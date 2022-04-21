@@ -1,0 +1,138 @@
+parameters:
+  - name: StageName
+    type: string
+    default: 'NoStageName'
+  - name: GradlewCommand
+    type: string
+    default: './gradlew clean test'
+stages:
+  - stage: ${{parameters.StageName}}
+    displayName: '${{parameters.StageName}}'
+#   dependsOn: staticanalysis
+    condition: eq(variables.flow, '${{parameters.StageName}}')
+    variables:
+      - group: BIZAGI
+      - group: CRM
+    pool:
+      name: 'BancoPichinchaDevOps'
+      demands:
+        - agent.name -equals AutomationSQA
+    jobs:
+      - job: AutomatedTest
+        steps:
+          - checkout: self
+            clean: true
+          - task: replacetokens@3
+            inputs:
+              #targetFiles: '**/**.csv'
+              writeBOM: true
+              verbosity: 'detailed'
+              actionOnMissing: 'fail'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTelemetry: true
+
+          - task: CmdLine@2
+            inputs:
+              script: |
+                echo %cd%
+
+#          - task: CmdLine@2
+#            displayName: 'Export UFT-8'
+#            inputs:
+#              script: |
+#                dpkg -l locales
+#                apt-get install locales
+#                dpkg-reconfigure locales
+#                export LC_ALL=en_US.UTF-8
+#                export LANG=en_US.UTF-8
+#                export LANGUAGE=en_US.UTF-8
+
+          - task: CmdLine@2
+            displayName: 'Automated Test'
+            continueOnError: true
+            inputs:
+              script: |
+                echo "${{parameters.GradlewCommand}}"
+                echo ${{parameters.GradlewCommand}}
+                ${{parameters.GradlewCommand}}
+
+          - task: CopyFiles@2
+            displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              SourceFolder: $(system.defaultworkingdirectory)
+              Contents: '**/*.jar'
+              TargetFolder: $(build.artifactstagingdirectory)
+          - task: CopyFiles@2
+            displayName: 'Copy results folder to: $(build.artifactstagingdirectory)/results'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              SourceFolder: $(system.defaultworkingdirectory)/target
+              Contents: '**'
+              TargetFolder: $(build.artifactstagingdirectory)/results
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact: drop'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: ${{parameters.StageName}}
+              publishLocation: 'Container'    
+          - task: PublishCucumberReport@1
+            displayName: Publish Cucumber Report
+            continueOnError: true
+            inputs:
+              jsonDir: target/cucumber-report
+              outputPath: target/cucumber-report
+#          - task: PublishHtmlReport@1
+#            displayName: Publish Html Report
+#            inputs:
+#              htmlType: 'genericHTML'
+#              reportDir: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+#              htmlPath: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+          - task: JakubRumpca.azure-pipelines-html-report.PublishHtmlReport.PublishHtmlReport@1
+            displayName: 'Publish Html Report'
+            continueOnError: true
+            inputs:
+              reportDir: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+#              htmlType: 'genericHTML'
+#              htmlPath: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+  - stage: Publish${{parameters.StageName}}
+    displayName: 'Publish ${{parameters.StageName}}'
+    dependsOn: ${{parameters.StageName}}
+    condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}')) 
+    variables:
+      - group: JIRA-SECRETS
+    pool:
+      vmImage: 'ubuntu-latest'
+    jobs:
+      - job: PublishJira
+        displayName: 'Publish to Jira'
+        steps:
+          - checkout: self
+          - download: none
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: ${{parameters.StageName}}
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
+          - task: CmdLine@2
+            displayName: 'Publish report to jira'
+            continueOnError: true
+            inputs:
+              script: |
+                pwd
+                find . -maxdepth 3 -ls
+                echo ${{parameters.StageName}}
+                cd ${{parameters.StageName}}/results/cucumber-report
+                echo "Json generado"
+                ls -altr
+                archivojson=$(ls -t | head -1)
+                token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(XRAY-CLIENT-ID)","client_secret": "$(XRAY-CLIENT-SECRET)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
+                curl -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivojson" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber              

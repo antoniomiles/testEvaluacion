@@ -1,0 +1,49 @@
+trigger:
+#  - feature/*
+  - master
+
+parameters:
+  - name: Flujo
+    displayName: 'Flujo a ejecutar'
+    default: Todos
+    values:
+      - Todos
+      - RegularRunnerTest
+      - SimulacionCompraTelefonoCSVRunnerTest
+variables:
+  flow: ${{parameters.Flujo}}
+  
+stages:
+  - stage: build
+    jobs:
+      - job: gradle_build
+        displayName: Gradle Build
+        pool:
+          name: 'BancoPichinchaDevOps'
+          demands:
+            - agent.name -equals AutomationSQA
+        steps:
+#          - task: CmdLine@2
+#            inputs:
+#              script: |
+#                gradle -v
+          - task: Gradle@2
+            displayName: gradlew build
+            inputs:
+              wrapperScript: gradlew
+              tasks: build
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: Todos
+      GradlewCommand: ./gradlew clean test
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: RegularRunnerTest
+      GradlewCommand: ./gradlew clean test --tests com.pichincha.automationtest.runners.RegularRunnerTest
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: SimulacionCompraTelefonoCSVRunnerTest
+      GradlewCommand: ./gradlew clean test --tests com.pichincha.automationtest.runners.SimulacionCompraTelefonoCSVRunnerTest
