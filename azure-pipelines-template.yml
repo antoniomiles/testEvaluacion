@@ -108,6 +108,7 @@ stages:
     condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}')) 
     variables:
       - group: JIRA-SECRETS
+      - group: CYPRESS-TEST
     pool:
       vmImage: 'ubuntu-latest'
     jobs:
@@ -133,6 +134,13 @@ stages:
                 cd ${{parameters.StageName}}/results/cucumber-report
                 echo "Json generado"
                 ls -altr
-                archivojson=$(ls -t | head -1)
+                flowOPTS=${{parameters.StageName}}
                 token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(XRAY-CLIENT-ID)","client_secret": "$(XRAY-CLIENT-SECRET)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
-                curl -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivojson" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber              
+                for archivo in *.json
+                do
+                  echo "Reporte Json $archivo"
+                  upJson=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivo" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber)
+                  keyTE=$(echo $upJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
+                  echo "{\"testExecutionKey\":\"$keyTE\",\"info\": {\"summary\":\"TE - Prueba E2E: NAME TEST: $flowOPTS\",\"description\":\"Prueba E2E de $flowOPTS en el ambiente $(environment)\"},\"tests\":[{\"testKey\":\"BMO-3507\",\"comment\":\"\",\"status\":\"passed\"}]}" > testExecutionName.json
+                  upTEName=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"testExecutionName.json" $(XRAY-REST-API-URL)/api/v1/import/execution)
+                done
