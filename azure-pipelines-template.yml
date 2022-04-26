@@ -5,10 +5,13 @@ parameters:
   - name: GradlewCommand
     type: string
     default: './gradlew clean test'
+  - name: StageTipo
+    type: string
+    default: 'cucumber'  
 stages:
   - stage: ${{parameters.StageName}}
     displayName: '${{parameters.StageName}}'
-#   dependsOn: staticanalysis
+    #   dependsOn: staticanalysis
     condition: eq(variables.flow, '${{parameters.StageName}}')
     variables:
       - group: BIZAGI
@@ -39,16 +42,16 @@ stages:
               script: |
                 echo %cd%
 
-#          - task: CmdLine@2
-#            displayName: 'Export UFT-8'
-#            inputs:
-#              script: |
-#                dpkg -l locales
-#                apt-get install locales
-#                dpkg-reconfigure locales
-#                export LC_ALL=en_US.UTF-8
-#                export LANG=en_US.UTF-8
-#                export LANGUAGE=en_US.UTF-8
+          #          - task: CmdLine@2
+          #            displayName: 'Export UFT-8'
+          #            inputs:
+          #              script: |
+          #                dpkg -l locales
+          #                apt-get install locales
+          #                dpkg-reconfigure locales
+          #                export LC_ALL=en_US.UTF-8
+          #                export LANG=en_US.UTF-8
+          #                export LANGUAGE=en_US.UTF-8
 
           - task: CmdLine@2
             displayName: 'Automated Test'
@@ -72,7 +75,7 @@ stages:
             continueOnError: true
             condition: succeededOrFailed()
             inputs:
-              SourceFolder: $(system.defaultworkingdirectory)/target
+              SourceFolder: $(system.defaultworkingdirectory)/build
               Contents: '**'
               TargetFolder: $(build.artifactstagingdirectory)/results
           - task: PublishBuildArtifacts@1
@@ -82,30 +85,34 @@ stages:
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
               ArtifactName: ${{parameters.StageName}}
-              publishLocation: 'Container'    
+              publishLocation: 'Container'          
+          #- task: PublishCucumberReport@1
+          #  displayName: Publish Karate Report
+          #  continueOnError: true
+          #  inputs:
+          #    jsonDir: build/karate-reports
+          #    outputPath: build/karate-reports
+          #          - task: PublishHtmlReport@1
+          #            displayName: Publish Html Report
+          #            inputs:
+          #              htmlType: 'genericHTML'
+          #              reportDir: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+          #              htmlPath: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
           - task: PublishCucumberReport@1
             displayName: Publish Cucumber Report
             continueOnError: true
             inputs:
-              jsonDir: target/cucumber-report
-              outputPath: target/cucumber-report
-#          - task: PublishHtmlReport@1
-#            displayName: Publish Html Report
-#            inputs:
-#              htmlType: 'genericHTML'
-#              reportDir: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
-#              htmlPath: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+              jsonDir: build/${{parameters.StageTipo}}-reports
+              outputPath: build/${{parameters.StageTipo}}-reports
           - task: JakubRumpca.azure-pipelines-html-report.PublishHtmlReport.PublishHtmlReport@1
             displayName: 'Publish Html Report'
             continueOnError: true
             inputs:
-              reportDir: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
-#              htmlType: 'genericHTML'
-#              htmlPath: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+              reportDir: '$(system.defaultworkingdirectory)/target/site/serenity/index.html'
   - stage: Publish${{parameters.StageName}}
     displayName: 'Publish ${{parameters.StageName}}'
     dependsOn: ${{parameters.StageName}}
-    condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}')) 
+    condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}'))
     variables:
       - group: JIRA-SECRETS
       - group: CYPRESS-TEST
@@ -131,7 +138,7 @@ stages:
                 pwd
                 find . -maxdepth 3 -ls
                 echo ${{parameters.StageName}}
-                cd ${{parameters.StageName}}/results/cucumber-report
+                cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports
                 echo "Json generado"
                 ls -altr
                 flowOPTS=${{parameters.StageName}}
@@ -141,6 +148,6 @@ stages:
                   echo "Reporte Json $archivo"
                   upJson=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivo" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber)
                   keyTE=$(echo $upJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
-                  echo "{\"testExecutionKey\":\"$keyTE\",\"info\": {\"summary\":\"TE - Prueba E2E: NAME TEST: $flowOPTS\",\"description\":\"Prueba E2E de $flowOPTS en el ambiente $(environment)\"},\"tests\":[{\"testKey\":\"BMO-3507\",\"comment\":\"\",\"status\":\"passed\"}]}" > testExecutionName.json
-                  upTEName=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"testExecutionName.json" $(XRAY-REST-API-URL)/api/v1/import/execution)
+                  echo "{\"testExecutionKey\":\"$keyTE\",\"info\": {\"summary\":\"TE - Prueba E2E: NAME TEST: $flowOPTS\",\"description\":\"Prueba E2E de $flowOPTS en el ambiente $(environment)\"},\"tests\":[{\"testKey\":\"PQBP-109\",\"comment\":\"\",\"status\":\"passed\"}]}" > testExecutionName.json
+                 # upTEName=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"testExecutionName.json" $(XRAY-REST-API-URL)/api/v1/import/execution)
                 done

@@ -8,6 +8,7 @@ import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
 
 import java.util.List;
+
 import static net.serenitybdd.screenplay.actors.OnStage.setTheStage;
 
 public class Hooks {

@@ -26,7 +26,8 @@ Realizadas por:  EquipoE2E
 	 1. Importar el proyecto desde IntelliJ IDE bajo la estructura de un proyecto Gradle existente
 	 2. Configurar JRE System Library con JavaSE-1.8
 	 3. Configurar la codificación a UTF-8 al proyecto una vez sea importado
-     4. Ejemplo de corrida ./gradlew test --tests *RegularRunnerTest
+     4. Ejemplo de corrida ./gradlew clean test --tests com.pichincha.automationtest.runners.SimulacionCompraTelefonoCSVRunnerTest
+     5. Ejemplo de corrida  para karate  ./gradle clean test --tests "-Dkarate.options=--tags @BancaMovil" "com.pichincha.automationtest.featuresws.ApiRunnerTest"
 
 <h2 id="pre4">4. Para Ejecutar Las Pruebas </h2>
 

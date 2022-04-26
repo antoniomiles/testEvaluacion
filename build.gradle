@@ -16,7 +16,6 @@ buildscript {
     }
 }
 
-
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
@@ -24,13 +23,32 @@ apply plugin: "net.serenity-bdd.serenity-gradle-plugin"
 //sourceCompatibility = 16
 //targetCompatibility = 16
 
+// es karate
+sourceSets {
+    test {
+        java {
+            srcDir file('src/test/java')
+            exclude '**/*UiRunner*.java'
+        }
+        resources {
+            srcDir file('src/test/java')
+            exclude '**/*.java'
+        }
+    }
+}
+
+
 ext {
     slf4jVersion = '1.7.7'
     serenityCoreVersion = '3.2.1'
     junitVersion = '4.13.2'
     assertJVersion = '3.22.0'
     logbackVersion = '1.2.11'
+    //es de karate
+        karate = '0.9.2'
+        cucumberReport = '5.3.0'
 }
+
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
@@ -52,7 +70,17 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.2'
     //required only for jdk 9 or above
     implementation('com.fasterxml.jackson.core:jackson-databind:2.13.2.2')
-
+    // es de karate
+    implementation 'ee.ringit.extras.camunda:timer-override-plugin:1.0.1'
+    implementation 'com.thoughtworks.feature:override_2.11:1.1.0'
+    implementation 'com.thoughtworks.feature:override_2.12:1.1.0'
+    implementation 'com.thoughtworks.constructor:override_2.12:4.1.0'
+    implementation 'com.thoughtworks.constructor:override_2.10:3.0.0'
+    testImplementation "com.intuit.karate:karate-junit4:1.1.0"
+    testImplementation "com.intuit.karate:karate-netty:0.9.2"
+    testImplementation "com.intuit.karate:karate-apache:0.9.6"
+    testImplementation "net.masterthought:cucumber-reporting:5.7.0"
+//    testImplementation 'junit:junit:4.13.2'
     /**
      * Lombok
      */
@@ -67,20 +95,31 @@ dependencies {
 
 test {
 //    testLogging.showStandardStreams = true
-
     systemProperties System.getProperties()
     maxParallelForks = 8
     systemProperty "file.encoding", "utf-8"
     systemProperty "cucumber.options", 
     System.getProperty("cucumber.options")
-}
+
+    // es de karate
+  //  include 'com/pichincha/automationtest/featuresws/TestRunner*'
+    // pull karate options into the runtime
+    systemProperty "karate.options", System.properties.getProperty("karate.options")
+    // pull karate env into the runtime
+    systemProperty "karate.env", System.properties.getProperty("karate.env")
+    // ensure tests are always run
+    outputs.upToDateWhen { false }
+
+    }
+
 
 serenity {
     // Specify the root package of any JUnit acceptance tests
     testRoot = "swaglabs"
 
     // Specify the root directory of any Cucumber feature files
-    requirementsDir = "src/test/resources/features"
+     requirementsDir = "src/test/resources/features"
+   // include 'com/pichincha/automationtest/featuresws/TestRunner*'
 }
 
 gradle.startParameter.continueOnFailure = true

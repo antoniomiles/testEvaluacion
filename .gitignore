@@ -6,6 +6,6 @@
 
 ### Maven template
 target/
-### .DS_Store
-### .gradle
-### build
+.DS_Store
+.gradle
+build

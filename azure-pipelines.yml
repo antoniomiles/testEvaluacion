@@ -5,14 +5,23 @@ trigger:
 parameters:
   - name: Flujo
     displayName: 'Flujo a ejecutar'
-    default: Todos
+    default: TodosWeb
     values:
-      - Todos
+      - TodosWeb
+      - TodosAPI
       - RegularRunnerTest
       - SimulacionCompraTelefonoCSVRunnerTest
+      - BancaMovil
+      - TCS
+  - name: Tipotest
+    displayName: 'Elija el tipo de test'
+    default: cucumber   
+    values:
+      - cucumber
+      - karate      
 variables:
   flow: ${{parameters.Flujo}}
-  
+          
 stages:
   - stage: build
     jobs:
@@ -31,19 +40,40 @@ stages:
             displayName: gradlew build
             inputs:
               wrapperScript: gradlew
-              tasks: build
+              tasks: build -x test
 
   - template: azure-pipelines-template.yml
     parameters:
-      StageName: Todos
-      GradlewCommand: ./gradlew clean test
+      StageName: TodosWeb
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.runners.*"
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: TodosAPI
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.featuresws.*"
 
   - template: azure-pipelines-template.yml
     parameters:
       StageName: RegularRunnerTest
-      GradlewCommand: ./gradlew clean test --tests com.pichincha.automationtest.runners.RegularRunnerTest
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@Saucedemo" com.pichincha.automationtest.runners.RegularRunnerTest
 
   - template: azure-pipelines-template.yml
     parameters:
       StageName: SimulacionCompraTelefonoCSVRunnerTest
-      GradlewCommand: ./gradlew clean test --tests com.pichincha.automationtest.runners.SimulacionCompraTelefonoCSVRunnerTest
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@SimulacionCompraTelefonoTng" com.pichincha.automationtest.runners.SimulacionCompraTelefonoCSVRunnerTest
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: BancaMovil
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @BancaMovil" "com.pichincha.automationtest.featuresws.ApiRunnerTest"
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: TCS
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @TCS" "com.pichincha.automationtest.featuresws.ApiRunnerTest"

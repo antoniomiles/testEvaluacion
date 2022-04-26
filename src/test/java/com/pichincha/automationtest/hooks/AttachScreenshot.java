@@ -1,8 +1,8 @@
 package com.pichincha.automationtest.hooks;
 
+import com.pichincha.automationtest.util.AttachScreenshotToScenario;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
-import com.pichincha.automationtest.util.AttachScreenshotToScenario;
 
 public class AttachScreenshot extends AttachScreenshotToScenario {
 
