@@ -11,7 +11,7 @@ parameters:
 stages:
   - stage: ${{parameters.StageName}}
     displayName: '${{parameters.StageName}}'
-    #   dependsOn: staticanalysis
+    dependsOn: build
     condition: eq(variables.flow, '${{parameters.StageName}}')
     variables:
       - group: BIZAGI
@@ -53,6 +53,36 @@ stages:
           #                export LANG=en_US.UTF-8
           #                export LANGUAGE=en_US.UTF-8
 
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: Temporales
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
+          
+          - task: CmdLine@2
+            displayName: 'Update Feature With Tags'
+            continueOnError: true
+            inputs:
+              script: |
+                cd .\Temporales\featuresJira
+                tar.exe -xvzf test.zip
+                dir
+                cd ..\..
+                move .\Temporales\featuresJira .\src\test\resources
+                node .\utils\keysComparator.js
+            
+           #
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact: Updated Features'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              PathtoPublish: '$(system.defaultworkingdirectory)\src\test\resources\features'
+              ArtifactName: Features
+              publishLocation: 'Container' 
+           # 
+
           - task: CmdLine@2
             displayName: 'Automated Test'
             continueOnError: true
@@ -70,6 +100,7 @@ stages:
               SourceFolder: $(system.defaultworkingdirectory)
               Contents: '**/*.jar'
               TargetFolder: $(build.artifactstagingdirectory)
+
           - task: CopyFiles@2
             displayName: 'Copy results folder to: $(build.artifactstagingdirectory)/results'
             continueOnError: true
@@ -78,6 +109,7 @@ stages:
               SourceFolder: $(system.defaultworkingdirectory)/build
               Contents: '**'
               TargetFolder: $(build.artifactstagingdirectory)/results
+              
           - task: PublishBuildArtifacts@1
             displayName: 'Publish Artifact: drop'
             continueOnError: true
@@ -86,29 +118,20 @@ stages:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
               ArtifactName: ${{parameters.StageName}}
               publishLocation: 'Container'          
-          #- task: PublishCucumberReport@1
-          #  displayName: Publish Karate Report
-          #  continueOnError: true
-          #  inputs:
-          #    jsonDir: build/karate-reports
-          #    outputPath: build/karate-reports
-          #          - task: PublishHtmlReport@1
-          #            displayName: Publish Html Report
-          #            inputs:
-          #              htmlType: 'genericHTML'
-          #              reportDir: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
-          #              htmlPath: '$(build.artifactstagingdirectory)/results/site/serenity/index.html'
+
           - task: PublishCucumberReport@1
             displayName: Publish Cucumber Report
             continueOnError: true
             inputs:
               jsonDir: build/${{parameters.StageTipo}}-reports
               outputPath: build/${{parameters.StageTipo}}-reports
+
           - task: JakubRumpca.azure-pipelines-html-report.PublishHtmlReport.PublishHtmlReport@1
             displayName: 'Publish Html Report'
             continueOnError: true
             inputs:
               reportDir: '$(system.defaultworkingdirectory)/target/site/serenity/index.html'
+  
   - stage: Publish${{parameters.StageName}}
     displayName: 'Publish ${{parameters.StageName}}'
     dependsOn: ${{parameters.StageName}}
@@ -131,24 +154,33 @@ stages:
               buildType: 'current'
               downloadType: 'single'
               downloadPath: './'
+          
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: Temporales
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
+                  
           - task: CmdLine@2
             displayName: 'Publish report to jira'
             continueOnError: true
             inputs:
               script: |
+                sprintId=$(cat Temporales/sprintId.txt)
                 pwd
                 find . -maxdepth 3 -ls
                 echo ${{parameters.StageName}}
-                cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports
+                cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json
                 echo "Json generado"
                 ls -altr
                 flowOPTS=${{parameters.StageName}}
-                token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(XRAY-CLIENT-ID)","client_secret": "$(XRAY-CLIENT-SECRET)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
+                token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
                 for archivo in *.json
                 do
                   echo "Reporte Json $archivo"
                   cucumberTEJson=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivo" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber)
                   keyTE=$(echo $cucumberTEJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
-                  echo "{\"fields\":{\"summary\":\"TE - Prueba E2E: NAME TEST: $flowOPTS\"}}" > testExecutionUpdate.json
+                  echo "{\"fields\":{\"summary\":\"TE - Prueba E2E: NAME TEST: $flowOPTS\",\"customfield_10021\":$sprintId}}" > testExecutionUpdate.json
                   upRequest=$(curl --request PUT --url  "$(url_api_jira)/api/3/issue/$keyTE" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data @"testExecutionUpdate.json")
                 done

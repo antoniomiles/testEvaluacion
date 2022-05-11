@@ -19,7 +19,6 @@ public class CSVReader {
         Map<Integer, String> rowHeaderPosition = new HashMap<>();
         Map<String, String> headerRow = null;
         try {
-            //bfreader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), StandardCharsets.ISO_8859_1));
             bfReader = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), StandardCharsets.UTF_8));
             while ((lineData = bfReader.readLine()) != null) {
 

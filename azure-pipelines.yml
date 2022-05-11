@@ -9,8 +9,8 @@ parameters:
     values:
       - TodosWeb
       - TodosAPI
-      - RegularRunnerTest
-      - SimulacionCompraTelefonoCSVRunnerTest
+      - SauceDemoLogin
+      - SimulacionCompraTelefono
       - BancaMovil
       - TCS
   - name: Tipotest
@@ -21,9 +21,66 @@ parameters:
       - karate      
 variables:
   flow: ${{parameters.Flujo}}
+  isMain: false
           
 stages:
+  - stage: Pre_Test_Jira_Integration
+    variables: 
+    - group: JIRA-SECRETS
+    - group: USUARIO_GENERICO
+    pool:
+      name: 'BancoPichinchaDevOps'
+      demands:
+        - agent.name -equals AutomationSQA
+    jobs: 
+    - job: Import
+      displayName: Jira XRAY Import Test
+      steps:
+      - task: CmdLine@2
+        displayName: 'Send feature to Jira'
+        inputs:
+          script: |
+            set assigneeId=5eb4731c021ae30ba839abc2
+            set projectKey=PQBP
+            set boardId=491
+            cd src/test/resources/
+            tar.exe -a -c -f features.zip features
+            curl -H "Content-Type: application/json" -X POST --data "{\"client_id\":\"$(id_xray_usuario_generico)\",\"client_secret\":\"$(clave_secreta_usuario_generico)\"}" $(XRAY-REST-API-URL)/api/v1/authenticate > tempToken.txt
+            set /p token=<tempToken.txt
+            set "token=%token:"=%"
+            curl --request GET --url "$(url_api_jira)/agile/1.0/board/%boardId%/sprint" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" > sprintInfo.json
+            node ../../../utils/sprintId.js
+            set /p sprintId=<sprintId.txt
+            echo {"fields": {"assignee": {"id": "%assigneeId%"}, "customfield_10021": %sprintId%}} > usuarioAsignado.json
+            curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer %token%" -F "testInfo=@usuarioAsignado.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=%projectKey% > keysResponse.json
+            node ../../../utils/parser.js
+            set /p cucumberKeys=<keys.txt
+            echo %cucumberKeys%
+            curl -k -H "Content-Type: application/json" -X GET -H "Authorization: Bearer %token%" "$(XRAY-REST-API-URL)/api/v1/export/cucumber?keys=%cucumberKeys%" > test.zip
+            
+      - task: CmdLine@2
+        displayName: 'Move temporary files to a "Temporales" folder'
+        inputs:
+          script: |
+            cd src/test/resources/
+            md Temporales featuresJira
+            move test.zip featuresJira
+            move *.txt Temporales
+            move *.json Temporales
+            move *.zip Temporales
+            move featuresJira Temporales
+
+      - task: PublishBuildArtifacts@1
+        displayName: 'Publish "Temporales" folder in Artifacts'
+        continueOnError: true
+        condition: succeededOrFailed()
+        inputs:
+          PathtoPublish: '$(system.defaultworkingdirectory)\src\test\resources\temporales'
+          ArtifactName: 'Temporales'
+          publishLocation: 'Container'
+
   - stage: build
+    dependsOn: Pre_Test_Jira_Integration
     jobs:
       - job: gradle_build
         displayName: Gradle Build
@@ -32,10 +89,6 @@ stages:
           demands:
             - agent.name -equals AutomationSQA
         steps:
-#          - task: CmdLine@2
-#            inputs:
-#              script: |
-#                gradle -v
           - task: Gradle@2
             displayName: gradlew build
             inputs:
@@ -46,34 +99,34 @@ stages:
     parameters:
       StageName: TodosWeb
       StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.runners.*"
-
+      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.runners.WebRunnerTest"
+    
   - template: azure-pipelines-template.yml
     parameters:
       StageName: TodosAPI
       StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.featuresws.*"
+      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.runners.ApiRunnerTest"
 
   - template: azure-pipelines-template.yml
     parameters:
-      StageName: RegularRunnerTest
+      StageName: SauceDemoLogin
       StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@Saucedemo" com.pichincha.automationtest.runners.RegularRunnerTest
+      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@login" com.pichincha.automationtest.runners.WebRunnerTest
 
   - template: azure-pipelines-template.yml
     parameters:
-      StageName: SimulacionCompraTelefonoCSVRunnerTest
+      StageName: SimulacionCompraTelefono
       StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@SimulacionCompraTelefonoTng" com.pichincha.automationtest.runners.SimulacionCompraTelefonoCSVRunnerTest
+      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@CompraTelefono" com.pichincha.automationtest.runners.WebRunnerTest
 
   - template: azure-pipelines-template.yml
     parameters:
       StageName: BancaMovil
       StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @BancaMovil" "com.pichincha.automationtest.featuresws.ApiRunnerTest"
+      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @BancaMovil" "com.pichincha.automationtest.runners.ApiRunnerTest"
 
   - template: azure-pipelines-template.yml
     parameters:
       StageName: TCS
       StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @TCS" "com.pichincha.automationtest.featuresws.ApiRunnerTest"
+      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @TCS" "com.pichincha.automationtest.runners.ApiRunnerTest"
