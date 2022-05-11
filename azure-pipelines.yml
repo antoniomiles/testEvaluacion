@@ -13,6 +13,7 @@ parameters:
       - SimulacionCompraTelefono
       - BancaMovil
       - TCS
+      - ManualTest
   - name: Tipotest
     displayName: 'Elija el tipo de test'
     default: cucumber   
@@ -130,3 +131,9 @@ stages:
       StageName: TCS
       StageTipo: ${{parameters.Tipotest}}
       GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @TCS" "com.pichincha.automationtest.runners.ApiRunnerTest"
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: ManualTest
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@ManualTest" com.pichincha.automationtest.runners.WebRunnerTest

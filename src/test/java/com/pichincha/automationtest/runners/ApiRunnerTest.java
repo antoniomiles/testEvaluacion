@@ -7,9 +7,10 @@ import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-
-
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import net.masterthought.cucumber.Configuration;
 public class ApiRunnerTest {
 @Test
     public void testparallel() throws IOException {
-    Runner.path("src/test/resources/features/").tags("~@cucumber").outputCucumberJson(true).parallel(5);
+    Runner.path("src/test/resources/features/").tags("@karate").outputCucumberJson(true).parallel(5);
     String karateOutputPath = "build/karate-reports";
     generateReport(karateOutputPath);
 }

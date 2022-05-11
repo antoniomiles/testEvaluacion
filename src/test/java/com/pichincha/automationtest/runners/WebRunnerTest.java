@@ -5,8 +5,6 @@ import com.pichincha.automationtest.util.BeforeSuite;
 import com.pichincha.automationtest.util.CustomCucumberWithSerenityRunner;
 import com.pichincha.automationtest.util.FeatureOverwrite;
 import io.cucumber.junit.CucumberOptions;
-import net.serenitybdd.cucumber.CucumberWithSerenity;
-import net.thucydides.core.ThucydidesSystemProperty;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -20,7 +18,7 @@ import java.io.IOException;
         features = "src/test/resources/features/",
         glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
         plugin = "json:build/cucumber-reports/json/cucumber.json",
-        tags = "not @karate"
+        tags = "not @karate and not @ManualTest"
 )
 public class WebRunnerTest {
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
@@ -37,18 +35,6 @@ public class WebRunnerTest {
         }
     }
 
-    @AfterSuite
-    public static void after() throws IOException, InvalidFormatException {
-        String featureName = variables.getProperty("featureName");
-        String[] features = getFeaturesNames(featureName);
-        for (String feature : features) {
-            if (!featureName.equals("todos")){
-                feature+=".feature";
-            }
-            FeatureOverwrite.overwriteFeatureFileRemove(feature);
-        }
-    }
-
     public static String[] getFeaturesNames(String featureName){
         String[] features;
         if (featureName.equals("todos")){
@@ -60,5 +46,17 @@ public class WebRunnerTest {
 
         }
         return features;
+    }
+
+    @AfterSuite
+    public static void after() throws IOException, InvalidFormatException {
+        String featureName = variables.getProperty("featureName");
+        String[] features = getFeaturesNames(featureName);
+        for (String feature : features) {
+            if (!featureName.equals("todos")){
+                feature+=".feature";
+            }
+            FeatureOverwrite.overwriteFeatureFileRemove(feature);
+        }
     }
 }

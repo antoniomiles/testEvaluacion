@@ -13,6 +13,7 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class FeatureOverwrite {
+    static PropertiesReader readProperties= new PropertiesReader();
 
     private static Map<String,List<String>> currentFeatures = new HashMap<>();
 
@@ -22,7 +23,13 @@ public class FeatureOverwrite {
 
     private static void addExternalDataToFeature(final String featureName) throws IOException, InvalidFormatException {
         File featureFile = new File(System.getProperty("user.dir") + "/src/test/resources/features/"+ featureName);
-        final List<String> featureWithExternalData = impSetFileDataToFeature(featureFile, featureName);
+        List<String> featureWithExternalData=null;
+        if(featureName.contains("Manual")){
+            featureWithExternalData= impSetPaneOrCsvDataToFeature(featureFile);
+        }else{
+            featureWithExternalData= impSetFileDataToFeature(featureFile, featureName);
+        }
+
         try (BufferedWriter writer = Files.newBufferedWriter(
                 Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8)
         ) {
@@ -98,13 +105,111 @@ public class FeatureOverwrite {
 
     private static void removeExternalDataToFeature(final String featureName) throws IOException {
         File featureFile = new File(System.getProperty("user.dir") + "/src/test/resources/features/"+ featureName);
+
+        final List<String> featureWithExternalData;
+
+        if(featureName.contains("Manual")){
+            featureWithExternalData= impRemovePaneDataToFeature(featureFile);
+        }else{
+            featureWithExternalData= currentFeatures.get(featureName);
+        }
         try (BufferedWriter writer = Files.newBufferedWriter(
                 Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8)
         ) {
-            for (final String writeline : currentFeatures.get(featureName)) {
+            for (final String writeline : featureWithExternalData) {
                 writer.write(writeline);
                 writer.write("\n");
             }
         }
     }
+
+    private static List<String> impSetPaneOrCsvDataToFeature(final File featureFile) throws IOException, InvalidFormatException {
+        final List<String> fileData = new ArrayList<String>();
+        BufferedReader buffReaderScenario=null;
+        BufferedReader buffReader = null;
+        try {
+            buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
+            buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
+            String data;
+            String externalDataSt ="";
+            final List<String> snarios = new ArrayList<String>();
+            String nameScenario ="";
+            int numScenario = 0;
+            String azureOrLocalExecution=readProperties.getPropiedad("azure.or.local.execution");
+            boolean foundHashTag = false;
+            while ((nameScenario = buffReaderScenario.readLine()) != null) {
+                if (nameScenario.trim().contains("Scenario:")) {
+                    snarios.add(nameScenario);
+                }
+            }
+            while ((data = buffReader.readLine()) != null) {
+                if (data.trim().contains("@manual-result:")) {
+                    foundHashTag = false;
+                }
+                if (data.trim().contains("@manual")) {
+                    foundHashTag = true;
+                    //fileData.add(data);
+                }
+                if (foundHashTag) {
+                    if (azureOrLocalExecution.equalsIgnoreCase("azure")){
+                        externalDataSt = ManualReadFeature.setPassedOrFailedFromCSV(snarios.get(numScenario),numScenario,readProperties.getPropiedad("path.data.passed.or.failed"));
+                    }else{
+                        externalDataSt = ManualReadFeature.setPassedOrFailedFromPane(snarios.get(numScenario),numScenario);
+                    }
+                    numScenario++;
+                    fileData.add(data+" "+externalDataSt.trim());
+                    foundHashTag = false;
+                    continue;
+                }
+                fileData.add(data);
+            }
+        }
+        finally {
+            if (buffReader != null) {
+                try {
+                    buffReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (buffReaderScenario != null) {
+                try {
+                    buffReaderScenario.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return fileData;
+    }
+
+    private static List<String> impRemovePaneDataToFeature(final File featureFile) throws IOException {
+        final List<String> fileData = new ArrayList<String>();
+        BufferedReader buffReader=null;
+        try{
+            buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
+            String data;
+            boolean foundHashTag = false;
+            while ((data = buffReader.readLine()) != null) {
+                if (data.trim().contains("@manual-result:") ||data.trim().contains("#EstadoScenarioNoDefinido") ) {
+                    data = data.replace(" @manual-result:passed","");
+                    data = data.replace(" @manual-result:failed","");
+                    data = data.replace(" #EstadoScenarioNoDefinido","");
+                        fileData.add(data);
+                        continue;
+                }
+                fileData.add(data);
+            }
+        }finally {
+            if (buffReader != null) {
+                try {
+                    buffReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return fileData;
+    }
+
 }
