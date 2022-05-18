@@ -181,6 +181,7 @@ stages:
                   echo "Reporte Json $archivo"
                   cucumberTEJson=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivo" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber)
                   keyTE=$(echo $cucumberTEJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
+                  curl -X POST --url  "$(url_api_jira)/api/3/issue/$keyTE/transitions?expand=transitions.fields" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data '{"transition":{"id":71}}'
                   echo "{\"fields\":{\"summary\":\"TE - Prueba E2E: NAME TEST: $flowOPTS\",\"customfield_10021\":$sprintId}}" > testExecutionUpdate.json
                   upRequest=$(curl --request PUT --url  "$(url_api_jira)/api/3/issue/$keyTE" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data @"testExecutionUpdate.json")
                 done
