@@ -1,18 +1,16 @@
 package com.pichincha.automationtest.util;
 
-//import org.apache.log4j.Logger;
-
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
-
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class CustomCucumberWithSerenityRunner extends Runner {
 
-    //static final Logger LOGGER = Logger.getLogger(CustomCucumberRunner.class);
     private final Class<CucumberWithSerenity> classValue;
     private CucumberWithSerenity cucumberWithSerenity;
 
@@ -48,15 +46,13 @@ public class CustomCucumberWithSerenityRunner extends Runner {
             runAnnotatedMethods(BeforeSuite.class);
             cucumberWithSerenity = new CucumberWithSerenity(classValue);
         } catch (Exception e) {
-           // LOGGER.error(e.getMessage(), e);
-            System.out.println("Z>>>>>>>>>>>ERROR: "+e);
+            log.error("Error: "+e.getMessage(), e);
         }
         cucumberWithSerenity.run(notifier);
         try {
             runAnnotatedMethods(AfterSuite.class);
         } catch (Exception e) {
-            //LOGGER.error(e.getMessage(), e);
-            System.out.println("Z>>>>>>>>>>>ERROR: "+e);
+            log.error("Error: "+e.getMessage(), e);
         }
     }
 }

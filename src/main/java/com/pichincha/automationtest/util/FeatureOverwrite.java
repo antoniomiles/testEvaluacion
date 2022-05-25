@@ -11,7 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-
+import lombok.extern.slf4j.Slf4j;
+@Slf4j
 public class FeatureOverwrite {
     static PropertiesReader readProperties= new PropertiesReader();
 
@@ -24,7 +25,7 @@ public class FeatureOverwrite {
     private static void addExternalDataToFeature(final String featureName) throws IOException, InvalidFormatException {
         File featureFile = new File(System.getProperty("user.dir") + "/src/test/resources/features/"+ featureName);
         List<String> featureWithExternalData=null;
-        if(featureName.contains("Manual")){
+        if(featureName.contains("Manual.feature")){
             featureWithExternalData= impSetPaneOrCsvDataToFeature(featureFile);
         }else{
             featureWithExternalData= impSetFileDataToFeature(featureFile, featureName);
@@ -108,7 +109,7 @@ public class FeatureOverwrite {
 
         final List<String> featureWithExternalData;
 
-        if(featureName.contains("Manual")){
+        if(featureName.contains("Manual.feature")){
             featureWithExternalData= impRemovePaneDataToFeature(featureFile);
         }else{
             featureWithExternalData= currentFeatures.get(featureName);
@@ -211,5 +212,4 @@ public class FeatureOverwrite {
         }
         return fileData;
     }
-
 }

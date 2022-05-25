@@ -1,4 +1,4 @@
-@REQ_PQBP-583 @Saucedemo @cucumber
+@REQ_PQBP-583 @Saucedemo @cucumber @R3
 Feature: Iniciar sesion en la pagina Prueba
   @id:1 @testFeature
   Scenario Outline: Iniciar sesión con credenciales de Jira

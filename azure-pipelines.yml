@@ -14,6 +14,7 @@ parameters:
       - BancaMovil
       - TCS
       - ManualTest
+      - ParallelTest
   - name: Tipotest
     displayName: 'Elija el tipo de test'
     default: cucumber   
@@ -49,7 +50,7 @@ stages:
             curl -H "Content-Type: application/json" -X POST --data "{\"client_id\":\"$(id_xray_usuario_generico)\",\"client_secret\":\"$(clave_secreta_usuario_generico)\"}" $(XRAY-REST-API-URL)/api/v1/authenticate > tempToken.txt
             set /p token=<tempToken.txt
             set "token=%token:"=%"
-            curl --request GET --url "$(url_api_jira)/agile/1.0/board/%boardId%/sprint" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" > sprintInfo.json
+            curl --request GET --url "$(url_api_jira)/agile/1.0/board/%boardId%/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" > sprintInfo.json
             node ../../../utils/sprintId.js
             set /p sprintId=<sprintId.txt
             echo {"fields": {"assignee": {"id": "%assigneeId%"}, "customfield_10021": %sprintId%}} > usuarioAsignado.json
@@ -137,3 +138,9 @@ stages:
       StageName: ManualTest
       StageTipo: ${{parameters.Tipotest}}
       GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@ManualTest" com.pichincha.automationtest.runners.WebRunnerTest
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: ParallelTest
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test -PmaxParallelForks=4 --tests "com.pichincha.automationtest.runners.parallel.*" aggregate -i

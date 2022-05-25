@@ -1,4 +1,4 @@
-@REQ_PQBP-511 @Saucedemo @cucumber
+@REQ_PQBP-511 @Saucedemo @cucumber @R1
 Feature: Iniciar sesion en la pagina SauceDemo
   @id:1 @login
   Scenario Outline: Iniciar sesión con credenciales correctas
