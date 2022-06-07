@@ -54,7 +54,7 @@ stages:
             node ../../../utils/sprintId.js
             set /p sprintId=<sprintId.txt
             echo {"fields": {"assignee": {"id": "%assigneeId%"}, "customfield_10021": %sprintId%}} > usuarioAsignado.json
-            curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer %token%" -F "testInfo=@usuarioAsignado.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=%projectKey% > keysResponse.json
+            curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer %token%" -F "precondInfo=@usuarioAsignado.json" -F "testInfo=@usuarioAsignado.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=%projectKey% > keysResponse.json
             node ../../../utils/parser.js
             set /p cucumberKeys=<keys.txt
             echo %cucumberKeys%
