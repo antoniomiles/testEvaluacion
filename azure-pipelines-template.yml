@@ -14,9 +14,6 @@ stages:
   displayName: '${{parameters.StageName}}'
   dependsOn: build
   condition: eq(variables.flow, '${{parameters.StageName}}')
-  variables:
-    - group: BIZAGI
-    - group: CRM
   pool:
     name: 'BancoPichinchaDevOps'
     demands:
@@ -138,8 +135,6 @@ stages:
   dependsOn: ${{parameters.StageName}}
   condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}'))
   variables:
-    - group: JIRA-SECRETS
-    - group: CYPRESS-TEST
     - group: USUARIO_GENERICO
   jobs:
   - job: PublishJira
@@ -167,7 +162,6 @@ stages:
       inputs:
         script: |
           sprintId=$(cat Temporales/sprintId.txt)
-          pwd
           find . -maxdepth 3 -ls
           echo ${{parameters.StageName}}
           cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json
@@ -182,7 +176,7 @@ stages:
           keyTE=$(echo $cucumberTEJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
           echo "##vso[task.setvariable variable=tempKey;]$keyTE"
           curl -X POST --url  "$(url_api_jira)/api/3/issue/$keyTE/transitions?expand=transitions.fields" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data '{"transition":{"id":71}}'
-          echo "{\"fields\":{\"summary\":\"TE - Prueba E2E: NAME TEST: $resumen\",\"customfield_10021\":$sprintId}}" > testExecutionUpdate.json
+          echo "{\"fields\":{\"summary\":\"TE - Prueba E2E: NAME TEST: $resumen\",\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testExecutionUpdate.json
           upRequest=$(curl --request PUT --url  "$(url_api_jira)/api/3/issue/$keyTE" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data @"testExecutionUpdate.json")
     
     - bash: echo "##vso[task.setvariable variable=keyTE;isOutput=true]$(tempKey)"
@@ -264,12 +258,9 @@ stages:
       continueOnError: true
       inputs:
         script: |
-          boardId=491
-          projectKey=PQBP
-          assigneeId=5eb4731c021ae30ba839abc2
           reportPath=FailedOrPassedScenarios/failedScenarios.json
-          sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$boardId/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')  
-          node -e "require('./utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$projectKey',apiURL:'$(url_api_jira)/api/3',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$assigneeId',sprintId:$sprintId})"
+          sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')  
+          node -e "require('./utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)/api/3',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',sprintId:$sprintId})"
 
 - stage: CloseJiraElements${{parameters.StageName}}
   dependsOn: ProcessResult${{parameters.StageName}}
@@ -299,7 +290,6 @@ stages:
       displayName: 'Closing passed scenarios'
       inputs:
         script: |
-          projectKey=PQBP
           reportPath=FailedOrPassedScenarios/passedScenarios.json
           echo "TEKEY process: $(currentTestExecutionKey)" 
-          node -e "require('./utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$projectKey',apiURL:'$(url_api_jira)/api/3',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)'})"
+          node -e "require('./utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)/api/3',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)'})"

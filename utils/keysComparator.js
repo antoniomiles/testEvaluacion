@@ -10,14 +10,27 @@ processFilesFromDir(featureOriginalesPath, 'override')
 
 function processFilesFromDir(dirPath, method='get'){
     fs.readdirSync(dirPath).forEach(file => {
-        if (file.includes('.feature')){
-            if (method=='get'){
-                getDataFromFile(`${dirPath}/${file}`);
-            } else{
-                updateTagInFeature(`${dirPath}/${file}`);
-            }
+        const fileInfo = fs.openSync(`${dirPath}/${file}`, 'r')
+        if(fs.fstatSync(fileInfo).isDirectory()){
+            const newDirPath = `${dirPath}/${file}`
+            fs.readdirSync(newDirPath).forEach(fileNested => {
+                processFile(newDirPath, fileNested, method)
+            });
+        }
+        else {
+            processFile(dirPath, file, method)
         }
     });
+}
+
+function processFile(dirPath, fileName, method){
+    if (fileName.includes('.feature')){
+        if (method=='get'){
+            getDataFromFile(`${dirPath}/${fileName}`);
+        } else{
+            updateTagInFeature(`${dirPath}/${fileName}`);
+        }
+    }
 }
 
 function getDataFromFile(filePath){
@@ -26,7 +39,8 @@ function getDataFromFile(filePath){
             const tagsList = featureLine.trim().split(" ")
             const jiraKey = tagsList[0]
             const comparatorList = featureLine.trim().split(/@TEST_[a-zA-Z]*-\d*/).pop().trim()
-            featureTestMap[comparatorList]=jiraKey;           
+            const sortComparator = comparatorList.split(" ").sort().join(" ")
+            featureTestMap[sortComparator]=jiraKey;           
         }
     });
 }
@@ -37,7 +51,10 @@ function updateTagInFeature(filePath){
         
         if(featureLine.trim().startsWith('@id:')){
             const comparator = featureLine.split(/@id:\d*/).pop().trim();
-            featureLine = `${featureTestMap[comparator]} ${comparator}`
+            const sortComparator = comparator.split(" ").sort().join(" ");
+            if (sortComparator in featureTestMap){
+                featureLine = `${featureTestMap[sortComparator]} ${sortComparator}`
+            }
         }
         featureData+=featureLine+"\n";
     });
