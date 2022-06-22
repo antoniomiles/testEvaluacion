@@ -1,19 +1,15 @@
 package com.pichincha.automationtest.featuresws;
 
 import com.intuit.karate.Runner;
-import io.cucumber.junit.CucumberOptions;
+import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
-
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import static org.junit.Assert.assertTrue;
-import net.masterthought.cucumber.Configuration;
-import net.masterthought.cucumber.ReportBuilder;
 
 public class ApiRunnerTest {
 @Test

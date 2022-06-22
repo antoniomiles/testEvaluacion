@@ -3,6 +3,7 @@ package com.pichincha.automationtest.util;
 import io.cucumber.java.Scenario;
 import net.serenitybdd.screenplay.abilities.BrowseTheWeb;
 import net.serenitybdd.screenplay.actors.OnStage;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import org.apache.commons.io. IOUtils;
 
 public class AttachScreenshotToScenario {
     static PropertiesReader readProperties= new PropertiesReader();

@@ -1,12 +1,13 @@
 package com.pichincha.automationtest.util;
 
+import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.cucumber.CucumberWithSerenity;
 import org.junit.runner.Description;
 import org.junit.runner.Runner;
 import org.junit.runner.notification.RunNotifier;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class CustomCucumberWithSerenityRunner extends Runner {
@@ -16,6 +17,7 @@ public class CustomCucumberWithSerenityRunner extends Runner {
 
     public CustomCucumberWithSerenityRunner(final Class<CucumberWithSerenity> classValue) throws Exception {
         this.classValue = classValue;
+
         cucumberWithSerenity = new CucumberWithSerenity(classValue);
     }
 

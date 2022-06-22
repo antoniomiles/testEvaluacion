@@ -1,7 +1,7 @@
 package com.pichincha.automationtest.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -11,24 +11,25 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 public class FeatureOverwrite {
-    static PropertiesReader readProperties= new PropertiesReader();
 
-    private static Map<String,List<String>> currentFeatures = new HashMap<>();
+    static PropertiesReader readProperties = new PropertiesReader();
 
-    public static void overwriteFeatureFileAdd(final String featureName) throws IOException, InvalidFormatException {
+    private static final Map<String, List<String>> currentFeatures = new HashMap<>();
+
+    public static void overwriteFeatureFileAdd(final String featureName) throws IOException {
         addExternalDataToFeature(featureName);
     }
 
-    private static void addExternalDataToFeature(final String featureName) throws IOException, InvalidFormatException {
-        File featureFile = new File(System.getProperty("user.dir") + "/src/test/resources/features/"+ featureName);
-        List<String> featureWithExternalData=null;
-        if(featureName.contains("Manual.feature")){
-            featureWithExternalData= impSetPaneOrCsvDataToFeature(featureFile);
-        }else{
-            featureWithExternalData= impSetFileDataToFeature(featureFile, featureName);
+    private static void addExternalDataToFeature(final String featureName) throws IOException {
+        File featureFile = new File(PathConstants.featurePath()+ featureName);
+        List<String> featureWithExternalData;
+        if (featureName.contains("Manual.feature")) {
+            featureWithExternalData = impSetPaneOrCsvDataToFeature(featureFile);
+        } else {
+            featureWithExternalData = impSetFileDataToFeature(featureFile, featureName);
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(
@@ -42,18 +43,18 @@ public class FeatureOverwrite {
     }
 
     private static List<String> impSetFileDataToFeature(final File featureFile, String featureName) throws IOException {
-        final List<String> fileData = new ArrayList<String>();
+        final List<String> fileData = new ArrayList<>();
         try (BufferedReader buffReader = Files.newBufferedReader(
                 Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8)
         ) {
             String data;
-            List<String> previousData = new ArrayList<String>();
+            List<String> previousData = new ArrayList<>();
             boolean exampleData = false;
             while ((data = buffReader.readLine()) != null) {
                 previousData.add(data);
                 if (data.trim().contains("@externaldata")) {
                     String filePath = getValidFilePath(data);
-                    List<Map<String, String>> externalData = getDataFromFile(filePath);
+                    List<Map<String, String>> externalData = getDataFromFile(PathConstants.dataPath() + filePath);
                     Collection<String> headers = externalData.get(0).keySet();
                     fileData.add(getGherkinExample(headers));
                     for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
@@ -61,23 +62,23 @@ public class FeatureOverwrite {
                         fileData.add(getGherkinExample(rowValues));
                     }
                     exampleData = false;
-                    data="#"+data;
+                    data = "#" + data;
                 }
                 if (!exampleData) {
                     fileData.add(data);
                 }
-                if (data.contains("Examples")){
-                    exampleData=true;
+                if (data.contains("Examples")) {
+                    exampleData = true;
                 }
             }
-            currentFeatures.put(featureName,previousData);
+            currentFeatures.put(featureName, previousData);
         }
         return fileData;
     }
 
     private static String getValidFilePath(String data) {
-        return data.substring(StringUtils.ordinalIndexOf(data, "@", 2)+1)
-                .replace("|","")
+        return data.substring(StringUtils.ordinalIndexOf(data, "@", 2) + 1)
+                .replace("|", "")
                 .trim()
                 .toLowerCase();
     }
@@ -92,7 +93,7 @@ public class FeatureOverwrite {
                 .endsWith(".csv");
     }
 
-    private static String getGherkinExample(Collection<String> examplesFields){
+    private static String getGherkinExample(Collection<String> examplesFields) {
         String example = "";
         for (String field : examplesFields) {
             example = String.format("%s|%s", example, field);
@@ -100,19 +101,19 @@ public class FeatureOverwrite {
         return example + "|";
     }
 
-    public static void overwriteFeatureFileRemove(final String featureName) throws IOException, InvalidFormatException {
+    public static void overwriteFeatureFileRemove(final String featureName) throws IOException {
         removeExternalDataToFeature(featureName);
     }
 
     private static void removeExternalDataToFeature(final String featureName) throws IOException {
-        File featureFile = new File(System.getProperty("user.dir") + "/src/test/resources/features/"+ featureName);
+        File featureFile = new File(PathConstants.featurePath() + featureName);
 
         final List<String> featureWithExternalData;
 
-        if(featureName.contains("Manual.feature")){
-            featureWithExternalData= impRemovePaneDataToFeature(featureFile);
-        }else{
-            featureWithExternalData= currentFeatures.get(featureName);
+        if (featureName.contains("Manual.feature")) {
+            featureWithExternalData = impRemovePaneDataToFeature(featureFile);
+        } else {
+            featureWithExternalData = currentFeatures.get(featureName);
         }
         try (BufferedWriter writer = Files.newBufferedWriter(
                 Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8)
@@ -124,19 +125,19 @@ public class FeatureOverwrite {
         }
     }
 
-    private static List<String> impSetPaneOrCsvDataToFeature(final File featureFile) throws IOException, InvalidFormatException {
-        final List<String> fileData = new ArrayList<String>();
-        BufferedReader buffReaderScenario=null;
+    private static List<String> impSetPaneOrCsvDataToFeature(final File featureFile) throws IOException {
+        final List<String> fileData = new ArrayList<>();
+        BufferedReader buffReaderScenario = null;
         BufferedReader buffReader = null;
         try {
             buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
             buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
             String data;
-            String externalDataSt ="";
-            final List<String> snarios = new ArrayList<String>();
-            String nameScenario ="";
+            String externalDataSt = "";
+            final List<String> snarios = new ArrayList<>();
+            String nameScenario = "";
             int numScenario = 0;
-            String azureOrLocalExecution=readProperties.getPropiedad("azure.or.local.execution");
+            String azureOrLocalExecution = readProperties.getPropiedad("azure.or.local.execution");
             boolean foundHashTag = false;
             while ((nameScenario = buffReaderScenario.readLine()) != null) {
                 if (nameScenario.trim().contains("Scenario:")) {
@@ -152,20 +153,20 @@ public class FeatureOverwrite {
                     //fileData.add(data);
                 }
                 if (foundHashTag) {
-                    if (azureOrLocalExecution.equalsIgnoreCase("azure")){
-                        externalDataSt = ManualReadFeature.setPassedOrFailedFromCSV(snarios.get(numScenario),numScenario,readProperties.getPropiedad("path.data.passed.or.failed"));
-                    }else{
-                        externalDataSt = ManualReadFeature.setPassedOrFailedFromPane(snarios.get(numScenario),numScenario);
+                    if (azureOrLocalExecution.equalsIgnoreCase("azure")) {
+                        externalDataSt = ManualReadFeature.setPassedOrFailedFromCSV(snarios.get(numScenario), numScenario,
+                                readProperties.getPropiedad("path.data.passed.or.failed"));
+                    } else {
+                        externalDataSt = ManualReadFeature.setPassedOrFailedFromPane(snarios.get(numScenario), numScenario);
                     }
                     numScenario++;
-                    fileData.add(data+" "+externalDataSt.trim());
+                    fileData.add(data + " " + externalDataSt.trim());
                     foundHashTag = false;
                     continue;
                 }
                 fileData.add(data);
             }
-        }
-        finally {
+        } finally {
             if (buffReader != null) {
                 try {
                     buffReader.close();
@@ -185,23 +186,22 @@ public class FeatureOverwrite {
     }
 
     private static List<String> impRemovePaneDataToFeature(final File featureFile) throws IOException {
-        final List<String> fileData = new ArrayList<String>();
-        BufferedReader buffReader=null;
-        try{
+        final List<String> fileData = new ArrayList<>();
+        BufferedReader buffReader = null;
+        try {
             buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
             String data;
-            boolean foundHashTag = false;
             while ((data = buffReader.readLine()) != null) {
-                if (data.trim().contains("@manual-result:") ||data.trim().contains("#EstadoScenarioNoDefinido") ) {
-                    data = data.replace(" @manual-result:passed","");
-                    data = data.replace(" @manual-result:failed","");
-                    data = data.replace(" #EstadoScenarioNoDefinido","");
-                        fileData.add(data);
-                        continue;
+                if (data.trim().contains("@manual-result:") || data.trim().contains("#EstadoScenarioNoDefinido")) {
+                    data = data.replace(" @manual-result:passed", "");
+                    data = data.replace(" @manual-result:failed", "");
+                    data = data.replace(" #EstadoScenarioNoDefinido", "");
+                    fileData.add(data);
+                    continue;
                 }
                 fileData.add(data);
             }
-        }finally {
+        } finally {
             if (buffReader != null) {
                 try {
                     buffReader.close();

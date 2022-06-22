@@ -1,9 +1,6 @@
 package com.pichincha.automationtest.runners;
 
-import com.pichincha.automationtest.util.AfterSuite;
-import com.pichincha.automationtest.util.BeforeSuite;
-import com.pichincha.automationtest.util.CustomCucumberWithSerenityRunner;
-import com.pichincha.automationtest.util.FeatureOverwrite;
+import com.pichincha.automationtest.util.*;
 import io.cucumber.junit.CucumberOptions;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
@@ -21,29 +18,29 @@ import java.io.IOException;
         tags = "not @karate and not @ManualTest"
 )
 public class WebRunnerTest {
+
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
 
     @BeforeSuite
-    public static void init() throws IOException, InvalidFormatException {
+    public static void init() throws IOException {
         String featureName = variables.getProperty("featureName");
+        PathConstants.featurePath();
         String[] features = getFeaturesNames(featureName);
         for (String feature : features) {
-            if (!featureName.equals("todos")){
-                feature+=".feature";
+            if (!featureName.equals("todos")) {
+                feature += ".feature";
             }
             FeatureOverwrite.overwriteFeatureFileAdd(feature);
         }
     }
 
-    public static String[] getFeaturesNames(String featureName){
+    public static String[] getFeaturesNames(String featureName) {
         String[] features;
-        if (featureName.equals("todos")){
-            File featureFolder = new File(System.getProperty("user.dir") + "/src/test/resources/features");
+        if (featureName.equalsIgnoreCase("todos")) {
+            File featureFolder = new File(PathConstants.featurePath());
             features = featureFolder.list();
-        }
-        else {
+        } else {
             features = featureName.split(";");
-
         }
         return features;
     }
@@ -53,8 +50,8 @@ public class WebRunnerTest {
         String featureName = variables.getProperty("featureName");
         String[] features = getFeaturesNames(featureName);
         for (String feature : features) {
-            if (!featureName.equals("todos")){
-                feature+=".feature";
+            if (!featureName.equals("todos")) {
+                feature += ".feature";
             }
             FeatureOverwrite.overwriteFeatureFileRemove(feature);
         }

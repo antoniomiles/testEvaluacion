@@ -12,7 +12,7 @@ Feature: Simulacion de la Compra de telefonos
     When el decide hacer la compra ingresa sus datos personales "<name>", "<country>", "<city>", "<card>", "<month>" y "<year>"
     Then el realiza la compra del producto exitosamente
   Examples:
-  | @externaldata@.\src\test\resources\data\datacompratelefono.csv |
+  | @externaldata@datacompratelefono.csv |
 
   @id:2 @CompraTelefono @CompraTelefonoFallida
   Scenario Outline: Compra de productos tecnologicos nuevo
@@ -24,7 +24,7 @@ Feature: Simulacion de la Compra de telefonos
     When el decide hacer la compra ingresa sus datos personales "<name>", "<country>", "<city>", "<card>", "<month>" y "<year>"
     Then el realiza la compra del producto exitosamente
   Examples:
-  | @externaldata@.\src\test\resources\data\datacompratelefono.csv |
+  | @externaldata@datacompratelefono.csv |
 
   @id:3 @CompraTelefono @CompraTelefonoEjemplo
   Scenario Outline: Compra de productos prueba jira nuevo
@@ -36,6 +36,6 @@ Feature: Simulacion de la Compra de telefonos
     When el decide hacer la compra ingresa sus datos personales "<name>", "<country>", "<city>", "<card>", "<month>" y "<year>"
     Then el realiza la compra del producto exitosamente
   Examples:
-  | @externaldata@.\src\test\resources\data\datacompratelefono.csv |
+  | @externaldata@datacompratelefono.csv |
 
 
