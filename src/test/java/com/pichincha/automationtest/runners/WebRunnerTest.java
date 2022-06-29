@@ -27,7 +27,7 @@ public class WebRunnerTest {
         PathConstants.featurePath();
         String[] features = getFeaturesNames(featureName);
         for (String feature : features) {
-            if (!featureName.equals("todos")) {
+            if (!feature.contains(".feature")) {
                 feature += ".feature";
             }
             FeatureOverwrite.overwriteFeatureFileAdd(feature);

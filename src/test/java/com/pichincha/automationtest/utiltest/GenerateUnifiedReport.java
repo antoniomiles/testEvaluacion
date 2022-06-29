@@ -26,9 +26,15 @@ public class GenerateUnifiedReport {
         List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
         JSONArray reportJson = new JSONArray();
         jsonFiles.forEach(file -> {
-            reportJson.add(getReportJsonByFile(file.getAbsolutePath()));
+            JSONArray jsonContent = getReportJsonByFile(file.getAbsolutePath());
+            if (jsonContent != null){
+                jsonContent.forEach(content -> {
+                    reportJson.add(content);
+                });
+            }
             jsonPaths.add(file.getAbsolutePath());
         });
+
         if (validatePathReport(jsonResumePath)) {
             Files.write(Paths.get(jsonResumePath + "/" + nameJsonReport), reportJson.toJSONString().getBytes());
             Configuration config = new Configuration(new File("build"), "Automation");
@@ -39,7 +45,7 @@ public class GenerateUnifiedReport {
         }
     }
 
-    public static Object getReportJsonByFile(String filePath) {
+    public static JSONArray getReportJsonByFile(String filePath) {
         FileReader reader = null;
         try {
             reader = new FileReader(filePath);
@@ -56,7 +62,10 @@ public class GenerateUnifiedReport {
             log.error("ERROR en getReportJsonByFile al Parsear los datos " + reader + "\n" + e);
         }
         assert jsonObject != null;
-        return jsonObject.get(0);
+        if (jsonObject.size()!=0){
+            return jsonObject;
+        }
+        return null;
     }
 
     public static boolean validatePathReport(String jsonResumePath) {
