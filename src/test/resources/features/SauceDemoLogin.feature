@@ -32,4 +32,15 @@ Feature: Iniciar sesion en la pagina SauceDemo
       | <user> | <pass> |
     Then el deberia ingresar a ver los productos disponibles
     Examples:
-      | @externaldata@datasaucedemo.csv |    
+      | @externaldata@datasaucedemo.csv |
+
+  @id:4 @login @loginPrueba @dataEstatica
+  Scenario Outline: Iniciar sesión con credenciales correctas, creacion de escenario estatico
+    Given que el cliente admin ingresa a la pagina SauceDemo
+    When el ingresa sus credenciales para iniciar sesion
+      | user   | pass   |
+      | <user> | <pass> |
+    Then el deberia ingresar a ver los productos disponibles
+    Examples:
+      | user   | pass   |
+      | standard_user | secret_sauce |

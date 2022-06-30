@@ -49,6 +49,7 @@ public class FeatureOverwrite {
         ) {
             String data;
             List<String> previousData = new ArrayList<>();
+            List<String> staticDataExample = new ArrayList<>();
             boolean exampleData = false;
             while ((data = buffReader.readLine()) != null) {
                 previousData.add(data);
@@ -64,12 +65,23 @@ public class FeatureOverwrite {
                     exampleData = false;
                     data = "#" + data;
                 }
+                else if ((data.trim().startsWith("@") || data.trim().startsWith("Scenario")) && exampleData) {
+                    exampleData = false;
+                    fileData.addAll(staticDataExample);
+                }
                 if (!exampleData) {
                     fileData.add(data);
+                } else {
+                    staticDataExample.add(data);
                 }
                 if (data.contains("Examples")) {
+                    staticDataExample.clear();
                     exampleData = true;
                 }
+            }
+            if (exampleData && !staticDataExample.isEmpty()){
+                fileData.addAll(staticDataExample);
+                staticDataExample.clear();
             }
             currentFeatures.put(featureName, previousData);
         }
