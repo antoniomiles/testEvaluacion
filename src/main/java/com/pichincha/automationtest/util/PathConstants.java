@@ -40,5 +40,14 @@ public class PathConstants {
             return variables.getProperty("data.path");
         return DATA_PATH;
     }
-
+    public static String validatePath(String path) {
+        if (path.contains("/")) {
+            path = path.replace("/", File.separator);
+        } else if (path.contains("\\")) {
+            path = path.replace("\\", File.separator);
+        } else if (path.contains("-")) {
+            path = path.replace("-", File.separator);
+        }
+        return path;
+    }
 }

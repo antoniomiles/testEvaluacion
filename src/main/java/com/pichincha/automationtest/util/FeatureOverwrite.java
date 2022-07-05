@@ -55,7 +55,7 @@ public class FeatureOverwrite {
                 previousData.add(data);
                 if (data.trim().contains("@externaldata")) {
                     String filePath = getValidFilePath(data);
-                    List<Map<String, String>> externalData = getDataFromFile(PathConstants.dataPath() + filePath);
+                    List<Map<String, String>> externalData = getDataFromFile(PathConstants.dataPath() + PathConstants.validatePath(filePath));
                     Collection<String> headers = externalData.get(0).keySet();
                     fileData.add(getGherkinExample(headers));
                     for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
@@ -91,8 +91,7 @@ public class FeatureOverwrite {
     private static String getValidFilePath(String data) {
         return data.substring(StringUtils.ordinalIndexOf(data, "@", 2) + 1)
                 .replace("|", "")
-                .trim()
-                .toLowerCase();
+                .trim();
     }
 
     private static List<Map<String, String>> getDataFromFile(String filePath) throws IOException {
@@ -101,8 +100,7 @@ public class FeatureOverwrite {
     }
 
     private static boolean isCSV(String filePath) {
-        return filePath
-                .endsWith(".csv");
+        return filePath.toLowerCase().endsWith(".csv");
     }
 
     private static String getGherkinExample(Collection<String> examplesFields) {

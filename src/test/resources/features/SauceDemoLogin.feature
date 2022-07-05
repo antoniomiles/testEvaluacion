@@ -22,7 +22,7 @@ Feature: Iniciar sesion en la pagina SauceDemo
    Epic sadface: Sorry, this user has been locked out
    """
     Examples:
-      | @externaldata@datasaucedemo2.csv |
+      | @externaldata@sausedemo\DataSaucedemo2.csv |
 
   @id:3 @login @loginPrueba
   Scenario Outline: Iniciar sesión con credenciales correctas esto es una prueba de lectura de data
