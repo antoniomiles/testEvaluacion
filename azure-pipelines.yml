@@ -15,6 +15,7 @@ parameters:
       - TCS
       - ManualTest
       - ParallelTest
+      - RestAssuredApi
   - name: Tipotest
     displayName: 'Elija el tipo de test'
     default: cucumber   
@@ -142,3 +143,9 @@ stages:
       StageName: ParallelTest
       StageTipo: ${{parameters.Tipotest}}
       GradlewCommand: ./gradlew clean test -PmaxParallelForks=4 --tests "com.pichincha.automationtest.runners.parallel.*" aggregate -i
+
+  - template: azure-pipelines-template.yml
+    parameters:
+      StageName: RestAssuredApi
+      StageTipo: ${{parameters.Tipotest}}
+      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@DemoblazeAPIRestAssured " com.pichincha.automationtest.runners.WebRunnerTest

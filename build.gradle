@@ -60,7 +60,8 @@ dependencies {
     implementation "net.serenity-bdd:serenity-core:${serenityCoreVersion}",
             "net.serenity-bdd:serenity-cucumber:${serenityCoreVersion}",
             "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
-            "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}"
+            "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}",
+            "net.serenity-bdd:serenity-screenplay-rest:${serenityCoreVersion}"
     implementation group: 'net.serenity-bdd', name: 'serenity-ensure', version: '3.2.1'
     implementation 'com.github.matrixseven:ExcelReads:1.0.4'
     implementation 'com.myjeeva.poi:excelReader:1.3'
