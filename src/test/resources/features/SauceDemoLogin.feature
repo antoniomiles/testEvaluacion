@@ -2,7 +2,7 @@
 Feature: Iniciar sesion en la pagina SauceDemo
 
   @id:1 @login
-  Scenario Outline: Iniciar sesión con credenciales correctas
+  Scenario Outline: T-E2E-PQBP-551-CA1- Iniciar sesión con credenciales correctas
     Given que el cliente admin ingresa a la pagina SauceDemo
     When el ingresa sus credenciales para iniciar sesion
       | user   | pass   |
@@ -12,7 +12,7 @@ Feature: Iniciar sesion en la pagina SauceDemo
       | @externaldata@datasaucedemo.csv |
 
   @id:2 @login @loginFallido
-  Scenario Outline: Iniciar sesion con un usuario bloqueado
+  Scenario Outline: T-E2E-PQBP-551-CA2- Iniciar sesion con un usuario bloqueado
     Given que el cliente admin ingresa a la pagina SauceDemo
     When el ingresa sus credenciales para iniciar sesion
       | user   | pass   |
@@ -25,7 +25,7 @@ Feature: Iniciar sesion en la pagina SauceDemo
       | @externaldata@sausedemo\DataSaucedemo2.csv |
 
   @id:3 @login @loginPrueba
-  Scenario Outline: Iniciar sesión con credenciales correctas esto es una prueba de lectura de data
+  Scenario Outline: T-E2E-PQBP-551-CA3- Iniciar sesión con credenciales correctas esto es una prueba de lectura de data
     Given que el cliente admin ingresa a la pagina SauceDemo
     When el ingresa sus credenciales para iniciar sesion
       | user   | pass   |
@@ -35,7 +35,7 @@ Feature: Iniciar sesion en la pagina SauceDemo
       | @externaldata@datasaucedemo.csv |
 
   @id:4 @login @loginPrueba @dataEstatica
-  Scenario Outline: Iniciar sesión con credenciales correctas, creacion de escenario estatico
+  Scenario Outline: T-E2E-PQBP-551-CA4- Iniciar sesión con credenciales correctas, creacion de escenario estatico
     Given que el cliente admin ingresa a la pagina SauceDemo
     When el ingresa sus credenciales para iniciar sesion
       | user   | pass   |

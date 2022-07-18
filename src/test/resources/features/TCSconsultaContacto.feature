@@ -2,7 +2,7 @@
 Feature: Consulta servicio WSClientes0007
 
   @id:1 @Consulcontacto @TCS @karate
-  Scenario: Consulta contacto transaccional WSClientes0007
+  Scenario: T-API-PQBP-556-CA1- Consulta contacto transaccional WSClientes0007
     * header authorization = 'Basic YmpqYXJhOnBpY2hpbmNoYTE='
     * header content-type = 'application/json'
     Given url 'https://api-test.pichincha.com/tcs/WSClientes0007'

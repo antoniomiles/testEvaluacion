@@ -7,289 +7,297 @@ parameters:
     default: './gradlew clean test'
   - name: StageTipo
     type: string
-    default: 'cucumber'  
+    default: 'cucumber'
 
 stages:
-- stage: ${{parameters.StageName}}
-  displayName: '${{parameters.StageName}}'
-  dependsOn: build
-  condition: eq(variables.flow, '${{parameters.StageName}}')
-  pool:
-    name: 'BancoPichinchaDevOps'
-    demands:
-      - agent.name -equals AutomationSQA
-  jobs:
-  - job: AutomatedTest
-    steps:
-    - checkout: self
-      clean: true
-    - task: replacetokens@3
-      inputs:
-        #targetFiles: '**/**.csv'
-        writeBOM: true
-        verbosity: 'detailed'
-        actionOnMissing: 'fail'
-        keepToken: false
-        tokenPrefix: '#{'
-        tokenSuffix: '}#'
-        useLegacyPattern: false
-        enableTelemetry: true
+  - stage: ${{parameters.StageName}}
+    displayName: '${{parameters.StageName}}'
+    dependsOn: build
+    condition: eq(variables.flow, '${{parameters.StageName}}')
+    pool:
+      name: 'BancoPichinchaDevOps'
+      demands:
+        - agent.name -equals AutomationSQA
+    jobs:
+      - job: AutomatedTest
+        steps:
+          - checkout: self
+            clean: true
+          - task: replacetokens@3
+            inputs:
+              #targetFiles: '**/**.csv'
+              writeBOM: true
+              verbosity: 'detailed'
+              actionOnMissing: 'fail'
+              keepToken: false
+              tokenPrefix: '#{'
+              tokenSuffix: '}#'
+              useLegacyPattern: false
+              enableTelemetry: true
 
-    - task: CmdLine@2
-      inputs:
-        script: |
-          echo %cd%
+          - task: CmdLine@2
+            inputs:
+              script: |
+                echo %cd%
 
-    #          - task: CmdLine@2
-    #            displayName: 'Export UFT-8'
-    #            inputs:
-    #              script: |
-    #                dpkg -l locales
-    #                apt-get install locales
-    #                dpkg-reconfigure locales
-    #                export LC_ALL=en_US.UTF-8
-    #                export LANG=en_US.UTF-8
-    #                export LANGUAGE=en_US.UTF-8
+          #          - task: CmdLine@2
+          #            displayName: 'Export UFT-8'
+          #            inputs:
+          #              script: |
+          #                dpkg -l locales
+          #                apt-get install locales
+          #                dpkg-reconfigure locales
+          #                export LC_ALL=en_US.UTF-8
+          #                export LANG=en_US.UTF-8
+          #                export LANGUAGE=en_US.UTF-8
 
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: Temporales
-        buildType: 'current'
-        downloadType: 'single'
-        downloadPath: './'
-    
-    - task: CmdLine@2
-      displayName: 'Update Feature With Tags'
-      continueOnError: true
-      inputs:
-        script: |
-          cd .\Temporales\featuresJira
-          tar.exe -xvzf test.zip
-          dir
-          cd ..\..
-          move .\Temporales\featuresJira .\src\test\resources
-          node .\utils\keysComparator.js
-      
-      #
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: Updated Features'
-      continueOnError: true
-      condition: succeededOrFailed()
-      inputs:
-        PathtoPublish: '$(system.defaultworkingdirectory)\src\test\resources\features'
-        ArtifactName: Features
-        publishLocation: 'Container' 
-      # 
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: Temporales
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
 
-    - task: CmdLine@2
-      displayName: 'Automated Test'
-      continueOnError: true
-      inputs:
-        script: |
-          echo "${{parameters.GradlewCommand}}"
-          echo ${{parameters.GradlewCommand}}
-          ${{parameters.GradlewCommand}}
+          - task: CmdLine@2
+            displayName: 'Update Feature With Tags'
+            continueOnError: true
+            inputs:
+              script: |
+                cd .\Temporales\featuresJira
+                tar.exe -xvzf test.zip
+                dir
+                cd ..\..
+                move .\Temporales\featuresJira .\src\test\resources
+                node .\utils\keysComparator.js
 
-    - task: CopyFiles@2
-      displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
-      continueOnError: true
-      condition: succeededOrFailed()
-      inputs:
-        SourceFolder: $(system.defaultworkingdirectory)
-        Contents: '**/*.jar'
-        TargetFolder: $(build.artifactstagingdirectory)
+            #
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact: Updated Features'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              PathtoPublish: '$(system.defaultworkingdirectory)\src\test\resources\features'
+              ArtifactName: Features
+              publishLocation: 'Container'
+            #
 
-    - task: CopyFiles@2
-      displayName: 'Copy results folder to: $(build.artifactstagingdirectory)/results'
-      continueOnError: true
-      condition: succeededOrFailed()
-      inputs:
-        SourceFolder: $(system.defaultworkingdirectory)/build
-        Contents: '**'
-        TargetFolder: $(build.artifactstagingdirectory)/results
-        
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: drop'
-      continueOnError: true
-      condition: succeededOrFailed()
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: ${{parameters.StageName}}
-        publishLocation: 'Container'          
+          - task: CmdLine@2
+            displayName: 'Automated Test'
+            continueOnError: true
+            inputs:
+              script: |
+                echo "${{parameters.GradlewCommand}}"
+                echo ${{parameters.GradlewCommand}}
+                ${{parameters.GradlewCommand}}
 
-    - task: PublishCucumberReport@1
-      displayName: Publish Cucumber Report
-      continueOnError: true
-      inputs:
-        jsonDir: build/${{parameters.StageTipo}}-reports
-        outputPath: build/${{parameters.StageTipo}}-reports
+          - task: CopyFiles@2
+            displayName: 'Copy Files to: $(build.artifactstagingdirectory)'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              SourceFolder: $(system.defaultworkingdirectory)
+              Contents: '**/*.jar'
+              TargetFolder: $(build.artifactstagingdirectory)
 
-    - task: JakubRumpca.azure-pipelines-html-report.PublishHtmlReport.PublishHtmlReport@1
-      displayName: 'Publish Html Report'
-      continueOnError: true
-      inputs:
-        reportDir: '$(system.defaultworkingdirectory)/target/site/serenity/index.html'
+          - task: CopyFiles@2
+            displayName: 'Copy results folder to: $(build.artifactstagingdirectory)/results'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              SourceFolder: $(system.defaultworkingdirectory)/build
+              Contents: '**'
+              TargetFolder: $(build.artifactstagingdirectory)/results
 
-- stage: Publish${{parameters.StageName}}
-  displayName: 'Publish ${{parameters.StageName}}'
-  dependsOn: ${{parameters.StageName}}
-  condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}'))
-  variables:
-    - group: USUARIO_GENERICO
-  jobs:
-  - job: PublishJira
-    displayName: 'Publish to Jira'
-    steps:
-    - checkout: self
-    - download: none
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: ${{parameters.StageName}}
-        buildType: 'current'
-        downloadType: 'single'
-        downloadPath: './'
-    
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: Temporales
-        buildType: 'current'
-        downloadType: 'single'
-        downloadPath: './'
-            
-    - task: CmdLine@2
-      displayName: 'Publish report to jira'
-      continueOnError: true
-      inputs:
-        script: |
-          sprintId=$(cat Temporales/sprintId.txt)
-          find . -maxdepth 3 -ls
-          echo ${{parameters.StageName}}
-          cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json
-          echo "Json generado"
-          flowOPTS=${{parameters.StageName}}
-          token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
-          archivo=${{parameters.StageTipo}}.json
-          fecha=$(date +'%a %b %e %H:%M:%S' -d '5 hour ago')
-          resumen=$flowOPTS' - '$fecha
-          echo "Reporte Json $archivo"
-          cucumberTEJson=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivo" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber)
-          keyTE=$(echo $cucumberTEJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
-          echo "##vso[task.setvariable variable=tempKey;]$keyTE"
-          curl -X POST --url  "$(url_api_jira)/api/3/issue/$keyTE/transitions?expand=transitions.fields" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data '{"transition":{"id":71}}'
-          echo "{\"fields\":{\"summary\":\"TE - Prueba E2E: NAME TEST: $resumen\",\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testExecutionUpdate.json
-          upRequest=$(curl --request PUT --url  "$(url_api_jira)/api/3/issue/$keyTE" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data @"testExecutionUpdate.json")
-    
-    - bash: echo "##vso[task.setvariable variable=keyTE;isOutput=true]$(tempKey)"
-      name: testExecutionJira
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact: drop'
+            continueOnError: true
+            condition: succeededOrFailed()
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: ${{parameters.StageName}}
+              publishLocation: 'Container'
 
-- stage: ProcessResult${{parameters.StageName}}
-  dependsOn: Publish${{parameters.StageName}}
-  jobs:
-  - job: ProcessFailedOrPassedScenarios
-    displayName: 'Processing report'
+          - task: PublishCucumberReport@1
+            displayName: Publish Cucumber Report
+            continueOnError: true
+            inputs:
+              jsonDir: build/${{parameters.StageTipo}}-reports
+              outputPath: build/${{parameters.StageTipo}}-reports
+
+          - task: JakubRumpca.azure-pipelines-html-report.PublishHtmlReport.PublishHtmlReport@1
+            displayName: 'Publish Html Report'
+            continueOnError: true
+            inputs:
+              reportDir: '$(system.defaultworkingdirectory)/target/site/serenity/index.html'
+
+  - stage: Publish${{parameters.StageName}}
+    displayName: 'Publish ${{parameters.StageName}}'
+    dependsOn: ${{parameters.StageName}}
+    condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}'))
     variables:
-      currentTestExecutionKey: $[ stageDependencies.Publish${{parameters.StageName}}.PublishJira.outputs['testExecutionJira.keyTE'] ]
-    steps:
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: ${{parameters.StageName}}
-        buildType: 'current'
-        downloadType: 'single'
-        downloadPath: './'
-        
-    - task: CmdLine@2
-      displayName: 'Generate failed or paseed data'
-      inputs:
-        script: | 
-          reportPath=${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json/${{parameters.StageTipo}}.json
-          node -e "require('./utils/bugsTransitionsHandler.js').processJiraScenarios({reportPath:'$reportPath'})"
-    
-    - task: PublishBuildArtifacts@1
-      displayName: 'Publish Artifact: Failed Or Passed Scenarios'
-      condition: succeededOrFailed()
-      continueOnError: True
-      inputs:
-        PathtoPublish: $(System.DefaultWorkingDirectory)/utils/reports
-        ArtifactName: FailedOrPassedScenarios
-    
-    - bash: echo "##vso[task.setvariable variable=keyTE;isOutput=true]$(currentTestExecutionKey)"
-      name: testExecutionReference
+      - group: USUARIO_GENERICO
+    jobs:
+      - job: PublishJira
+        displayName: 'Publish to Jira'
+        steps:
+          - checkout: self
+          - download: none
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: ${{parameters.StageName}}
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
 
-- stage: BugCreation${{parameters.StageName}}
-  dependsOn: ProcessResult${{parameters.StageName}}
-  variables:
-  - group: USUARIO_GENERICO
-  jobs:
-  - job: waitForManualValidation
-    displayName: Manual Validation before Bugs creation
-    pool: server    
-    timeoutInMinutes: 4320 # job times out in 3 days
-    steps:   
-    - task: ManualValidation@0
-      timeoutInMinutes: 1440 # task times out in 1 day
-      inputs:
-        notifyUsers: |
-          liarias@pichincha.com
-          mtierra@pichincha.com
-          josordon@pichincha.com
-        instructions: 'Please validate the build configuration and resume'
-        onTimeout: 'resume'
-  
-  - job: PostAprobacion
-    displayName: Send bugs to Jira 
-    dependsOn: waitForManualValidation
-    steps:
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: FailedOrPassedScenarios
-        buildType: 'current'
-        downloadType: 'single'
-        downloadPath: './'
+          - task: CmdLine@2
+            displayName: 'Publish report to jira'
+            continueOnError: true
+            inputs:
+              script: |
+                testExecutionDoingID=71
+                sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')
+                echo ${{parameters.StageName}}
+                cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json
+                echo "Json generado"
+                flowOPTS=${{parameters.StageName}}
+                token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
+                archivo=${{parameters.StageTipo}}.json
+                fecha=$(date +'%a %b %e %H:%M:%S' -d '5 hour ago')
+                resumen=$flowOPTS' - '$fecha
+                echo "Reporte Json $archivo"
+                cucumberTEJson=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivo" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber)
+                keyTE=$(echo $cucumberTEJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
+                echo "##vso[task.setvariable variable=tempKey;]$keyTE"
+                curl -X POST --url  "$(url_api_jira)/api/3/issue/$keyTE/transitions?expand=transitions.fields" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data "{\"transition\":{\"id\":$testExecutionDoingID}}"
+                echo "{\"fields\":{\"summary\":\"TE-E2E- NAME TEST: $resumen\",\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testExecutionUpdate.json
+                upRequest=$(curl --request PUT --url  "$(url_api_jira)/api/3/issue/$keyTE" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data @"testExecutionUpdate.json")
 
-    - task: CmdLine@2
-      displayName: 'Download fetch dependency'
-      continueOnError: true
-      inputs:
-        script: |
-          npm i node-fetch@2.6.1 --save-dev
+          - bash: echo "##vso[task.setvariable variable=keyTE;isOutput=true]$(tempKey)"
+            name: testExecutionJira
 
-    - task: CmdLine@2
-      displayName: 'Bugs Creations'
-      continueOnError: true
-      inputs:
-        script: |
-          reportPath=FailedOrPassedScenarios/failedScenarios.json
-          sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')  
-          node -e "require('./utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)/api/3',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',sprintId:$sprintId})"
+  - stage: ProcessResult${{parameters.StageName}}
+    dependsOn: Publish${{parameters.StageName}}
+    jobs:
+      - job: ProcessFailedOrPassedScenarios
+        displayName: 'Processing report'
+        variables:
+          currentTestExecutionKey: $[ stageDependencies.Publish${{parameters.StageName}}.PublishJira.outputs['testExecutionJira.keyTE'] ]
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: ${{parameters.StageName}}
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
 
-- stage: CloseJiraElements${{parameters.StageName}}
-  dependsOn: ProcessResult${{parameters.StageName}}
-  variables:
-  - group: USUARIO_GENERICO
-  jobs:
-  - job: CloseJiraProcess
-    displayName: Close elements in to Jira
+          - task: CmdLine@2
+            displayName: 'Generate failed or paseed data'
+            inputs:
+              script: |
+                reportPath=${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json/${{parameters.StageTipo}}.json
+                node -e "require('./utils/bugsTransitionsHandler.js').processJiraScenarios({reportPath:'$reportPath'})"
+                statusTE=$(jq '.currentTEStatus' ./utils/reports/passedScenarios.json)
+                echo "##vso[task.setvariable variable=statusTE;]$statusTE"
+
+          - task: PublishBuildArtifacts@1
+            displayName: 'Publish Artifact: Failed Or Passed Scenarios'
+            condition: succeededOrFailed()
+            continueOnError: True
+            inputs:
+              PathtoPublish: $(System.DefaultWorkingDirectory)/utils/reports
+              ArtifactName: FailedOrPassedScenarios
+
+          - bash: echo "##vso[task.setvariable variable=statusTE;isOutput=true]$(statusTE)"
+            name: testExecutionStatus
+
+          - bash: echo "##vso[task.setvariable variable=keyTE;isOutput=true]$(currentTestExecutionKey)"
+            name: testExecutionReference
+
+  - stage: BugCreation${{parameters.StageName}}
+    dependsOn: ProcessResult${{parameters.StageName}}
     variables:
-      currentTestExecutionKey: $[ stageDependencies.ProcessResult${{parameters.StageName}}.ProcessFailedOrPassedScenarios.outputs['testExecutionReference.keyTE'] ]
-    steps:
-    - task: DownloadBuildArtifacts@0
-      inputs:
-        artifactName: FailedOrPassedScenarios
-        buildType: 'current'
-        downloadType: 'single'
-        downloadPath: './'
-    
-    - task: CmdLine@2
-      displayName: 'Download fetch dependency'
-      continueOnError: true
-      inputs:
-        script: |
-          npm i node-fetch@2.6.1 --save-dev
+      - group: USUARIO_GENERICO
+      - name: statusTE
+        value: $[ stageDependencies.ProcessResult${{parameters.StageName}}.ProcessFailedOrPassedScenarios.outputs['testExecutionStatus.statusTE'] ]
+    jobs:
+      - job: waitForManualValidation
+        displayName: Manual Validation before Bugs creation
+        condition: eq(variables.statusTE, 'failed')
+        pool: server
+        timeoutInMinutes: 4320 # job times out in 3 days
+        steps:
+          - task: ManualValidation@0
+            timeoutInMinutes: 1440 # task times out in 1 day
+            inputs:
+              notifyUsers: |
+                liarias@pichincha.com
+                mtierra@pichincha.com
+                josordon@pichincha.com
+              instructions: 'Please validate the build configuration and resume'
+              onTimeout: 'resume'
 
-    - task: CmdLine@2
-      displayName: 'Closing passed scenarios'
-      inputs:
-        script: |
-          reportPath=FailedOrPassedScenarios/passedScenarios.json
-          echo "TEKEY process: $(currentTestExecutionKey)" 
-          node -e "require('./utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)/api/3',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)'})"
+      - job: PostAprobacion
+        displayName: Send bugs to Jira
+        dependsOn: waitForManualValidation
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: FailedOrPassedScenarios
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
+
+          - task: CmdLine@2
+            displayName: 'Download fetch dependency'
+            continueOnError: true
+            inputs:
+              script: |
+                npm i node-fetch@2.6.1 -g
+                npm i form-data@4.0.0 -g
+
+          - task: CmdLine@2
+            displayName: 'Bugs Creations'
+            continueOnError: true
+            inputs:
+              script: |
+                bugDoingID=21
+                testCaseDoingID=71
+                export NODE_PATH=/usr/local/lib/node_modules
+                reportPath=FailedOrPassedScenarios/failedScenarios.json
+                node -e "require('./utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',bugDoingID:'$bugDoingID'})"
+
+  - stage: CloseJiraElements${{parameters.StageName}}
+    dependsOn: ProcessResult${{parameters.StageName}}
+    variables:
+      - group: USUARIO_GENERICO
+    jobs:
+      - job: CloseJiraProcess
+        displayName: Close elements in to Jira
+        variables:
+          currentTestExecutionKey: $[ stageDependencies.ProcessResult${{parameters.StageName}}.ProcessFailedOrPassedScenarios.outputs['testExecutionReference.keyTE'] ]
+        steps:
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: FailedOrPassedScenarios
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
+
+          - task: CmdLine@2
+            displayName: 'Download fetch dependency'
+            continueOnError: true
+            inputs:
+              script: |
+                npm i node-fetch@2.6.1 -g
+
+          - task: CmdLine@2
+            displayName: 'Closing passed scenarios'
+            inputs:
+              script: |
+                testCaseDoneID=91
+                testExecutionDoneID=91
+                bugDoneID=31
+                export NODE_PATH=/usr/local/lib/node_modules
+                reportPath=FailedOrPassedScenarios/passedScenarios.json
+                echo "TEKEY process: $(currentTestExecutionKey)"
+                node -e "require('./utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)',testCaseDoneID:'$testCaseDoneID',bugDoneID:'$bugDoneID',testExecutionDoneID:'$testExecutionDoneID',boardId:'$(boardId)'})"

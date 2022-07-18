@@ -3,7 +3,7 @@ Feature: Simulacion de la Compra de telefonos
   Ejecutar una simulacion de la compra de telefonos
 
   @id:1 @CompraTelefono @CompraTelefonoExitosa
-  Scenario Outline: Compra de productos tecnologicos
+  Scenario Outline: T-E2E-PQBP-110-CA1- Compra de productos tecnologicos
   Para realizar una compra exitosa de un producto
   como cliente sin realizar login en la aplicación
   necesito ser capaz de realizar y verificar la compra
@@ -15,7 +15,7 @@ Feature: Simulacion de la Compra de telefonos
   | @externaldata@datacompratelefono.csv |
 
   @id:2 @CompraTelefono @CompraTelefonoFallida
-  Scenario Outline: Compra de productos tecnologicos nuevo
+  Scenario Outline: T-E2E-PQBP-110-CA2- Compra de productos tecnologicos nuevo
   Para realizar una compra exitosa de un producto
   como cliente sin realizar login en la aplicación
   necesito ser capaz de realizar y verificar la compra
@@ -27,7 +27,7 @@ Feature: Simulacion de la Compra de telefonos
   | @externaldata@datacompratelefono.csv |
 
   @id:3 @CompraTelefono @CompraTelefonoEjemplo
-  Scenario Outline: Compra de productos prueba jira nuevo
+  Scenario Outline: T-E2E-PQBP-110-CA3- Compra de productos prueba jira nuevo
   Para realizar una compra exitosa de un producto
   como cliente sin realizar login en la aplicación
   necesito ser capaz de realizar y verificar la compra
