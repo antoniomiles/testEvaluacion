@@ -60,7 +60,9 @@ public class FeatureOverwrite {
                     fileData.add(getGherkinExample(headers));
                     for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
                         Collection<String> rowValues = externalData.get(rowNumber).values();
-                        fileData.add(getGherkinExample(rowValues));
+                        String example = getGherkinExample(rowValues);
+                        if (example != "")
+                            fileData.add(example);
                     }
                     exampleData = false;
                     data = "#" + data;
@@ -106,8 +108,12 @@ public class FeatureOverwrite {
     private static String getGherkinExample(Collection<String> examplesFields) {
         String example = "";
         for (String field : examplesFields) {
-            example = String.format("%s|%s", example, field);
+            if (field.trim()!=""){
+                example = String.format("%s|%s", example, field);
+            }
         }
+        if (example=="")
+            return "";
         return example + "|";
     }
 
