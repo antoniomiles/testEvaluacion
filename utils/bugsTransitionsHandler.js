@@ -259,7 +259,7 @@ const deletePreviousAttachmentsIssue = async function (issueIdOrKey) {
 }
 
 const getPreviousBugs = async function (sprintIds, testCaseKey) {
-    const url = `${apiURL}/api/3/search?jql=project=PQBP%20AND%20issueCreatedBy=${testCaseKey}%20AND%20issuetype="Bug de Desarrollo"%20AND%20Sprint%20in%20(${sprintIds.join(",")})&fields=summary,customfield_10021,resolution`
+    const url = `${apiURL}/api/3/search?jql=project="${projectKey}"%20AND%20issueCreatedBy=${testCaseKey}%20AND%20issuetype="Bug de Desarrollo"%20AND%20Sprint%20in%20(${sprintIds.join(",")})&fields=summary,customfield_10021,resolution`
     const response = await request(url, "GET")
     return JSON.parse(response).issues
 }
