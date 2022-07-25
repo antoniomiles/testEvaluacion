@@ -61,6 +61,7 @@ stages:
           - task: CmdLine@2
             displayName: 'Update Feature With Tags'
             continueOnError: true
+            condition: succeededOrFailed()
             inputs:
               script: |
                 cd .\Temporales\featuresJira
@@ -84,6 +85,7 @@ stages:
           - task: CmdLine@2
             displayName: 'Automated Test'
             continueOnError: true
+            condition: succeededOrFailed()
             inputs:
               script: |
                 echo "${{parameters.GradlewCommand}}"
@@ -156,7 +158,6 @@ stages:
               script: |
                 testExecutionDoingID=71
                 sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')
-                echo ${{parameters.StageName}}
                 cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json
                 echo "Json generado"
                 flowOPTS=${{parameters.StageName}}
@@ -166,11 +167,23 @@ stages:
                 resumen=$flowOPTS' - '$fecha
                 echo "Reporte Json $archivo"
                 cucumberTEJson=$(curl -k -H "Content-Type: application/json" -X POST -H "Authorization: Bearer $token" --data @"$archivo" $(XRAY-REST-API-URL)/api/v1/import/execution/cucumber)
+                testExecutionId=$(echo $cucumberTEJson | awk -F',' '{print $1}' | awk -F':' '{print $2}' | tr -d '"')
                 keyTE=$(echo $cucumberTEJson | awk -F',' '{print $2}' | awk -F':' '{print $2}' | tr -d '"')
-                echo "##vso[task.setvariable variable=tempKey;]$keyTE"
                 curl -X POST --url  "$(url_api_jira)/api/3/issue/$keyTE/transitions?expand=transitions.fields" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data "{\"transition\":{\"id\":$testExecutionDoingID}}"
                 echo "{\"fields\":{\"summary\":\"TE-E2E- NAME TEST: $resumen\",\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testExecutionUpdate.json
                 upRequest=$(curl --request PUT --url  "$(url_api_jira)/api/3/issue/$keyTE" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" --header "Content-Type: application/json" --data @"testExecutionUpdate.json")
+                echo "##vso[task.setvariable variable=tempKey;]$keyTE"
+                echo "##vso[task.setvariable variable=token;]$token"
+                echo "##vso[task.setvariable variable=sprintId;]$sprintId"
+                echo "##vso[task.setvariable variable=testExecutionId;]$testExecutionId"
+
+          - task: CmdLine@2
+            displayName: 'Add Test Execution to Test Plan'
+            inputs:
+              script: |
+                npm i node-fetch@2 -g
+                export NODE_PATH=/usr/local/lib/node_modules
+                node -e "require('$(system.defaultworkingdirectory)/utils/bugsTransitionsHandler.js').testExecutionToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',testExecutionId:'$(testExecutionId)',sprintId:$(sprintId)})"
 
           - bash: echo "##vso[task.setvariable variable=keyTE;isOutput=true]$(tempKey)"
             name: testExecutionJira
@@ -252,7 +265,7 @@ stages:
             continueOnError: true
             inputs:
               script: |
-                npm i node-fetch@2.6.1 -g
+                npm i node-fetch@2 -g
                 npm i form-data@4.0.0 -g
 
           - task: CmdLine@2
@@ -288,7 +301,7 @@ stages:
             continueOnError: true
             inputs:
               script: |
-                npm i node-fetch@2.6.1 -g
+                npm i node-fetch@2 -g
 
           - task: CmdLine@2
             displayName: 'Closing passed scenarios'

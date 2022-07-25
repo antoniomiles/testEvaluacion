@@ -1,3 +1,5 @@
+name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
+
 trigger:
 #  - feature/*
   - master
@@ -21,7 +23,8 @@ parameters:
     default: cucumber   
     values:
       - cucumber
-      - karate      
+      - karate
+
 variables:
   flow: ${{parameters.Flujo}}
           
@@ -29,56 +32,55 @@ stages:
   - stage: Pre_Test_Jira_Integration
     variables: 
     - group: USUARIO_GENERICO
-    pool:
-      name: 'BancoPichinchaDevOps'
-      demands:
-        - agent.name -equals AutomationSQA
-    jobs: 
+    jobs:
     - job: Import
       displayName: Jira XRAY Import Test
       steps:
       - task: CmdLine@2
         displayName: 'Send feature to Jira'
         inputs:
-          script: |
-            set assigneeId=5eb4731c021ae30ba839abc2
-            set projectKey=PQBP
-            set boardId=491
+          script: |            
             cd src/test/resources/
-            tar.exe -a -c -f features.zip features
-            curl -H "Content-Type: application/json" -X POST --data "{\"client_id\":\"$(id_xray_usuario_generico)\",\"client_secret\":\"$(clave_secreta_usuario_generico)\"}" $(XRAY-REST-API-URL)/api/v1/authenticate > tempToken.txt
-            set /p token=<tempToken.txt
-            set "token=%token:"=%"
-            curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" > sprintInfo.json
-            node ../../../utils/sprintId.js
-            set /p sprintId=<sprintId.txt
-            echo {"fields": {"assignee": {"id": "$(assigneeId)"}, "customfield_10021": %sprintId%}} > usuarioAsignado.json
-            curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer %token%" -F "precondInfo=@usuarioAsignado.json" -F "testInfo=@usuarioAsignado.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=$(projectKey) > keysResponse.json
-            node ../../../utils/parser.js
-            set /p cucumberKeys=<keys.txt
-            echo %cucumberKeys%
-            curl -k -H "Content-Type: application/json" -X GET -H "Authorization: Bearer %token%" "$(XRAY-REST-API-URL)/api/v1/export/cucumber?keys=%cucumberKeys%" > test.zip
-            
+            zip -r features.zip features
+            token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
+            sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')
+            echo "{\"fields\":{\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testInfo.json
+            curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer $token" -F "precondInfo=@testInfo.json" -F "testInfo=@testInfo.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=$(projectKey) > keysResponse.json
+            node $(system.defaultworkingdirectory)/utils/parser.js
+            cucumberKeys=$(cat keys.txt)
+            echo $cucumberKeys
+            curl -k -H "Content-Type: application/json" -X GET -H "Authorization: Bearer $token" "$(XRAY-REST-API-URL)/api/v1/export/cucumber?keys=$cucumberKeys" > test.zip
+            echo "##vso[task.setvariable variable=sprintId;]$sprintId"
+            echo "##vso[task.setvariable variable=token;]$token"
+
+      - task: CmdLine@2
+        displayName: 'Add Tests to Test Plan'
+        inputs:
+          script: |
+            cucumberIds=$(cat $(system.defaultworkingdirectory)/src/test/resources/ids.txt)
+            npm i node-fetch@2 -g
+            export NODE_PATH=/usr/local/lib/node_modules
+            node -e "require('$(system.defaultworkingdirectory)/utils/bugsTransitionsHandler.js').testCasesToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',assigneeId:'$(assigneeId)',sprintId:$(sprintId),testCasesIds:[$cucumberIds]})"    
+
       - task: CmdLine@2
         displayName: 'Move temporary files to a "Temporales" folder'
         inputs:
           script: |
             cd src/test/resources/
-            md Temporales featuresJira
-            move test.zip featuresJira
-            move *.txt Temporales
-            move *.json Temporales
-            move *.zip Temporales
-            move featuresJira Temporales
+            mkdir Temporales featuresJira
+            mv test.zip featuresJira
+            mv *.txt *.json *.zip ./Temporales
+            mv featuresJira ./Temporales
 
       - task: PublishBuildArtifacts@1
         displayName: 'Publish "Temporales" folder in Artifacts'
         continueOnError: true
         condition: succeededOrFailed()
         inputs:
-          PathtoPublish: '$(system.defaultworkingdirectory)\src\test\resources\temporales'
+          PathtoPublish: '$(system.defaultworkingdirectory)/src/test/resources/Temporales'
           ArtifactName: 'Temporales'
           publishLocation: 'Container'
+
 
   - stage: build
     dependsOn: Pre_Test_Jira_Integration
@@ -101,7 +103,7 @@ stages:
       StageName: TodosWeb
       StageTipo: ${{parameters.Tipotest}}
       GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.runners.WebRunnerTest"
-    
+
   - template: azure-pipelines-template.yml
     parameters:
       StageName: TodosAPI

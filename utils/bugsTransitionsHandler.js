@@ -6,6 +6,7 @@ let testExecutionDoneID, testCaseDoneID, bugDoneID;
 let testExecutionDoingID, testCaseDoingID, bugDoingID;
 
 const browserURL = "https://pichincha.atlassian.net/browse/"
+const testPlanSummaryPrefix = "TP-Pruebas Funcionales Automatizadas"
 
 const headers = () => {
     return {
@@ -15,13 +16,13 @@ const headers = () => {
     }
 };
 
-const issueFormat = (projectKey, assigneeId, sprintId) => {
-    return {
+const issueFormat = (projectKey, assigneeId, sprintId, issuetype = "Bug de Desarrollo") => {
+    const formatData = {
         "update": {},
         "fields": {
             "summary": "",
             "issuetype": {
-                "name": "Bug de Desarrollo"
+                "name": issuetype
             },
             "project": {
                 "key": projectKey
@@ -44,12 +45,15 @@ const issueFormat = (projectKey, assigneeId, sprintId) => {
                     }
                 ]
             },
-            "priority": {
-                "name": "High"
-            },
             "customfield_10021": sprintId
         }
+    };
+    if (issuetype == "Bug de Desarrollo") {
+        formatData.fields.priority = {
+            "name": "High"
+        }
     }
+    return formatData
 };
 
 const issueUpdateFormat = (newAssigneeId, description) => {
@@ -139,6 +143,11 @@ const request = async function (url, method, bodyData = null, customHeaders = nu
         .catch(err => console.error(err))
 }
 
+const getCurrentYear = () =>{
+    const today = new Date();
+    return today.getFullYear();
+}
+
 /*const getIssueByKey = async function (issueIdOrKey) {
     const url = `${apiURL}/api/3/issue/${issueIdOrKey}`
     const response = await request(url, "GET")
@@ -159,6 +168,8 @@ const getValidTransitionData = (typeTransition, typeIssue) => {
         validTransitionId = typeTransition.toLowerCase() == "done" ? testExecutionDoneID : testExecutionDoingID
     } else if (typeIssue.toLowerCase() == "bug") {
         validTransitionId = typeTransition.toLowerCase() == "done" ? bugDoneID : bugDoingID
+    } else {
+        validTransitionId = typeTransition.toLowerCase() == "done" ? testCaseDoneID : testCaseDoingID
     }
     return {
         transition: {
@@ -321,12 +332,124 @@ const validateArguments = (arguments, mandatoryArgs) => {
     }
 }
 
-const reOpenIssue = async function(issueIdOrKey, attachmentPath, assigneeId, descriptionMessage, comment) {
+const reOpenIssue = async function (issueIdOrKey, attachmentPath, assigneeId, descriptionMessage, comment) {
     await deletePreviousAttachmentsIssue(issueIdOrKey)
     await addAttachmentToIssue(issueIdOrKey, attachmentPath)
     await updateIssueByKey(issueIdOrKey, assigneeId, descriptionMessage)
     await makeComment(issueIdOrKey, comment)
 }
+
+//Make a single method
+const createIssue = async function (bodyData) {
+    const url = `${apiURL}/api/3/issue`
+    const response = await request(url, "POST", bodyData)
+    return JSON.parse(response)
+}
+
+const testPlanBySprint = async function (sprintId) {
+    const url = `${apiURL}/api/3/search?jql=project="${projectKey}"%20AND%20issuetype="Test Plan"%20AND%20Sprint=${sprintId}%20AND%20summary~"${testPlanSummaryPrefix}*"&fields=summary`
+    const response = await request(url, "GET")
+    return JSON.parse(response)
+}
+
+const testPlanQuery = (issuesIds) => {
+    return {
+        query: `{
+            getTests(jql: "project = '${projectKey}'", issueIds:[${issuesIds.map(x => "\"" + x + "\"")}], limit: 100) {
+                total
+                start
+                limit
+                results {
+                    issueId
+                    testPlans(limit: 10) {
+                        total
+                        start
+                        limit
+                        results {
+                            issueId
+                            jira(fields: ["summary", "key"])
+                        }
+                    }
+                    jira(fields: ["summary"])
+                }
+            }
+        }`,
+        variables: {}
+    }
+}
+
+const testToTestPlanQuery = (testPlanId, testCasesIds) => {
+    return {
+        query: `
+            mutation {
+                addTestsToTestPlan(
+                    issueId: "${testPlanId}",
+                    testIssueIds: [${testCasesIds.map(x => "\"" + x + "\"")}]
+                ) {
+                    addedTests
+                    warning
+                }
+            }`,
+        variables: {}
+    }
+}
+
+const testExecutionsToPlanQuery = (testPlanId, testExecutionsIds) => {
+    return {
+        query: `
+            mutation {
+                addTestExecutionsToTestPlan(
+                issueId: "${testPlanId}",
+                testExecIssueIds: [${testExecutionsIds.map(x => "\"" + x + "\"")}]) {
+                    addedTestExecutions
+                    warning
+                }
+            }`,
+        variables: {}
+    }
+}
+
+const graphQLRequest = async function (token, testPlanQuery) {
+    const url = `https://xray.cloud.getxray.app/api/v1/graphql`
+    const response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(testPlanQuery),
+    })
+        .then(response => {
+            return response.text();
+        })
+        .then(text => {
+            return text
+        })
+        .catch(err => console.error(err))
+    return JSON.parse(response)
+}
+
+const getSprintInfoByID = async function(sprintId) {
+    const url = `${apiURL}/agile/1.0/sprint/${sprintId}`
+    const response = await request(url, "GET")
+    return JSON.parse(response)
+}
+
+const getTestPlanId = async function (sprintId) {
+    let testPlanId;
+    const sprintInfo = await getSprintInfoByID(sprintId)
+    const testPlanInSprint = await testPlanBySprint(sprintId)
+    if (testPlanInSprint.issues.length == 0) {
+        const issueData = JSON.parse(JSON.stringify(issueFormat(projectKey, assigneeId, sprintId, "Test Plan")));
+        issueData.fields.summary = `${testPlanSummaryPrefix}-${getCurrentYear()}-${sprintInfo.name}`
+        const testPlanResponse = await createIssue(issueData)
+        testPlanId = testPlanResponse.id
+    } else {
+        testPlanId = testPlanInSprint.issues[0].id
+    }
+    return testPlanId
+}
+//
 
 module.exports.processJiraScenarios = function (arguments) {
     let reportPath;
@@ -441,15 +564,15 @@ module.exports.closePassedScenarios = async function (arguments) {
         console.error(`File not found in the following path: '${passedScenariosPath}'`)
         exit(0)
     }
-
+    const activeSprintResponse = await getActiveSprint(boardId)
+    const activeSprintID = [activeSprintResponse.values[0].id]
     const passedScenarios = JSON.parse(fs.readFileSync(passedScenariosPath, { encoding: 'utf8', flag: 'r' }))
     for (const [scenarioName, testCaseResult] of Object.entries(passedScenarios.scenarios)) {
         if (testCaseResult.isComplete) {
             await closePreviousBugs(testCaseResult.testCaseKey)
             await makeTransition(testCaseResult.testCaseKey, "DONE", "TESTCASE")
         } else {
-            const activeSprintResponse = await getActiveSprint(boardId)
-            const activeSprintID = [activeSprintResponse.values[0].id]
+            
             const previousBugsResponse = await getPreviousBugs(activeSprintID, testCaseResult.testCaseKey)
             const previousBugsFields = previousBugsResponse.map(({ key, fields }) => ({ key, fields }))
             for (const passedStep of testCaseResult.passedSteps) {
@@ -463,6 +586,8 @@ module.exports.closePassedScenarios = async function (arguments) {
 
     if (passedScenarios.currentTEStatus != "failed") {
         await closeTestExecutions(currentTEKey)
+        const testPlanId = await getTestPlanId(activeSprintID)
+        makeTransition(testPlanId, "DONE" , "TESTPLAN")
     }
 };
 
@@ -537,4 +662,33 @@ module.exports.createBugsInJira = async function (arguments) {
             await createBugIssue(bugData, failedScenarios[key].parentLinks, message, attachmentPath)
         }
     }
+    if (Object.keys(failedScenarios).length != 0) {
+        const testPlanId = await getTestPlanId(actualSprint.id)
+        makeTransition(testPlanId, "PRUEBAS DOING" , "TESTPLAN")
+    }
 };
+
+module.exports.testCasesToPlan = async function (arguments) {
+    fetch = require('node-fetch');
+    const mandatoryArgs = ['apiURL', 'auth', 'projectKey', 'assigneeId', 'sprintId', "testCasesIds", "token"]
+    validateArguments(arguments, mandatoryArgs);
+    ({ apiURL, projectKey, assigneeId, sprintId, testCasesIds, token } = arguments);
+    auth = Buffer.from(arguments.auth).toString('base64');
+    const testPlanId = await getTestPlanId(sprintId);
+    const testsGraphQLResponse = await graphQLRequest(token, testPlanQuery(testCasesIds))
+    for (const testCase of testsGraphQLResponse.data.getTests.results) {
+        if (testCase.testPlans.results.length == 0) {
+            await graphQLRequest(token, testToTestPlanQuery(testPlanId, [testCase.issueId]))
+        }
+    }
+};
+
+module.exports.testExecutionToPlan = async function (arguments) {
+    fetch = require('node-fetch');
+    const mandatoryArgs = ['apiURL', 'auth', 'projectKey', 'token', "testExecutionId", "sprintId"]
+    validateArguments(arguments, mandatoryArgs);
+    ({ apiURL, projectKey, token, testExecutionId, sprintId } = arguments);
+    auth = Buffer.from(arguments.auth).toString('base64');
+    const testPlanId = await getTestPlanId(sprintId);
+    await graphQLRequest(token, testExecutionsToPlanQuery(testPlanId, [testExecutionId]))
+}
