@@ -470,7 +470,8 @@ module.exports.processJiraScenarios = function (arguments) {
     const cucumberReport = JSON.parse(readData)
     for (const feature of cucumberReport) {
         const scenariosStatus = {};
-        for (const scenario of feature.elements) {
+        const filterScenarios = feature.elements.filter((element)=> element.type == "scenario")
+        for (const scenario of filterScenarios) {
             let testCaseKey;
             if (scenariosStatus[scenario.name] == undefined) {
                 scenariosStatus[scenario.name] = true;
