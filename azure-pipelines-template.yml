@@ -13,7 +13,7 @@ stages:
   - stage: ${{parameters.StageName}}
     displayName: '${{parameters.StageName}}'
     dependsOn: build
-    condition: eq(variables.flow, '${{parameters.StageName}}')
+    condition: and(succeededOrFailed(),eq(variables.flow, '${{parameters.StageName}}'))
     pool:
       name: 'BancoPichinchaDevOps'
       demands:
@@ -89,7 +89,6 @@ stages:
             inputs:
               script: |
                 echo "${{parameters.GradlewCommand}}"
-                echo ${{parameters.GradlewCommand}}
                 ${{parameters.GradlewCommand}}
 
           - task: CopyFiles@2
@@ -143,7 +142,7 @@ stages:
         displayName: 'Publish to Jira'
         steps:
           - checkout: self
-          - download: none
+          - checkout: bugs-repo
           - task: DownloadBuildArtifacts@0
             inputs:
               artifactName: ${{parameters.StageName}}
@@ -183,7 +182,7 @@ stages:
               script: |
                 npm i node-fetch@2 -g
                 export NODE_PATH=/usr/local/lib/node_modules
-                node -e "require('$(system.defaultworkingdirectory)/utils/bugsTransitionsHandler.js').testExecutionToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',testExecutionId:'$(testExecutionId)',sprintId:$(sprintId)})"
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').testExecutionToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',testExecutionId:'$(testExecutionId)',sprintId:$(sprintId)})"
 
           - bash: echo "##vso[task.setvariable variable=keyTE;isOutput=true]$(tempKey)"
             name: testExecutionJira
@@ -195,7 +194,9 @@ stages:
         displayName: 'Processing report'
         variables:
           currentTestExecutionKey: $[ stageDependencies.Publish${{parameters.StageName}}.PublishJira.outputs['testExecutionJira.keyTE'] ]
-        steps:
+        steps:   
+          - checkout: self
+          - checkout: bugs-repo
           - task: DownloadBuildArtifacts@0
             inputs:
               artifactName: ${{parameters.StageName}}
@@ -208,8 +209,8 @@ stages:
             inputs:
               script: |
                 reportPath=${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json/${{parameters.StageTipo}}.json
-                node -e "require('./utils/bugsTransitionsHandler.js').processJiraScenarios({reportPath:'$reportPath'})"
-                statusTE=$(jq '.currentTEStatus' ./utils/reports/passedScenarios.json)
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').processJiraScenarios({reportPath:'$reportPath'})"
+                statusTE=$(jq '.currentTEStatus' $(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/reports/passedScenarios.json)
                 echo "##vso[task.setvariable variable=statusTE;]$statusTE"
 
           - task: PublishBuildArtifacts@1
@@ -217,7 +218,7 @@ stages:
             condition: succeededOrFailed()
             continueOnError: True
             inputs:
-              PathtoPublish: $(System.DefaultWorkingDirectory)/utils/reports
+              PathtoPublish: $(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/reports
               ArtifactName: FailedOrPassedScenarios
 
           - bash: echo "##vso[task.setvariable variable=statusTE;isOutput=true]$(statusTE)"
@@ -252,7 +253,9 @@ stages:
       - job: PostAprobacion
         displayName: Send bugs to Jira
         dependsOn: waitForManualValidation
-        steps:
+        steps:   
+          - checkout: self
+          - checkout: bugs-repo
           - task: DownloadBuildArtifacts@0
             inputs:
               artifactName: FailedOrPassedScenarios
@@ -277,7 +280,7 @@ stages:
                 testCaseDoingID=71
                 export NODE_PATH=/usr/local/lib/node_modules
                 reportPath=FailedOrPassedScenarios/failedScenarios.json
-                node -e "require('./utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',bugDoingID:'$bugDoingID'})"
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',bugDoingID:'$bugDoingID'})"
 
   - stage: CloseJiraElements${{parameters.StageName}}
     dependsOn: ProcessResult${{parameters.StageName}}
@@ -288,7 +291,9 @@ stages:
         displayName: Close elements in to Jira
         variables:
           currentTestExecutionKey: $[ stageDependencies.ProcessResult${{parameters.StageName}}.ProcessFailedOrPassedScenarios.outputs['testExecutionReference.keyTE'] ]
-        steps:
+        steps:    
+          - checkout: self
+          - checkout: bugs-repo
           - task: DownloadBuildArtifacts@0
             inputs:
               artifactName: FailedOrPassedScenarios
@@ -313,4 +318,4 @@ stages:
                 export NODE_PATH=/usr/local/lib/node_modules
                 reportPath=FailedOrPassedScenarios/passedScenarios.json
                 echo "TEKEY process: $(currentTestExecutionKey)"
-                node -e "require('./utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)',testCaseDoneID:'$testCaseDoneID',bugDoneID:'$bugDoneID',testExecutionDoneID:'$testExecutionDoneID',boardId:'$(boardId)'})"
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)',testCaseDoneID:'$testCaseDoneID',bugDoneID:'$bugDoneID',testExecutionDoneID:'$testExecutionDoneID',boardId:'$(boardId)'})"

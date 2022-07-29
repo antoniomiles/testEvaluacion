@@ -1,5 +1,12 @@
 name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
 
+resources:
+  repositories:
+  - repository: bugs-repo
+    type: git
+    name: BP-Quality-Management/Automation-bug-generator-nodejs
+    ref: develop
+
 trigger:
 #  - feature/*
   - master
@@ -36,17 +43,19 @@ stages:
     - job: Import
       displayName: Jira XRAY Import Test
       steps:
+      - checkout: self
+      - checkout: bugs-repo
       - task: CmdLine@2
         displayName: 'Send feature to Jira'
         inputs:
           script: |            
-            cd src/test/resources/
+            cd $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/
             zip -r features.zip features
             token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
             sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')
             echo "{\"fields\":{\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testInfo.json
             curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer $token" -F "precondInfo=@testInfo.json" -F "testInfo=@testInfo.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=$(projectKey) > keysResponse.json
-            node $(system.defaultworkingdirectory)/utils/parser.js
+            node $(system.defaultworkingdirectory)/$(Build.Repository.Name)/utils/parser.js
             cucumberKeys=$(cat keys.txt)
             echo $cucumberKeys
             curl -k -H "Content-Type: application/json" -X GET -H "Authorization: Bearer $token" "$(XRAY-REST-API-URL)/api/v1/export/cucumber?keys=$cucumberKeys" > test.zip
@@ -57,16 +66,16 @@ stages:
         displayName: 'Add Tests to Test Plan'
         inputs:
           script: |
-            cucumberIds=$(cat $(system.defaultworkingdirectory)/src/test/resources/ids.txt)
             npm i node-fetch@2 -g
             export NODE_PATH=/usr/local/lib/node_modules
-            node -e "require('$(system.defaultworkingdirectory)/utils/bugsTransitionsHandler.js').testCasesToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',assigneeId:'$(assigneeId)',sprintId:$(sprintId),testCasesIds:[$cucumberIds]})"    
+            cucumberIds=$(cat $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/ids.txt)
+            node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').testCasesToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',assigneeId:'$(assigneeId)',sprintId:$(sprintId),testCasesIds:[$cucumberIds]})"    
 
       - task: CmdLine@2
         displayName: 'Move temporary files to a "Temporales" folder'
         inputs:
           script: |
-            cd src/test/resources/
+            cd $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/
             mkdir Temporales featuresJira
             mv test.zip featuresJira
             mv *.txt *.json *.zip ./Temporales
@@ -77,7 +86,7 @@ stages:
         continueOnError: true
         condition: succeededOrFailed()
         inputs:
-          PathtoPublish: '$(system.defaultworkingdirectory)/src/test/resources/Temporales'
+          PathtoPublish: '$(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/Temporales'
           ArtifactName: 'Temporales'
           publishLocation: 'Container'
 
