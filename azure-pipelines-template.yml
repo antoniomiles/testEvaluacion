@@ -124,6 +124,8 @@ stages:
             inputs:
               jsonDir: build/${{parameters.StageTipo}}-reports
               outputPath: build/${{parameters.StageTipo}}-reports
+              name: '${{parameters.StageTipo}} Tests'
+              title: ${{parameters.StageTipo}}
 
           - task: JakubRumpca.azure-pipelines-html-report.PublishHtmlReport.PublishHtmlReport@1
             displayName: 'Publish Html Report'
@@ -135,8 +137,6 @@ stages:
     displayName: 'Publish ${{parameters.StageName}}'
     dependsOn: ${{parameters.StageName}}
     condition: and(succeededOrFailed(), eq(variables.flow, '${{parameters.StageName}}'))
-    variables:
-      - group: USUARIO_GENERICO
     jobs:
       - job: PublishJira
         displayName: 'Publish to Jira'
@@ -230,7 +230,6 @@ stages:
   - stage: BugCreation${{parameters.StageName}}
     dependsOn: ProcessResult${{parameters.StageName}}
     variables:
-      - group: USUARIO_GENERICO
       - name: statusTE
         value: $[ stageDependencies.ProcessResult${{parameters.StageName}}.ProcessFailedOrPassedScenarios.outputs['testExecutionStatus.statusTE'] ]
     jobs:
@@ -262,6 +261,13 @@ stages:
               buildType: 'current'
               downloadType: 'single'
               downloadPath: './'
+          
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: ${{parameters.StageName}}
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
 
           - task: CmdLine@2
             displayName: 'Download fetch dependency'
@@ -278,14 +284,14 @@ stages:
               script: |
                 bugDoingID=21
                 testCaseDoingID=71
+                reportZipPathName=reports.zip
+                zip -r $reportZipPathName ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/*
                 export NODE_PATH=/usr/local/lib/node_modules
                 reportPath=FailedOrPassedScenarios/failedScenarios.json
-                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',bugDoingID:'$bugDoingID'})"
-
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',bugDoingID:'$bugDoingID',reportZipPathName:'$reportZipPathName'})"
+                
   - stage: CloseJiraElements${{parameters.StageName}}
     dependsOn: ProcessResult${{parameters.StageName}}
-    variables:
-      - group: USUARIO_GENERICO
     jobs:
       - job: CloseJiraProcess
         displayName: Close elements in to Jira

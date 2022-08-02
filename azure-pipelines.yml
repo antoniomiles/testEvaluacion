@@ -33,12 +33,12 @@ parameters:
       - karate
 
 variables:
-  flow: ${{parameters.Flujo}}
+  - name: flow
+    value: ${{parameters.Flujo}}
+  - group: USUARIO_GENERICO
           
 stages:
   - stage: Pre_Test_Jira_Integration
-    variables: 
-    - group: USUARIO_GENERICO
     jobs:
     - job: Import
       displayName: Jira XRAY Import Test
