@@ -284,11 +284,12 @@ stages:
               script: |
                 bugDoingID=21
                 testCaseDoingID=71
+                testPlanDoingID=71
                 reportZipPathName=reports.zip
                 zip -r $reportZipPathName ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/*
                 export NODE_PATH=/usr/local/lib/node_modules
                 reportPath=FailedOrPassedScenarios/failedScenarios.json
-                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',bugDoingID:'$bugDoingID',reportZipPathName:'$reportZipPathName'})"
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').createBugsInJira({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',failedScenariosPath:'$reportPath',assigneeId:'$(assigneeId)',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',bugDoingID:'$bugDoingID',testPlanDoingID:'$testPlanDoingID',reportZipPathName:'$reportZipPathName'})"
                 
   - stage: CloseJiraElements${{parameters.StageName}}
     dependsOn: ProcessResult${{parameters.StageName}}
@@ -320,8 +321,9 @@ stages:
               script: |
                 testCaseDoneID=91
                 testExecutionDoneID=91
+                testPlanDoneID=91
                 bugDoneID=31
                 export NODE_PATH=/usr/local/lib/node_modules
                 reportPath=FailedOrPassedScenarios/passedScenarios.json
                 echo "TEKEY process: $(currentTestExecutionKey)"
-                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)',testCaseDoneID:'$testCaseDoneID',bugDoneID:'$bugDoneID',testExecutionDoneID:'$testExecutionDoneID',boardId:'$(boardId)'})"
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').closePassedScenarios({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',passedScenariosPath:'$reportPath',currentTEKey:'$(currentTestExecutionKey)',testCaseDoneID:'$testCaseDoneID',bugDoneID:'$bugDoneID',testExecutionDoneID:'$testExecutionDoneID',testPlanDoneID:'$testPlanDoneID',boardId:'$(boardId)'})"
