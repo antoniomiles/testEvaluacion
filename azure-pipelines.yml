@@ -8,7 +8,6 @@ resources:
     ref: develop
 
 trigger:
-#  - feature/*
   - master
 
 parameters:
@@ -25,6 +24,7 @@ parameters:
       - ManualTest
       - ParallelTest
       - RestAssuredApi
+      
   - name: Tipotest
     displayName: 'Elija el tipo de test'
     default: cucumber   

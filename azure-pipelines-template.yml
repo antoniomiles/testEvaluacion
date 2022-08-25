@@ -158,7 +158,6 @@ stages:
                 testExecutionDoingID=71
                 sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')
                 cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json
-                echo "Json generado"
                 flowOPTS=${{parameters.StageName}}
                 token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
                 archivo=${{parameters.StageTipo}}.json
@@ -233,6 +232,36 @@ stages:
       - name: statusTE
         value: $[ stageDependencies.ProcessResult${{parameters.StageName}}.ProcessFailedOrPassedScenarios.outputs['testExecutionStatus.statusTE'] ]
     jobs:
+      - job: TransitionFailedElements
+        displayName: Transition in Jira Elements 
+        steps:
+          - checkout: self
+          - checkout: bugs-repo
+          - task: DownloadBuildArtifacts@0
+            inputs:
+              artifactName: FailedOrPassedScenarios
+              buildType: 'current'
+              downloadType: 'single'
+              downloadPath: './'
+
+          - task: CmdLine@2
+            displayName: 'Download fetch dependency'
+            continueOnError: true
+            inputs:
+              script: |
+                npm i node-fetch@2 -g
+
+          - task: CmdLine@2
+            displayName: 'Failed transitions'
+            continueOnError: true
+            inputs:
+              script: |
+                testCaseDoingID=71
+                testPlanDoingID=71
+                export NODE_PATH=/usr/local/lib/node_modules
+                reportPath=FailedOrPassedScenarios/failedScenarios.json
+                node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').transitionFailedScenarios({apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',projectKey:'$(projectKey)',failedScenariosPath:'$reportPath',boardId:$(boardId),testCaseDoingID:'$testCaseDoingID',testPlanDoingID:'$testPlanDoingID'})"
+
       - job: waitForManualValidation
         displayName: Manual Validation before Bugs creation
         condition: eq(variables.statusTE, 'failed')
