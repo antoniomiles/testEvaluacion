@@ -2,9 +2,9 @@ name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
 
 resources:
   repositories:
-  - repository: bugs-repo
+  - repository: jira-utils-repo
     type: git
-    name: BP-Quality-Management/Automation-bug-generator-nodejs
+    name: BP-Quality-Management/sqa-aut-arq-jira-nodejs
     ref: develop
 
 trigger:
@@ -33,6 +33,8 @@ parameters:
       - karate
 
 variables:
+  - name: jira-utils-repo
+    value: sqa-aut-arq-jira-nodejs
   - name: flow
     value: ${{parameters.Flujo}}
   - group: USUARIO_GENERICO
@@ -44,7 +46,7 @@ stages:
       displayName: Jira XRAY Import Test
       steps:
       - checkout: self
-      - checkout: bugs-repo
+      - checkout: jira-utils-repo
       - task: CmdLine@2
         displayName: 'Send feature to Jira'
         inputs:
@@ -69,7 +71,7 @@ stages:
             npm i node-fetch@2 -g
             export NODE_PATH=/usr/local/lib/node_modules
             cucumberIds=$(cat $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/ids.txt)
-            node -e "require('$(system.defaultworkingdirectory)/Automation-bug-generator-nodejs/utils/bugsTransitionsHandler.js').testCasesToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',assigneeId:'$(assigneeId)',sprintId:$(sprintId),testCasesIds:[$cucumberIds]})"    
+            node -e "require('$(system.defaultworkingdirectory)/$(jira-utils-repo)/utils/bugsTransitionsHandler.js').testCasesToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',assigneeId:'$(assigneeId)',sprintId:$(sprintId),testCasesIds:[$cucumberIds]})"    
 
       - task: CmdLine@2
         displayName: 'Move temporary files to a "Temporales" folder'
