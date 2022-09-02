@@ -149,7 +149,7 @@ stages:
     parameters:
       StageName: ManualTest
       StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@ManualTest" com.pichincha.automationtest.runners.WebRunnerTest
+      GradlewCommand: ./gradlew clean test --tests "-Dcucumber.filter.tags=@ManualTest" "com.pichincha.automationtest.runners.WebRunnerTest" -Dexecute="azure"
 
   - template: azure-pipelines-template.yml
     parameters:

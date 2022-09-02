@@ -1,6 +1,8 @@
 package com.pichincha.automationtest.util;
 
 import lombok.extern.slf4j.Slf4j;
+import net.thucydides.core.util.EnvironmentVariables;
+import net.thucydides.core.util.SystemEnvironmentVariables;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -16,6 +18,7 @@ import java.util.*;
 public class FeatureOverwrite {
 
     static PropertiesReader readProperties = new PropertiesReader();
+    private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
 
     private static final Map<String, List<String>> currentFeatures = new HashMap<>();
 
@@ -153,7 +156,10 @@ public class FeatureOverwrite {
             final List<String> snarios = new ArrayList<>();
             String nameScenario = "";
             int numScenario = 0;
-            String azureOrLocalExecution = readProperties.getPropiedad("azure.or.local.execution");
+            String azureOrLocalExecution = variables.getProperty("execute");
+            if (azureOrLocalExecution == null || azureOrLocalExecution.isEmpty()) {
+                azureOrLocalExecution = readProperties.getPropiedad("azure.or.local.execution");
+            }
             boolean foundHashTag = false;
             while ((nameScenario = buffReaderScenario.readLine()) != null) {
                 if (nameScenario.trim().contains("Scenario:")) {
