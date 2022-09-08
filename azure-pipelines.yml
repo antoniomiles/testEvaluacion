@@ -38,6 +38,7 @@ variables:
   - name: flow
     value: ${{parameters.Flujo}}
   - group: USUARIO_GENERICO
+  - group: JIRA_AUTOMATIZACION
           
 stages:
   - stage: staticanalysis
@@ -96,7 +97,7 @@ stages:
             cd $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/
             zip -r features.zip features
             token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
-            sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')
+            sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select((.state=="active") and (.originBoardId==$(boardId))) | .id')
             echo "{\"fields\":{\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testInfo.json
             curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer $token" -F "precondInfo=@testInfo.json" -F "testInfo=@testInfo.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=$(projectKey) > keysResponse.json
             node $(system.defaultworkingdirectory)/$(Build.Repository.Name)/utils/parser.js

@@ -156,7 +156,7 @@ stages:
             inputs:
               script: |
                 testExecutionDoingID=71
-                sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select(.state=="active") | .id')
+                sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select((.state=="active") and (.originBoardId==$(boardId))) | .id')
                 cd ${{parameters.StageName}}/results/${{parameters.StageTipo}}-reports/json
                 flowOPTS=${{parameters.StageName}}
                 token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
