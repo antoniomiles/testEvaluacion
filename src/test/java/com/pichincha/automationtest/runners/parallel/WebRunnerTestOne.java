@@ -23,8 +23,8 @@ import java.io.IOException;
         tags = "@R1 and not @karate and not @ManualTest"
 )
 public class WebRunnerTestOne {
-    private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
-
+     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
+     private  WebRunnerTestOne(){}
     @BeforeSuite
     public static void init() throws IOException, InvalidFormatException {
         String featureName = variables.getProperty("featureName");

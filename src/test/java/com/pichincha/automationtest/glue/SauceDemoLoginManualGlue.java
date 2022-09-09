@@ -14,45 +14,45 @@ import java.util.List;
 public class SauceDemoLoginManualGlue {
     static PropertiesReader readProperties= new PropertiesReader();
     @Given("que el cliente ingresa a la pagina Mantest")
-    public void que_el_cliente_ingresa_a_la_pagina() throws IOException, InvalidFormatException {
+    public void queElClienteIngresaAlaPagina() throws IOException, InvalidFormatException {
         List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty("user.dir") + readProperties.getPropiedad("path.manual.feature")));
         ManualReadFeature.validatePassedOrdFailed(scenarios,0);
     }
     @When("quien ingresa sus cred para iniciar sesion Mantest")
-    public void quien_ingresa_sus_credenciales_para_iniciar_sesion() {
-
+    public void quienIngresaSusCredencialesParaIniciarSesion() {
+            // Paso para prueba manual que  esta vacío
     }
     @Then("el ingresa a ver los productos disponibles Mantest")
-    public void el_ingresa_a_ver_los_productos_disponibles() {
-
+    public void elIngresaAVerLosProductosDisponibles() {
+           // es un paso para la prueba manual por eso esta vacío
     }
 
     @Given("que el cliente ingresa a la pagina SauceDemo Mantest")
-    public void que_el_cliente_ingresa_a_la_pagina_sauce_demo() throws IOException {
+    public void queElClienteIngresaaAlaPaginaSauceDemo() throws IOException {
         List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty("user.dir") + readProperties.getPropiedad("path.manual.feature")));
         ManualReadFeature.validatePassedOrdFailed(scenarios,1);
     }
     @When("el ingresa sus cred para iniciar sesion Mantest")
-    public void el_ingresa_sus_cred_para_iniciar_sesion() {
-
+    public void elIngresaSusCredParaIniciarSesion() {
+    // es un paso que esta vacío por prueba manual
     }
     @Then("se deberia mostrar el mensaje de error Mantest")
-    public void se_deberia_mostrar_el_mensaje_de_error() {
-
+    public void seDeberiaMostrarElMensajeDeError() {
+     //Es un paso de prueba manual por lo que se mantiene vacío
     }
 
     @Given("que el cliente ingresa a la pagina SauceDemo2 Mantest")
-    public void que_el_cliente_ingresa_a_la_pagina_sauce_demo2() throws IOException {
+    public void queElClienteIngresaAlaPaginaSauceDemo2() throws IOException {
         List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty("user.dir") + readProperties.getPropiedad("path.manual.feature")));
         ManualReadFeature.validatePassedOrdFailed(scenarios,2);
     }
     @When("el ingresa sus cred para iniciar sesion2 Mantest")
-    public void el_ingresa_sus_cred_para_iniciar_sesion2() {
-
+    public void elIngresaSusCredParaIniciarSesion2() {
+     //Es un paso de prueba manual poreso esta vacío
     }
     @Then("se deberia mostrar el mensaje de error2 Mantest")
-    public void se_deberia_mostrar_el_mensaje_de_error2() {
-
+    public void seDeberiaMostrarElMensajeDeError2() {
+     //Es un paso de prueba manual
     }
 
 }

@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 public class ControlParallelTest {
-
+      private ControlParallelTest(){}
     public static void setOrRemoveExecution(String addOrDeleteRunner ) throws IOException {
         File propertiesFile = new File(System.getProperty("user.dir") + "/src/test/resources/properties/parallelcontrol.properties");
         List<String> propertiesModified= addOrDeleteExecutioInProperties(propertiesFile, addOrDeleteRunner);

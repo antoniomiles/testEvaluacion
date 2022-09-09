@@ -15,12 +15,12 @@ import java.io.IOException;
         features = "src/test/resources/features/",
         glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
         plugin = "json:build/cucumber-reports/json/cucumber.json",
-        tags = "not @karate and not @ManualTest"
+        tags = " @ManualTest "
 )
 public class WebRunnerTest {
 
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
-
+    private WebRunnerTest(){}
     @BeforeSuite
     public static void init() throws IOException {
         String featureName = variables.getProperty("featureName");

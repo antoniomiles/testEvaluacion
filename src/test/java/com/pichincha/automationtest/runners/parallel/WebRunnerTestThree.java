@@ -18,6 +18,7 @@ import java.io.IOException;
         tags = "@R3 and not @karate and not @ManualTest"
 )
 public class WebRunnerTestThree {
+    private WebRunnerTestThree(){}
     @BeforeSuite
     public static void init() throws InterruptedException, IOException, InvalidFormatException {
         Thread.sleep(2000);

@@ -1,6 +1,5 @@
 package com.pichincha.automationtest.glue;
 
-import com.pichincha.automationtest.model.InformacionCliente;
 import com.pichincha.automationtest.tasks.AnadirProducto;
 import com.pichincha.automationtest.tasks.BuscarProducto;
 import com.pichincha.automationtest.tasks.RegistrarCliente;
@@ -29,7 +28,7 @@ public class SimulacionCompraTelefonoStepdefinitions {
     @When("el decide hacer la compra ingresa sus datos personales {string}, {string}, {string}, {string}, {string} y {string}")
     public void ySeIdentificaConLosDatosDeCompraY(String nombre, String pais, String ciudad, String numeroDeTarjeta, String mesVencimiento, String anioVencimiento) {
         when(theActorInTheSpotlight()).wasAbleTo(
-                RegistrarCliente.conInformacionCompra(InformacionCliente.conDatos(nombre, pais, ciudad, numeroDeTarjeta, mesVencimiento, anioVencimiento)));
+                RegistrarCliente.conInformacionCompra(nombre, pais,ciudad, numeroDeTarjeta, mesVencimiento,  anioVencimiento));
     }
     @Then("el realiza la compra del producto exitosamente")
     public void completaLaCompraExitosamenteDelProducto() {
