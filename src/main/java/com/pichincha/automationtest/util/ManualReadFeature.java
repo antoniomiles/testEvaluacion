@@ -14,6 +14,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class ManualReadFeature {
+    private ManualReadFeature(){}
     static PropertiesReader readProperties= new PropertiesReader();
 
     public static String setPassedOrFailedFromPane( String nameScenario, int numScenario){
@@ -35,6 +36,9 @@ public class ManualReadFeature {
             statusExecution="  @manual-result:failed";
         }else if(optionSelected.trim().equals("Si")){
             statusExecution="  @manual-result:passed";
+        }
+        else {
+            throw new IllegalStateException();
         }
         return  statusExecution;
     }
@@ -59,6 +63,9 @@ public class ManualReadFeature {
                     }else if(lineData.trim().contains("passed")){
                         statusExecution="  @manual-result:passed";
                         break;
+                    }
+                    else {
+                        throw new IllegalStateException();
                     }
                 }
             }
@@ -105,6 +112,9 @@ public class ManualReadFeature {
             status= "FAILED";
         }else if(passedOrdFailed.contains("EstadoScenarioNoDefinido")){
             status= "PENDING";
+        }
+        else {
+            throw new IllegalStateException();
         }
         assertEquals("ESTADO SCENARIO MANUAL: ","PASSED",status);
     }

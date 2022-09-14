@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 public class ControlParallelTest {
       private ControlParallelTest(){}
+    private static String externalDataSt ="RunnerEjecutandose";
     public static void setOrRemoveExecution(String addOrDeleteRunner ) throws IOException {
         File propertiesFile = new File(System.getProperty("user.dir") + "/src/test/resources/properties/parallelcontrol.properties");
         List<String> propertiesModified= addOrDeleteExecutioInProperties(propertiesFile, addOrDeleteRunner);
@@ -42,7 +43,7 @@ public class ControlParallelTest {
         try {
             buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
             String data;
-            String externalDataSt ="RunnerEjecutandose";
+
             if (addOrDelete.equals("add")){
                 while ((data = buffReader.readLine()) != null) {
                     fileData.add(data);
@@ -51,7 +52,7 @@ public class ControlParallelTest {
             }else if (addOrDelete.equals("delete")){
                 int cont=0;
                 while ((data = buffReader.readLine()) != null) {
-                    if(data.contains("RunnerEjecutandose")){
+                    if(data.contains(externalDataSt)){
                         cont++;
                     }
                     if (cont!=1){
@@ -81,7 +82,7 @@ public class ControlParallelTest {
             String data;
             int cont=0;
             while ((data = buffReader.readLine()) != null) {
-                if(data.contains("RunnerEjecutandose")){
+                if(data.contains(externalDataSt)){
                     cont++;
                 }
             }

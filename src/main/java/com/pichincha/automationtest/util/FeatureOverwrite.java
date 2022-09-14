@@ -16,7 +16,7 @@ import java.util.*;
 
 @Slf4j
 public class FeatureOverwrite {
-
+    private FeatureOverwrite(){}
     static PropertiesReader readProperties = new PropertiesReader();
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
 
@@ -64,7 +64,7 @@ public class FeatureOverwrite {
                     for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
                         Collection<String> rowValues = externalData.get(rowNumber).values();
                         String example = getGherkinExample(rowValues);
-                        if (example != "")
+                        if (!"".equals(example))
                             fileData.add(example);
                     }
                     exampleData = false;
@@ -111,11 +111,11 @@ public class FeatureOverwrite {
     private static String getGherkinExample(Collection<String> examplesFields) {
         String example = "";
         for (String field : examplesFields) {
-            if (field.trim()!=""){
+            if (!"".equals(field.trim())){
                 example = String.format("%s|%s", example, field);
             }
         }
-        if (example=="")
+        if ("".equals(example))
             return "";
         return example + "|";
     }

@@ -1,11 +1,15 @@
 package com.pichincha.automationtest.hooks;
 
 import com.pichincha.automationtest.util.AttachScreenshotToScenario;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
 
 public class AttachScreenshot extends AttachScreenshotToScenario {
+    Logger logger = Logger.getLogger(AttachScreenshot.class.getName());
 
     @After @AfterStep("not @manual")
     public void attachScreenshotJsonReportForScenario(Scenario scenario) {
@@ -25,7 +29,8 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
                     addScreenshot(scenario);
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: al adjuntar imagen al reporte JSON generado por cucumber: "+ e);
+                logger.log(Level.WARNING,"ERROR: al adjuntar imagen al reporte JSON generado por cucumber:",e);
+
             }
         }
     }

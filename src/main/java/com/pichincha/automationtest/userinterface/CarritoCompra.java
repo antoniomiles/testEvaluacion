@@ -1,10 +1,10 @@
 package com.pichincha.automationtest.userinterface;
 
-import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;
 
-public class CarritoCompra extends PageObject {
+public class CarritoCompra {
+    private CarritoCompra(){}
 
     public static final Target ELEMENT_CART = Target.the("'El producto {0}'").locatedBy("//*[@id='tbodyid']/tr[//td[.='{0}']]");
     public static final Target NAME = Target.the("'Nombre de Cliente'").located(By.id("name"));

@@ -20,11 +20,11 @@ public class SimulacionCompraTelefonoStepdefinitions {
 
     @Given("que el {actor} ingresa a la pagina de demoblaze para la compra de telefonos selecciona el {string}")
     public void quiereComprarProducto(Actor actor,String descripcion) {
-    givenThat(actor).attemptsTo(Open.browserOn().the(PaginaPrincipal.class));
-    andThat(actor).wasAbleTo(
-            BuscarProducto.conDescripcion(descripcion),
-            AnadirProducto.alCarrito(descripcion));
-   }
+        givenThat(actor).attemptsTo(Open.browserOn().the(PaginaPrincipal.class));
+        andThat(actor).wasAbleTo(
+                BuscarProducto.conDescripcion(descripcion),
+                AnadirProducto.alCarrito(descripcion));
+    }
     @When("el decide hacer la compra ingresa sus datos personales {string}, {string}, {string}, {string}, {string} y {string}")
     public void ySeIdentificaConLosDatosDeCompraY(String nombre, String pais, String ciudad, String numeroDeTarjeta, String mesVencimiento, String anioVencimiento) {
         when(theActorInTheSpotlight()).wasAbleTo(

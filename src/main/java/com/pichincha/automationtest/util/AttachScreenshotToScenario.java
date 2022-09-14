@@ -16,11 +16,11 @@ import java.util.Date;
 
 public class AttachScreenshotToScenario {
     static PropertiesReader readProperties= new PropertiesReader();
-    public static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
     public void addScreenshot( Scenario scenario){
         scenario.attach(((TakesScreenshot) BrowseTheWeb.as(OnStage.theActorInTheSpotlight()).getDriver()).getScreenshotAs(OutputType.BYTES),
                 "image/png", //"text/plain"
-                String.format("%s %s.jpg", scenario.getName(), DATE_FORMAT.format(new Date()))
+                String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date()))
         );
     }
 
@@ -38,13 +38,16 @@ public class AttachScreenshotToScenario {
                     {
                         scenario.attach(imageInBytes,
                                 "image/png", //"text/plain"
-                                String.format("%s %s.jpg", scenario.getName(), DATE_FORMAT.format(new Date()))
+                                String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date()))
                         );
                     }else if (nameEvidence.endsWith(".txt") ){
                         scenario.attach(imageInBytes,
                                 "text/plain",
-                                String.format("%s %s.txt", scenario.getName(), DATE_FORMAT.format(new Date()))
+                                String.format("%s %s.txt", scenario.getName(), formatDate.format(new Date()))
                         );
+                    }
+                    else{
+                        throw new IllegalStateException();
                     }
 
                 }

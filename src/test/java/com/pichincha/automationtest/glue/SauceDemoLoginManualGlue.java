@@ -13,9 +13,11 @@ import java.util.List;
 
 public class SauceDemoLoginManualGlue {
     static PropertiesReader readProperties= new PropertiesReader();
+    private String atributopro = "path.manual.feature";
+    private String userDir = "user.dir";
     @Given("que el cliente ingresa a la pagina Mantest")
     public void queElClienteIngresaAlaPagina() throws IOException, InvalidFormatException {
-        List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty("user.dir") + readProperties.getPropiedad("path.manual.feature")));
+        List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty(userDir) + readProperties.getPropiedad(atributopro)));
         ManualReadFeature.validatePassedOrdFailed(scenarios,0);
     }
     @When("quien ingresa sus cred para iniciar sesion Mantest")
@@ -29,7 +31,7 @@ public class SauceDemoLoginManualGlue {
 
     @Given("que el cliente ingresa a la pagina SauceDemo Mantest")
     public void queElClienteIngresaaAlaPaginaSauceDemo() throws IOException {
-        List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty("user.dir") + readProperties.getPropiedad("path.manual.feature")));
+        List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty(userDir) + readProperties.getPropiedad(atributopro)));
         ManualReadFeature.validatePassedOrdFailed(scenarios,1);
     }
     @When("el ingresa sus cred para iniciar sesion Mantest")
@@ -43,7 +45,7 @@ public class SauceDemoLoginManualGlue {
 
     @Given("que el cliente ingresa a la pagina SauceDemo2 Mantest")
     public void queElClienteIngresaAlaPaginaSauceDemo2() throws IOException {
-        List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty("user.dir") + readProperties.getPropiedad("path.manual.feature")));
+        List<String> scenarios = ManualReadFeature.readManualFeaturePassedOrdFailed(new File(System.getProperty(userDir) + readProperties.getPropiedad(atributopro)));
         ManualReadFeature.validatePassedOrdFailed(scenarios,2);
     }
     @When("el ingresa sus cred para iniciar sesion2 Mantest")

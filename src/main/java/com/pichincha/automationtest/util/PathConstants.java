@@ -6,6 +6,7 @@ import net.thucydides.core.util.SystemEnvironmentVariables;
 import java.io.File;
 
 public class PathConstants {
+    private PathConstants(){}
 
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
 

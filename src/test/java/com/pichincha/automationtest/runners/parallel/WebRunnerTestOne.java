@@ -24,13 +24,14 @@ import java.io.IOException;
 )
 public class WebRunnerTestOne {
      private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
+    private static String allFeatures = "todos";
      private  WebRunnerTestOne(){}
     @BeforeSuite
     public static void init() throws IOException, InvalidFormatException {
         String featureName = variables.getProperty("featureName");
         String[] features = getFeaturesNames(featureName);
         for (String feature : features) {
-            if (!featureName.equals("todos")){
+            if (!featureName.equals(allFeatures)){
                 feature+=".feature";
             }
             FeatureOverwrite.overwriteFeatureFileAdd(feature);
@@ -40,7 +41,7 @@ public class WebRunnerTestOne {
 
     public static String[] getFeaturesNames(String featureName){
         String[] features;
-        if (featureName.equals("todos")){
+        if (featureName.equals(allFeatures)){
             File featureFolder = new File(System.getProperty("user.dir") + "/src/test/resources/features");
             features = featureFolder.list();
         }
@@ -58,7 +59,7 @@ public class WebRunnerTestOne {
         String featureName = variables.getProperty("featureName");
         String[] features = getFeaturesNames(featureName);
         for (String feature : features) {
-            if (!featureName.equals("todos")){
+            if (!featureName.equals(allFeatures)){
                 feature+=".feature";
             }
             FeatureOverwrite.overwriteFeatureFileRemove(feature);

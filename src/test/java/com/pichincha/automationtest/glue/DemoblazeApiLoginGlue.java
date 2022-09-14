@@ -20,11 +20,12 @@ import static org.hamcrest.Matchers.*;
 public class DemoblazeApiLoginGlue {
 
 
-    private String theRestApiBaseUrl;
+
     private EnvironmentVariables environmentVariables;
 
     @Given("que el usuario {actor} ingresa a la Api de Demoblaze e ingrese las credenciales")
     public void queElActorIngresaALaPaginaSauceDemo(Actor actor, DataTable table) {
+        String theRestApiBaseUrl;
 
         theRestApiBaseUrl = environmentVariables.optionalProperty("restapi.baseurl")
                 .orElse("https://api.demoblaze.com");
