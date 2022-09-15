@@ -14,112 +14,90 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class ManualReadFeature {
-    private ManualReadFeature(){}
-    static PropertiesReader readProperties= new PropertiesReader();
+    private ManualReadFeature() {
+    }
 
-    public static String setPassedOrFailedFromPane( String nameScenario, int numScenario){
-        String statusExecution="  #EstadoScenarioNoDefinido";
-        String[] options={"   No   ","   Si   "};
-        String numInitArrayReadCsv= readProperties.getPropiedad("num.init.array.read.csv");
-        if(numInitArrayReadCsv.equals("1")){
-            numScenario=numScenario+1;
+    static PropertiesReader readProperties = new PropertiesReader();
+
+    public static String setPassedOrFailedFromPane(String nameScenario, int numScenario) {
+        String statusExecution;
+        String[] options = { "   No   ", "   Si   " };
+        String numInitArrayReadCsv = readProperties.getPropiedad("num.init.array.read.csv");
+        if (numInitArrayReadCsv.equals("1")) {
+            numScenario = numScenario + 1;
         }
 
-        JOptionPane jOptionPane = new JOptionPane("El  \""+nameScenario.trim()+"\"  se ejecutó correctamente?",
+        JOptionPane jOptionPane = new JOptionPane("El  \"" + nameScenario.trim() + "\"  se ejecutó correctamente?",
                 JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION,
                 null, options, options[0]);
-        JDialog jDialog = jOptionPane.createDialog(null, "Scenario N° "+numScenario);
+        JDialog jDialog = jOptionPane.createDialog(null, "Scenario N° " + numScenario);
         jDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         jDialog.setVisible(true);
         String optionSelected = (String) jOptionPane.getValue();
-        if(optionSelected.trim().equals("No")){
-            statusExecution="  @manual-result:failed";
-        }else if(optionSelected.trim().equals("Si")){
-            statusExecution="  @manual-result:passed";
+        if (optionSelected.trim().equals("No")) {
+            statusExecution = "  @manual-result:failed";
+        } else {
+            statusExecution = "  @manual-result:passed";
         }
-        else {
-            throw new IllegalStateException();
-        }
-        return  statusExecution;
+        return statusExecution;
     }
 
-    public static String setPassedOrFailedFromCSV( String nameScenario, int numScenario, String filePath) throws IOException {
-        BufferedReader bfReader = null;
+    public static String setPassedOrFailedFromCSV(int numScenario, String filePath) throws IOException {
         String lineData = "";
-        String statusExecution="  #EstadoScenarioNoDefinido";
-        String numInitArrayReadCsv= readProperties.getPropiedad("num.init.array.read.csv");
-        if(numInitArrayReadCsv.equals("1")){
-            numScenario=numScenario+1;
+        String statusExecution = "  #EstadoScenarioNoDefinido";
+        String numInitArrayReadCsv = readProperties.getPropiedad("num.init.array.read.csv");
+        if (numInitArrayReadCsv.equals("1")) {
+            numScenario = numScenario + 1;
         }
-        try {
-            bfReader = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8));
+        try ( BufferedReader bfReader = new BufferedReader(
+                new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8));) {
+
             while ((lineData = bfReader.readLine()) != null) {
                 String[] numberAndResultTest = lineData.split(",");
 
-                String columnOne=numberAndResultTest[0];
-                if (columnOne.equalsIgnoreCase(String.valueOf(numScenario))){
+                String columnOne = numberAndResultTest[0];
+                if (columnOne.equalsIgnoreCase(String.valueOf(numScenario))) {
                     switch (numberAndResultTest[1].toLowerCase()) {
                         case "failed":
-                            statusExecution="  @manual-result:failed";
+                            statusExecution = "  @manual-result:failed";
                             break;
                         case "passed":
-                            statusExecution="  @manual-result:passed";
+                            statusExecution = "  @manual-result:passed";
                             break;
                         default:
                             break;
                     }
-                    else {
-                        throw new IllegalStateException();
-                    }
-                }
-            }
-        } finally {
-            if (bfReader != null) {
-                try {
-                    bfReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
             }
         }
-        return  statusExecution;
+        return statusExecution;
     }
+
     public static List<String> readManualFeaturePassedOrdFailed(final File featureFile) throws IOException {
-        BufferedReader buffReaderScenario = null;
         final List<String> scenarios = new ArrayList<String>();
-        try  {
-                buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
-                String passedFailedScenario ="";
-                while ((passedFailedScenario = buffReaderScenario.readLine()) != null) {
-                    if (passedFailedScenario.trim().contains("@manual-result:") ||passedFailedScenario.trim().contains("#EstadoScenarioNoDefinido")  ) {
-                        scenarios.add(passedFailedScenario);
-                    }
-                }
-        }finally {
-            if (buffReaderScenario != null) {
-                try {
-                    buffReaderScenario.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        try (BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
+        StandardCharsets.UTF_8);){
+            String passedFailedScenario = "";
+            while ((passedFailedScenario = buffReaderScenario.readLine()) != null) {
+                if (passedFailedScenario.trim().contains("@manual-result:")
+                        || passedFailedScenario.trim().contains("#EstadoScenarioNoDefinido")) {
+                    scenarios.add(passedFailedScenario);
                 }
             }
         }
         return scenarios;
     }
 
-    public static void validatePassedOrdFailed(List<String> scenarios, int numScenario){
+    public static void validatePassedOrdFailed(List<String> scenarios, int numScenario) {
         String passedOrdFailed = scenarios.get(numScenario);
-        String status="";
-        if(passedOrdFailed.contains("passed")){
-            status= "PASSED";
-        }else if(passedOrdFailed.contains("failed")){
-            status= "FAILED";
-        }else{
-            status= "PENDING";
+        String status = "";
+        if (passedOrdFailed.contains("passed")) {
+            status = "PASSED";
+        } else if (passedOrdFailed.contains("failed")) {
+            status = "FAILED";
+        } else {
+            status = "PENDING";
         }
-        else {
-            throw new IllegalStateException();
-        }
-        assertEquals("ESTADO SCENARIO MANUAL: ","PASSED",status);
+        assertEquals("ESTADO SCENARIO MANUAL: ", "PASSED", status);
     }
 }
