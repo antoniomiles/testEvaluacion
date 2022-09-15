@@ -76,7 +76,8 @@ public class FeatureOverwrite {
                 if (data.trim().contains("@externaldata")) {
                     externalDataProcess(data, fileData);
                     exampleData = false;
-                    data = "#" + data;
+                    StringBuilder externalString = new StringBuilder("#").append(data);
+                    data = externalString.toString();
                 } else if ((data.trim().startsWith("@") || data.trim().startsWith("Scenario")) && exampleData) {
                     exampleData = false;
                     fileData.addAll(staticDataExample);
@@ -153,9 +154,10 @@ public class FeatureOverwrite {
 
     private static List<String> impSetPaneOrCsvDataToFeature(final File featureFile) throws IOException {
         final List<String> fileData = new ArrayList<>();
-        try (BufferedReader buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
-             BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
-                StandardCharsets.UTF_8)) {
+        try (BufferedReader buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
+                StandardCharsets.UTF_8);
+                BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
+                        StandardCharsets.UTF_8)) {
             String data;
             String externalDataSt;
             final List<String> scenarios = new ArrayList<>();
@@ -181,7 +183,8 @@ public class FeatureOverwrite {
                                 numScenario);
                     }
                     numScenario++;
-                    data += " " + externalDataSt.trim();
+                    StringBuilder externalString = new StringBuilder(data).append(" ").append(externalDataSt.trim());
+                    data = externalString.toString();
                 }
                 fileData.add(data);
             }
@@ -210,7 +213,7 @@ public class FeatureOverwrite {
                 try {
                     buffReader.close();
                 } catch (IOException e) {
-                    logger.log(Level.WARNING,msgError,e);
+                    logger.log(Level.WARNING, msgError, e);
                 }
             }
         }
