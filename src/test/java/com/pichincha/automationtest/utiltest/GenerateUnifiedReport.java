@@ -18,9 +18,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+
 @Slf4j
 public class GenerateUnifiedReport {
     private GenerateUnifiedReport(){}
+
 
     public static void generateReport(String reportsOutputPath, String jsonResumePath, String nameJsonReport) throws IOException {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsOutputPath), new String[]{"json"}, true);
@@ -49,7 +51,7 @@ public class GenerateUnifiedReport {
         try {
             reader = new FileReader(filePath);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+
             log.error("ERROR en getReportJsonByFile al leer " + filePath + "\n" + e);
         }
         JSONParser jsonParser = new JSONParser();
@@ -57,7 +59,7 @@ public class GenerateUnifiedReport {
         try {
             jsonObject = (JSONArray) jsonParser.parse(reader);
         } catch (ParseException e) {
-            e.printStackTrace();
+
             log.error("ERROR en getReportJsonByFile al Parsear los datos " + reader + "\n" + e);
         }
         assert jsonObject != null;

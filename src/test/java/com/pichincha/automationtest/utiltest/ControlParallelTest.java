@@ -11,11 +11,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Slf4j
 public class ControlParallelTest {
       private ControlParallelTest(){}
     private static String externalDataSt ="RunnerEjecutandose";
+    private static String msgError = "ERROR: ";
+    private static Logger logger = Logger.getLogger(ControlParallelTest.class.getName());
     public static void setOrRemoveExecution(String addOrDeleteRunner ) throws IOException {
         File propertiesFile = new File(System.getProperty("user.dir") + "/src/test/resources/properties/parallelcontrol.properties");
         List<String> propertiesModified= addOrDeleteExecutioInProperties(propertiesFile, addOrDeleteRunner);
@@ -31,7 +35,7 @@ public class ControlParallelTest {
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING,msgError,e);
                 }
             }
         }
@@ -66,7 +70,7 @@ public class ControlParallelTest {
                 try {
                     buffReader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING,msgError,e);
                 }
             }
         }
@@ -97,7 +101,7 @@ public class ControlParallelTest {
                 try {
                     buffReader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING,msgError,e);
                 }
             }
         }

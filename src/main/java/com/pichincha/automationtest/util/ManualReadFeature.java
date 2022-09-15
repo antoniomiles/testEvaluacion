@@ -49,8 +49,8 @@ public class ManualReadFeature {
         if (numInitArrayReadCsv.equals("1")) {
             numScenario = numScenario + 1;
         }
-        try ( BufferedReader bfReader = new BufferedReader(
-                new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8));) {
+        try (BufferedReader bfReader = new BufferedReader(
+                new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8))) {
 
             while ((lineData = bfReader.readLine()) != null) {
                 String[] numberAndResultTest = lineData.split(",");
@@ -76,7 +76,7 @@ public class ManualReadFeature {
     public static List<String> readManualFeaturePassedOrdFailed(final File featureFile) throws IOException {
         final List<String> scenarios = new ArrayList<String>();
         try (BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
-        StandardCharsets.UTF_8);){
+                StandardCharsets.UTF_8)) {
             String passedFailedScenario = "";
             while ((passedFailedScenario = buffReaderScenario.readLine()) != null) {
                 if (passedFailedScenario.trim().contains("@manual-result:")

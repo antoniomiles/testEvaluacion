@@ -8,10 +8,16 @@ import net.thucydides.core.annotations.Step;
 import static com.pichincha.automationtest.userinterface.PaginaPrincipal.SELECTED_PRODUCT;
 import static com.pichincha.automationtest.userinterface.PaginaPrincipal.SELECT_TYPE_PRODUCT;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class BuscarProducto implements Task {
 
     private String descripcion;
+
+    Logger logger = Logger.getLogger(this.getClass().getName());
+
     public BuscarProducto(String descripcion) {
         this.descripcion = descripcion;
     }
@@ -30,8 +36,10 @@ public class BuscarProducto implements Task {
         try {
             Thread.sleep(1000L);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING,"ERROR: ",e);
             Thread.currentThread().interrupt();
+
         }
+
     }
 }

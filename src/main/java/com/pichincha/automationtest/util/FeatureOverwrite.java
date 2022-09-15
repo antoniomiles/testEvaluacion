@@ -13,16 +13,19 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Slf4j
 public class FeatureOverwrite {
-    private FeatureOverwrite() {
-    }
-
+    static Logger logger = Logger.getLogger(FeatureOverwrite.class.getName());
+    static String msgError = "ERROR: ";
     static PropertiesReader readProperties = new PropertiesReader();
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
-
     private static final Map<String, List<String>> currentFeatures = new HashMap<>();
+
+    private FeatureOverwrite() {
+    }
 
     public static void overwriteFeatureFileAdd(final String featureName) throws IOException {
         addExternalDataToFeature(featureName);
@@ -39,10 +42,24 @@ public class FeatureOverwrite {
 
         try (BufferedWriter writer = Files.newBufferedWriter(
                 Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8)) {
-            for (final String writeline : featureWithExternalData) {
-                writer.write(writeline);
+            for (final String writeLine : featureWithExternalData) {
+                writer.write(writeLine);
                 writer.write("\n");
             }
+        }
+    }
+
+    private static void externalDataProcess(String data, List<String> fileData) throws IOException {
+        String filePath = getValidFilePath(data);
+        List<Map<String, String>> externalData = getDataFromFile(
+                PathConstants.dataPath() + PathConstants.validatePath(filePath));
+        Collection<String> headers = externalData.get(0).keySet();
+        fileData.add(getGherkinExample(headers));
+        for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
+            Collection<String> rowValues = externalData.get(rowNumber).values();
+            String example = getGherkinExample(rowValues);
+            if (!"".equals(example))
+                fileData.add(example);
         }
     }
 
@@ -57,17 +74,7 @@ public class FeatureOverwrite {
             while ((data = buffReader.readLine()) != null) {
                 previousData.add(data);
                 if (data.trim().contains("@externaldata")) {
-                    String filePath = getValidFilePath(data);
-                    List<Map<String, String>> externalData = getDataFromFile(
-                            PathConstants.dataPath() + PathConstants.validatePath(filePath));
-                    Collection<String> headers = externalData.get(0).keySet();
-                    fileData.add(getGherkinExample(headers));
-                    for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
-                        Collection<String> rowValues = externalData.get(rowNumber).values();
-                        String example = getGherkinExample(rowValues);
-                        if (!"".equals(example))
-                            fileData.add(example);
-                    }
+                    externalDataProcess(data, fileData);
                     exampleData = false;
                     data = "#" + data;
                 } else if ((data.trim().startsWith("@") || data.trim().startsWith("Scenario")) && exampleData) {
@@ -137,8 +144,8 @@ public class FeatureOverwrite {
         }
         try (BufferedWriter writer = Files.newBufferedWriter(
                 Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8)) {
-            for (final String writeline : featureWithExternalData) {
-                writer.write(writeline);
+            for (final String writeLine : featureWithExternalData) {
+                writer.write(writeLine);
                 writer.write("\n");
             }
         }
@@ -146,64 +153,37 @@ public class FeatureOverwrite {
 
     private static List<String> impSetPaneOrCsvDataToFeature(final File featureFile) throws IOException {
         final List<String> fileData = new ArrayList<>();
-        BufferedReader buffReaderScenario = null;
-        BufferedReader buffReader = null;
-        try {
-            buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
-            buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
-                    StandardCharsets.UTF_8);
+        try (BufferedReader buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
+             BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
+                StandardCharsets.UTF_8)) {
             String data;
-            String externalDataSt = "";
-            final List<String> snarios = new ArrayList<>();
-            String nameScenario = "";
+            String externalDataSt;
+            final List<String> scenarios = new ArrayList<>();
+            String nameScenario;
             int numScenario = 0;
             String azureOrLocalExecution = variables.getProperty("execute");
             if (azureOrLocalExecution == null || azureOrLocalExecution.isEmpty()) {
                 azureOrLocalExecution = readProperties.getPropiedad("azure.or.local.execution");
             }
-            boolean foundHashTag = false;
             while ((nameScenario = buffReaderScenario.readLine()) != null) {
                 if (nameScenario.trim().contains("Scenario:")) {
-                    snarios.add(nameScenario);
+                    scenarios.add(nameScenario);
                 }
             }
             while ((data = buffReader.readLine()) != null) {
-                if (data.trim().contains("@manual-result:")) {
-                    foundHashTag = false;
-                }
-                if (data.trim().contains("@manual")) {
-                    foundHashTag = true;
-                    // fileData.add(data);
-                }
+                boolean foundHashTag = data.trim().contains("@manual") && !(data.trim().contains("@manual-result:"));
                 if (foundHashTag) {
                     if (azureOrLocalExecution.equalsIgnoreCase("azure")) {
                         externalDataSt = ManualReadFeature.setPassedOrFailedFromCSV(numScenario,
                                 readProperties.getPropiedad("path.data.passed.or.failed"));
                     } else {
-                        externalDataSt = ManualReadFeature.setPassedOrFailedFromPane(snarios.get(numScenario),
+                        externalDataSt = ManualReadFeature.setPassedOrFailedFromPane(scenarios.get(numScenario),
                                 numScenario);
                     }
                     numScenario++;
-                    fileData.add(data + " " + externalDataSt.trim());
-                    foundHashTag = false;
-                    continue;
+                    data += " " + externalDataSt.trim();
                 }
                 fileData.add(data);
-            }
-        } finally {
-            if (buffReader != null) {
-                try {
-                    buffReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-            if (buffReaderScenario != null) {
-                try {
-                    buffReaderScenario.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
         return fileData;
@@ -230,7 +210,7 @@ public class FeatureOverwrite {
                 try {
                     buffReader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING,msgError,e);
                 }
             }
         }

@@ -9,7 +9,7 @@ import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
 
 public class AttachScreenshot extends AttachScreenshotToScenario {
-    Logger logger = Logger.getLogger(AttachScreenshot.class.getName());
+    Logger logger = Logger.getLogger(this.getClass().getName());
 
     @After @AfterStep("not @manual")
     public void attachScreenshotJsonReportForScenario(Scenario scenario) {

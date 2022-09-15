@@ -6,12 +6,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CSVReader {
     private CSVReader(){}
 
     private static final char DEFAULT_SEPARATOR = ',';
     private static final char DEFAULT_QUOTE = '"';
+    private static Logger logger = Logger.getLogger(CSVReader.class.getName());
+
 
     public static List<Map<String, String>> getData(final String filePath) throws IOException {
         List<Map<String, String>> rowsData = new ArrayList<>();
@@ -42,7 +46,7 @@ public class CSVReader {
                 try {
                     bfReader.close();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.log(Level.WARNING,"ERROR: ",e);
                 }
             }
         }

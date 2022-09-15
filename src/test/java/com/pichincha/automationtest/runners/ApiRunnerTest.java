@@ -18,8 +18,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ApiRunnerTest {
+    private static Logger logger = Logger.getLogger(ApiRunnerTest.class.getName());
     @Test
     public void testparallel() throws IOException {
         Runner.path("src/test/resources/features/").tags("@karate").outputCucumberJson(true).parallel(5);
@@ -51,14 +54,14 @@ public class ApiRunnerTest {
         try {
             reader = new FileReader(filePath);
         } catch (FileNotFoundException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING,"ERROR: ",e);
         }
         JSONParser jsonParser = new JSONParser();
         JSONArray jsonObject = null;
         try {
             jsonObject = (JSONArray) jsonParser.parse(reader);
         } catch (ParseException e) {
-            e.printStackTrace();
+            logger.log(Level.WARNING,"ERROR: ",e);
         }
         return jsonObject.get(0);
     }
