@@ -55,14 +55,18 @@ public class ManualReadFeature {
             bfReader = new BufferedReader(new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8));
             while ((lineData = bfReader.readLine()) != null) {
                 String[] numberAndResultTest = lineData.split(",");
+
                 String columnOne=numberAndResultTest[0];
                 if (columnOne.equalsIgnoreCase(String.valueOf(numScenario))){
-                    if(lineData.trim().contains("failed")){
-                        statusExecution="  @manual-result:failed";
-                        break;
-                    }else if(lineData.trim().contains("passed")){
-                        statusExecution="  @manual-result:passed";
-                        break;
+                    switch (numberAndResultTest[1].toLowerCase()) {
+                        case "failed":
+                            statusExecution="  @manual-result:failed";
+                            break;
+                        case "passed":
+                            statusExecution="  @manual-result:passed";
+                            break;
+                        default:
+                            break;
                     }
                     else {
                         throw new IllegalStateException();
@@ -110,7 +114,7 @@ public class ManualReadFeature {
             status= "PASSED";
         }else if(passedOrdFailed.contains("failed")){
             status= "FAILED";
-        }else if(passedOrdFailed.contains("EstadoScenarioNoDefinido")){
+        }else{
             status= "PENDING";
         }
         else {

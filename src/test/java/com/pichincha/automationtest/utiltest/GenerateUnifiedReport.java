@@ -29,9 +29,7 @@ public class GenerateUnifiedReport {
         jsonFiles.forEach(file -> {
             JSONArray jsonContent = getReportJsonByFile(file.getAbsolutePath());
             if (jsonContent != null){
-                jsonContent.forEach(content -> {
-                    reportJson.add(content);
-                });
+                jsonContent.forEach(content -> reportJson.add(content));
             }
             jsonPaths.add(file.getAbsolutePath());
         });
@@ -77,7 +75,7 @@ public class GenerateUnifiedReport {
             File pathFolderCucmber = new File(pathCucumber);
             boolean existFolderCucumber = Files.exists(Paths.get(pathCucumber));
             if (!existFolderCucumber) {
-                existFolderCucumber = pathFolderCucmber.mkdir();
+                pathFolderCucmber.mkdir();
             }
         }
         if (!existFolderReport) {

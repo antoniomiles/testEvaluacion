@@ -49,7 +49,7 @@ public class ControlParallelTest {
                     fileData.add(data);
                 }
                 fileData.add(externalDataSt);
-            }else if (addOrDelete.equals("delete")){
+            }else {
                 int cont=0;
                 while ((data = buffReader.readLine()) != null) {
                     if(data.contains(externalDataSt)){
