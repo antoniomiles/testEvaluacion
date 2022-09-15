@@ -42,10 +42,11 @@ public class PathConstants {
         return DATA_PATH;
     }
     public static String validatePath(String path) {
-        List<String> caractersSeparator = Arrays.asList(new String[]{"/", "\\", "-"});
-        for (String caracter: caractersSeparator) {
-            if (path.contains(caracter)){
-                path = path.replace(caracter, File.separator);
+        String[] separators = {"/", "\\", "-"};
+
+        for (String separator: separators) {
+            if (path.contains(separator)){
+                path = path.replace(separator, File.separator);
                 break;
             }
         }
