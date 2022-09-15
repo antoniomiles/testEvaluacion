@@ -16,14 +16,14 @@ fs.readFile('./keysResponse.json', 'utf8', (err, data) => {
     keys = keys.substring(0, keys.length-1)
     ids = ids.substring(0, ids.length-1)
 
-    fs.writeFile('./keys.txt', keys, err => {
-        if (err) {
-          console.error(err);
+    fs.writeFile('./keys.txt', keys, error => {
+        if (error) {
+          console.error(error);
         }
     });
-    fs.writeFile('./ids.txt', ids, err => {
-        if (err) {
-          console.error(err);
+    fs.writeFile('./ids.txt', ids, error => {
+        if (error) {
+          console.error(error);
         }
     });
 });

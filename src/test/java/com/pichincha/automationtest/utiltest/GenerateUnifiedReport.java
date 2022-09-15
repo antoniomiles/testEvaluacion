@@ -20,6 +20,7 @@ import java.util.List;
 
 @Slf4j
 public class GenerateUnifiedReport {
+    private GenerateUnifiedReport(){}
 
     public static void generateReport(String reportsOutputPath, String jsonResumePath, String nameJsonReport) throws IOException {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsOutputPath), new String[]{"json"}, true);
