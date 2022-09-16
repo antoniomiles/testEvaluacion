@@ -22,7 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ApiRunnerTest {
-    private static Logger logger = Logger.getLogger(ApiRunnerTest.class.getName());
+    private static final Logger logger = Logger.getLogger(ApiRunnerTest.class.getName());
+    private static final String ERROR_MSG = "ERROR: ";
     @Test
     public void testparallel() throws IOException {
         Runner.path("src/test/resources/features/").tags("@karate").outputCucumberJson(true).parallel(5);
@@ -50,19 +51,13 @@ public class ApiRunnerTest {
     }
 
     public static Object getReportJsonByFile(String filePath) {
-        FileReader reader = null;
-        try {
-            reader = new FileReader(filePath);
-        } catch (FileNotFoundException e) {
-            logger.log(Level.WARNING,"ERROR: ",e);
+        Object jsonReport = null;
+        try (FileReader reader = new FileReader(filePath)){
+            JSONArray jsonArray = (JSONArray) new JSONParser().parse(reader);
+            if (!jsonArray.isEmpty()) jsonReport = jsonArray.get(0);
+        } catch (IOException|ParseException e) {
+            logger.log(Level.WARNING,ERROR_MSG,e);
         }
-        JSONParser jsonParser = new JSONParser();
-        JSONArray jsonObject = null;
-        try {
-            jsonObject = (JSONArray) jsonParser.parse(reader);
-        } catch (ParseException e) {
-            logger.log(Level.WARNING,"ERROR: ",e);
-        }
-        return jsonObject.get(0);
+        return jsonReport;
     }
 }
