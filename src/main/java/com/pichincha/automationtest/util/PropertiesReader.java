@@ -13,16 +13,17 @@ public class PropertiesReader {
     public String getPropiedad(String atributopro) {
         InputStream archivoProp = null;
         try {
-            archivoProp = PropertiesReader.class.getClassLoader().getResourceAsStream("properties/manualtest.properties");
+            archivoProp = PropertiesReader.class.getClassLoader()
+                    .getResourceAsStream("properties/manualtest.properties");
             this.proper.load(archivoProp);
         } catch (IOException e) {
-            logger.log(Level.WARNING,"ERROR: ",e);
+            logger.log(Level.WARNING, "ERROR: ", e);
         } finally {
             if (archivoProp != null) {
                 try {
                     archivoProp.close();
                 } catch (IOException e) {
-                    logger.log(Level.WARNING,"ERROR: ",e);
+                    logger.log(Level.WARNING, "ERROR: ", e);
                 }
             }
         }

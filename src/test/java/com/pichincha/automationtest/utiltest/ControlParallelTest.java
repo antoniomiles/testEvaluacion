@@ -16,13 +16,17 @@ import java.util.logging.Logger;
 
 @Slf4j
 public class ControlParallelTest {
-      private ControlParallelTest(){}
-    private static String externalDataSt ="RunnerEjecutandose";
+    private ControlParallelTest() {
+    }
+
+    private static String externalDataSt = "RunnerEjecutandose";
     private static String msgError = "ERROR: ";
     private static Logger logger = Logger.getLogger(ControlParallelTest.class.getName());
-    public static void setOrRemoveExecution(String addOrDeleteRunner ) throws IOException {
-        File propertiesFile = new File(System.getProperty("user.dir") + "/src/test/resources/properties/parallelcontrol.properties");
-        List<String> propertiesModified= addOrDeleteExecutioInProperties(propertiesFile, addOrDeleteRunner);
+
+    public static void setOrRemoveExecution(String addOrDeleteRunner) throws IOException {
+        File propertiesFile = new File(
+                System.getProperty("user.dir") + "/src/test/resources/properties/parallelcontrol.properties");
+        List<String> propertiesModified = addOrDeleteExecutioInProperties(propertiesFile, addOrDeleteRunner);
         BufferedWriter writer = null;
         try {
             writer = Files.newBufferedWriter(Paths.get(propertiesFile.getAbsolutePath()), StandardCharsets.UTF_8);
@@ -35,42 +39,42 @@ public class ControlParallelTest {
                 try {
                     writer.close();
                 } catch (IOException e) {
-                    logger.log(Level.WARNING,msgError,e);
+                    logger.log(Level.WARNING, msgError, e);
                 }
             }
         }
     }
 
-    private static List<String> addOrDeleteExecutioInProperties(final File featureFile, String addOrDelete) throws IOException {
+    private static List<String> addOrDeleteExecutioInProperties(final File featureFile, String addOrDelete)
+            throws IOException {
         final List<String> fileData = new ArrayList<String>();
         BufferedReader buffReader = null;
         try {
             buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
             String data;
 
-            if (addOrDelete.equals("add")){
+            if (addOrDelete.equals("add")) {
                 while ((data = buffReader.readLine()) != null) {
                     fileData.add(data);
                 }
                 fileData.add(externalDataSt);
-            }else {
-                int cont=0;
+            } else {
+                int cont = 0;
                 while ((data = buffReader.readLine()) != null) {
-                    if(data.contains(externalDataSt)){
+                    if (data.contains(externalDataSt)) {
                         cont++;
                     }
-                    if (cont!=1){
+                    if (cont != 1) {
                         fileData.add(data);
                     }
                 }
             }
-        }
-        finally {
+        } finally {
             if (buffReader != null) {
                 try {
                     buffReader.close();
                 } catch (IOException e) {
-                    logger.log(Level.WARNING,msgError,e);
+                    logger.log(Level.WARNING, msgError, e);
                 }
             }
         }
@@ -79,29 +83,30 @@ public class ControlParallelTest {
 
     public static boolean validateExecution() {
         boolean delete = false;
-        File featureFile = new File(System.getProperty("user.dir") + "/src/test/resources/properties/parallelcontrol.properties");
+        File featureFile = new File(
+                System.getProperty("user.dir") + "/src/test/resources/properties/parallelcontrol.properties");
         BufferedReader buffReader = null;
-        try{
-            buffReader =Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
+        try {
+            buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
             String data;
-            int cont=0;
+            int cont = 0;
             while ((data = buffReader.readLine()) != null) {
-                if(data.contains(externalDataSt)){
+                if (data.contains(externalDataSt)) {
                     cont++;
                 }
             }
-            if (cont==1){
-                delete=true;
+            if (cont == 1) {
+                delete = true;
             }
 
-        }catch (IOException e){
-            log.error("error al leer properties parallelcontrol.properties "+"\n"+e.getMessage(), e);
-        }finally {
+        } catch (IOException e) {
+            log.error("error al leer properties parallelcontrol.properties " + "\n" + e.getMessage(), e);
+        } finally {
             if (buffReader != null) {
                 try {
                     buffReader.close();
                 } catch (IOException e) {
-                    logger.log(Level.WARNING,msgError,e);
+                    logger.log(Level.WARNING, msgError, e);
                 }
             }
         }

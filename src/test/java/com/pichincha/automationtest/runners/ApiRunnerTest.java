@@ -10,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,6 +23,7 @@ import java.util.logging.Logger;
 public class ApiRunnerTest {
     private static final Logger logger = Logger.getLogger(ApiRunnerTest.class.getName());
     private static final String ERROR_MSG = "ERROR: ";
+    
     @Test
     public void testparallel() throws IOException {
         Runner.path("src/test/resources/features/").tags("@karate").outputCucumberJson(true).parallel(5);

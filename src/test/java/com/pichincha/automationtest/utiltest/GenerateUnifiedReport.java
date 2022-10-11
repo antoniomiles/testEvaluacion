@@ -18,19 +18,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-
 @Slf4j
 public class GenerateUnifiedReport {
-    private GenerateUnifiedReport(){}
+    private GenerateUnifiedReport() {
+    }
 
-
-    public static void generateReport(String reportsOutputPath, String jsonResumePath, String nameJsonReport) throws IOException {
-        Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsOutputPath), new String[]{"json"}, true);
+    public static void generateReport(String reportsOutputPath, String jsonResumePath, String nameJsonReport)
+            throws IOException {
+        Collection<File> jsonFiles = FileUtils.listFiles(new File(reportsOutputPath), new String[] { "json" }, true);
         List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
         JSONArray reportJson = new JSONArray();
         jsonFiles.forEach(file -> {
             JSONArray jsonContent = getReportJsonByFile(file.getAbsolutePath());
-            if (jsonContent != null){
+            if (jsonContent != null) {
                 jsonContent.forEach(content -> reportJson.add(content));
             }
             jsonPaths.add(file.getAbsolutePath());
@@ -42,7 +42,7 @@ public class GenerateUnifiedReport {
             ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
             reportBuilder.generateReports();
         } else {
-            log.error("No se pudo crear el path"+ jsonResumePath+" para el reporte.");
+            log.error("No se pudo crear el path" + jsonResumePath + " para el reporte.");
         }
     }
 
@@ -63,7 +63,7 @@ public class GenerateUnifiedReport {
             log.error("ERROR en getReportJsonByFile al Parsear los datos " + reader + "\n" + e);
         }
         assert jsonObject != null;
-        if (jsonObject.size()!=0){
+        if (jsonObject.size() != 0) {
             return jsonObject;
         }
         return null;
@@ -86,5 +86,3 @@ public class GenerateUnifiedReport {
         return existFolderReport;
     }
 }
-
-

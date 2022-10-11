@@ -2,16 +2,21 @@ name: $(SourceBranchName)-$(Date:yyyyMMdd)$(Rev:.r)
 
 resources:
   repositories:
-  - repository: jira-utils-repo
+  - repository: self
+  - repository: qa-pipeline-templates
     type: git
-    name: BP-Quality-Management/sqa-aut-arq-jira-nodejs
-    ref: develop
+    name: BP-DevOps-Infrastructure/common-pipeline-template-sqa
+    ref: master
+  - repository: qa-utils-templates
+    type: git
+    name: BP-Quality-Management/common-pipeline-template-sqa
+    ref: master
 
 trigger:
   - master
 
 parameters:
-  - name: Flujo
+  - name: FLUJO
     displayName: 'Flujo a ejecutar'
     default: TodosWeb
     values:
@@ -25,7 +30,7 @@ parameters:
       - ParallelTest
       - RestAssuredApi
       
-  - name: Tipotest
+  - name: TIPO_TEST
     displayName: 'Elija el tipo de test'
     default: cucumber   
     values:
@@ -33,175 +38,12 @@ parameters:
       - karate
 
 variables:
-  - name: jira-utils-repo
-    value: sqa-aut-arq-jira-nodejs
-  - name: flow
-    value: ${{parameters.Flujo}}
   - group: USUARIO_GENERICO
   - group: JIRA_AUTOMATIZACION
-          
+  - group: SONAR2
+           
 stages:
-  - stage: staticanalysis
-    variables:
-      - group: SONAR2
-      - name: branchName
-        ${{ if contains(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
-          value: master
-        ${{ else }}:
-          value: $[replace(variables['Build.SourceBranch'], 'refs/heads/', '')]
-          
-    jobs:
-    - job:
-      steps: 
-      - task: SonarSource.sonarcloud.14d9cde6-c1da-4d55-aa01-2965cd301255.SonarCloudPrepare@1
-        displayName: 'Prepare analysis on SonarCloud'
-        inputs:
-          SonarCloud: 'sonarcloud'
-          organization: 'bancopichinchaec'
-          scannerMode: CLI
-          extraProperties: |
-            # Additional properties that will be passed to the scanner, 
-            # Put one key=value per line, example:
-            # sonar.exclusions=**/*.bin
-            sonar.projectKey=$(Build.Repository.Name)
-            sonar.projectName=$(Build.Repository.Name)
-            sonar.branch.name=$(branchName)
-            #sonar.language=js
-            sonar.sources=.
-            sonar.java.binaries=.
-            sonar.sourceEncoding=UTF-8 
-
-      - task: SonarSource.sonarcloud.ce096e50-6155-4de8-8800-4221aaeed4a1.SonarCloudAnalyze@1
-        displayName: 'Run Code Analysis'
-
-      - task: SonarSource.sonarcloud.38b27399-a642-40af-bb7d-9971f69712e8.SonarCloudPublish@1
-        displayName: 'Publish Quality Gate Result'
-
-      - task: SimondeLang.sonarcloud-buildbreaker.sonar-buildbreaker.sonarcloud-buildbreaker@2
-        displayName: 'Break build on quality gate failure'
-        inputs:
-          SonarCloud: 'sonarcloud'
-          organization: bancopichinchaec  
-
-  - stage: Pre_Test_Jira_Integration
-    jobs:
-    - job: Import
-      displayName: Jira XRAY Import Test
-      steps:
-      - checkout: self
-      - checkout: jira-utils-repo
-      - task: CmdLine@2
-        displayName: 'Send feature to Jira'
-        inputs:
-          script: |            
-            cd $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/
-            zip -r features.zip features
-            token=$(curl -H "Content-Type: application/json" -X POST --data '{ "client_id": "$(id_xray_usuario_generico)","client_secret": "$(clave_secreta_usuario_generico)" }' $(XRAY-REST-API-URL)/api/v1/authenticate | tr -d '"')
-            sprintId=$(curl --request GET --url "$(url_api_jira)/agile/1.0/board/$(boardId)/sprint?state=active" --user "$(user_jira):$(token_jira)" --header "Accept: application/json" | jq ' .values[] | select((.state=="active") and (.originBoardId==$(boardId))) | .id')
-            echo "{\"fields\":{\"assignee\":{\"id\":\"$(assigneeId)\"},\"customfield_10021\":$sprintId}}" > testInfo.json
-            curl -k -H "Content-Type: multipart/form-data" -X POST -H "Authorization: Bearer $token" -F "precondInfo=@testInfo.json" -F "testInfo=@testInfo.json" -F "file=@features.zip" $(XRAY-REST-API-URL)/api/v1/import/feature?projectKey=$(projectKey) > keysResponse.json
-            node $(system.defaultworkingdirectory)/$(Build.Repository.Name)/utils/parser.js
-            cucumberKeys=$(cat keys.txt)
-            echo $cucumberKeys
-            curl -k -H "Content-Type: application/json" -X GET -H "Authorization: Bearer $token" "$(XRAY-REST-API-URL)/api/v1/export/cucumber?keys=$cucumberKeys" > test.zip
-            echo "##vso[task.setvariable variable=sprintId;]$sprintId"
-            echo "##vso[task.setvariable variable=token;]$token"
-
-      - task: CmdLine@2
-        displayName: 'Add Tests to Test Plan'
-        inputs:
-          script: |
-            npm i node-fetch@2 -g
-            export NODE_PATH=/usr/local/lib/node_modules
-            cucumberIds=$(cat $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/ids.txt)
-            node -e "require('$(system.defaultworkingdirectory)/$(jira-utils-repo)/utils/bugsTransitionsHandler.js').testCasesToPlan({projectKey:'$(projectKey)',apiURL:'$(url_api_jira)',auth:'$(user_jira):$(token_jira)',token:'$(token)',assigneeId:'$(assigneeId)',sprintId:$(sprintId),testCasesIds:[$cucumberIds]})"    
-
-      - task: CmdLine@2
-        displayName: 'Move temporary files to a "Temporales" folder'
-        inputs:
-          script: |
-            cd $(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/
-            mkdir Temporales featuresJira
-            mv test.zip featuresJira
-            mv *.txt *.json *.zip ./Temporales
-            mv featuresJira ./Temporales
-
-      - task: PublishBuildArtifacts@1
-        displayName: 'Publish "Temporales" folder in Artifacts'
-        continueOnError: true
-        condition: succeededOrFailed()
-        inputs:
-          PathtoPublish: '$(system.defaultworkingdirectory)/$(Build.Repository.Name)/src/test/resources/Temporales'
-          ArtifactName: 'Temporales'
-          publishLocation: 'Container'
-
-
-  - stage: build
-    dependsOn: Pre_Test_Jira_Integration
-    jobs:
-    - job: gradle_build
-      displayName: Gradle Build
-      pool:
-        name: 'BancoPichinchaDevOps'
-        demands:
-          - agent.name -equals AutomationSQA
-      steps:
-      - task: Gradle@2
-        displayName: gradlew build
-        inputs:
-          wrapperScript: gradlew
-          tasks: build -x test
-
-  - template: azure-pipelines-template.yml
+  - template: serenity/init.yml@qa-pipeline-templates
     parameters:
-      StageName: TodosWeb
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.runners.WebRunnerTest"
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: TodosAPI
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "com.pichincha.automationtest.runners.ApiRunnerTest"
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: SauceDemoLogin
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@login" com.pichincha.automationtest.runners.WebRunnerTest
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: SimulacionCompraTelefono
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@CompraTelefono" com.pichincha.automationtest.runners.WebRunnerTest
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: BancaMovil
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @BancaMovil" "com.pichincha.automationtest.runners.ApiRunnerTest"
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: TCS
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "-Dkarate.options=--tags @TCS" "com.pichincha.automationtest.runners.ApiRunnerTest"
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: ManualTest
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests "-Dcucumber.filter.tags=@ManualTest" "com.pichincha.automationtest.runners.WebRunnerTest" -Dexecute="azure"
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: ParallelTest
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test -PmaxParallelForks=4 --tests "com.pichincha.automationtest.runners.parallel.*" aggregate -i
-
-  - template: azure-pipelines-template.yml
-    parameters:
-      StageName: RestAssuredApi
-      StageTipo: ${{parameters.Tipotest}}
-      GradlewCommand: ./gradlew clean test --tests -Dcucumber.filter.tags="@DemoblazeAPIRestAssured " com.pichincha.automationtest.runners.WebRunnerTest
+      FLUJO: ${{parameters.FLUJO}}
+      TIPO_TEST: ${{parameters.TIPO_TEST}}

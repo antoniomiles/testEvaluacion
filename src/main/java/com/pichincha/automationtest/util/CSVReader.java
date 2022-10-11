@@ -70,9 +70,12 @@ public class CSVReader {
         List<String> result = new ArrayList<>();
 
         // if empty, return!
-        if (csvLine.isEmpty()) return result;
-        if (customQuote == ' ') customQuote = DEFAULT_QUOTE;
-        if (separators == ' ') separators = DEFAULT_SEPARATOR;
+        if (csvLine.isEmpty())
+            return result;
+        if (customQuote == ' ')
+            customQuote = DEFAULT_QUOTE;
+        if (separators == ' ')
+            separators = DEFAULT_SEPARATOR;
 
         StringBuilder separateWords = new StringBuilder();
         boolean inQuotes = false;

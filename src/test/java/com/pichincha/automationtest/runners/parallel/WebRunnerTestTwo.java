@@ -12,18 +12,21 @@ import java.io.IOException;
 
 @RunWith(CustomCucumberWithSerenityRunner.class)
 @CucumberOptions(
-        features = "src/test/resources/features/",
-        glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
-        plugin = "json:build/cucumberreportstest/cucumberParallel2.json",
-        tags = "@R2 and not @karate and not @ManualTest"
-)
+    features = "src/test/resources/features/", 
+    glue = { "com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue" }, 
+    plugin = "json:build/cucumberreportstest/cucumberParallel2.json", 
+    tags = "@R2 and not @karate and not @ManualTest")
+    
 public class WebRunnerTestTwo {
-    private WebRunnerTestTwo(){}
+    private WebRunnerTestTwo() {
+    }
+
     @BeforeSuite
     public static void init() throws InterruptedException, IOException, InvalidFormatException {
         Thread.sleep(2000);
         ControlParallelTest.setOrRemoveExecution("add");
     }
+
     @AfterSuite
     public static void after() throws IOException, InvalidFormatException {
         ControlParallelTest.setOrRemoveExecution("delete");

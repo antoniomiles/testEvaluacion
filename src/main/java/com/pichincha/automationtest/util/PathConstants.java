@@ -6,7 +6,8 @@ import net.thucydides.core.util.SystemEnvironmentVariables;
 import java.io.File;
 
 public class PathConstants {
-    private PathConstants(){}
+    private PathConstants() {
+    }
 
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
 
@@ -19,9 +20,11 @@ public class PathConstants {
             + "data" + File.separator;
 
     /**
-     * Evalua si la ruta de los archivos features se encuentra parametrizada en el archivo serenity.properties
+     * Evalua si la ruta de los archivos features se encuentra parametrizada en el
+     * archivo serenity.properties
      * De lo contrario, tomara el valor por defecto de la variable
      * FEATURE_PATH: "src/test/resources/features/"
+     * 
      * @return El valor de la ruta contenedora de los features
      */
     public static String featurePath() {
@@ -31,9 +34,11 @@ public class PathConstants {
     }
 
     /**
-     * Evalua si la ruta de los archivos de data (.csv) se encuentra parametrizada en la propiedad "data.path" en el archivo serenity.properties
+     * Evalua si la ruta de los archivos de data (.csv) se encuentra parametrizada
+     * en la propiedad "data.path" en el archivo serenity.properties
      * De lo contrario, tomara el valor por defecto de la variable
      * DATA_PATH: "src/test/resources/data/"
+     * 
      * @return El valor de la ruta contenedora de los features
      */
     public static String dataPath() {
@@ -41,11 +46,12 @@ public class PathConstants {
             return variables.getProperty("data.path");
         return DATA_PATH;
     }
-    public static String validatePath(String path) {
-        String[] separators = {"/", "\\", "-"};
 
-        for (String separator: separators) {
-            if (path.contains(separator)){
+    public static String validatePath(String path) {
+        String[] separators = { "/", "\\", "-" };
+
+        for (String separator : separators) {
+            if (path.contains(separator)) {
                 path = path.replace(separator, File.separator);
                 break;
             }

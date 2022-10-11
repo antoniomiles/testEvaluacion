@@ -11,10 +11,11 @@ import io.cucumber.java.Scenario;
 public class AttachScreenshot extends AttachScreenshotToScenario {
     Logger logger = Logger.getLogger(this.getClass().getName());
 
-    @After @AfterStep("not @manual")
+    @After
+    @AfterStep("not @manual")
     public void attachScreenshotJsonReportForScenario(Scenario scenario) {
-        boolean isManualScenario=false;
-        if(scenario.isFailed()){
+        boolean isManualScenario = false;
+        if (scenario.isFailed()) {
             try {
                 String[] tagsScenario = scenario.getSourceTagNames().toArray(new String[0]);
                 for (String lineTag : tagsScenario) {
@@ -23,13 +24,13 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
                         break;
                     }
                 }
-                if(isManualScenario){
+                if (isManualScenario) {
                     addScreenshotManualTest(scenario);
-                }else {
+                } else {
                     addScreenshot(scenario);
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING,"ERROR: al adjuntar imagen al reporte JSON generado por cucumber:",e);
+                logger.log(Level.WARNING, "ERROR: al adjuntar imagen al reporte JSON generado por cucumber:", e);
 
             }
         }

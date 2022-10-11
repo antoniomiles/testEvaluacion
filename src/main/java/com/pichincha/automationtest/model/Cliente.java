@@ -4,7 +4,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class Cliente {
     private String nombre;
     private String ciudad;
@@ -13,7 +15,8 @@ public class Cliente {
     private String mesVencimiento;
     private String anioVencimiento;
 
-    public Cliente(String nombre, String ciudad, String pais, String numeroTarjeta, String mesVencimiento, String anioVencimiento){
+    public Cliente(String nombre, String ciudad, String pais, String numeroTarjeta, String mesVencimiento,
+            String anioVencimiento) {
         this.nombre = nombre;
         this.ciudad = ciudad;
         this.pais = pais;

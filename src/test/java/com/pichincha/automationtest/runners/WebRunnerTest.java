@@ -17,10 +17,12 @@ import java.io.IOException;
         plugin = "json:build/cucumber-reports/json/cucumber.json",
         tags = "not @karate and not @ManualTest "
 )
-public class WebRunnerTest {
 
+public class WebRunnerTest {
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
-    private WebRunnerTest(){}
+
+    private WebRunnerTest() {
+    }
 
     private static String allFeatures = "todos";
     private static String extensionFeature = ".feature";
