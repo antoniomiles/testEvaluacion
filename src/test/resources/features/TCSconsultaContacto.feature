@@ -1,7 +1,7 @@
-@REQ_PQBP-556 
+@REQ_PQBP-556 @TCS
 Feature: Consulta servicio WSClientes0007
 
-  @id:1 @Consulcontacto @TCS @karate
+  @id:1 @Consulcontacto @karate
   Scenario: T-API-PQBP-556-CA1- Consulta contacto transaccional WSClientes0007
     * header authorization = 'Basic YmpqYXJhOnBpY2hpbmNoYTE='
     * header content-type = 'application/json'

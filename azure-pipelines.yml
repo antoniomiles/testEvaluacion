@@ -22,7 +22,7 @@ parameters:
     values:
       - TodosWeb
       - TodosAPI
-      - SauceDemoLogin
+      - Saucedemo
       - SimulacionCompraTelefono
       - BancaMovil
       - TCS
@@ -40,6 +40,7 @@ parameters:
 variables:
   - group: USUARIO_GENERICO
   - group: JIRA_AUTOMATIZACION
+  - group: VARIABLES_TEST
   - group: SONAR2
            
 stages:
@@ -47,3 +48,4 @@ stages:
     parameters:
       FLUJO: ${{parameters.FLUJO}}
       TIPO_TEST: ${{parameters.TIPO_TEST}}
+      TEST_EXTRA_PARAMETERS: ""

@@ -1,4 +1,4 @@
-@REQ_PQBP-110 @SimulacionCompraTelefonoTng @cucumber @R2
+@REQ_PQBP-110 @SimulacionCompraTelefono @cucumber @R2
 Feature: Simulacion de la Compra de telefonos
   Ejecutar una simulacion de la compra de telefonos
 

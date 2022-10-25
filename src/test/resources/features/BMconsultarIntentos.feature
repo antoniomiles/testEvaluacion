@@ -1,6 +1,6 @@
-@REQ_PQBP-557
+@REQ_PQBP-557 @BancaMovil
 Feature: Consulta Intentos
-  @id:1 @BancaMovil @Consultaintentos @karate
+  @id:1 @Consultaintentos @karate
   Scenario: T-API-PQBP-557-CA1- Consulta Intentos
     * header content-type = 'application/json'
     Given url 'https://app-security-username-attempts-dot-pmovil-app-test.ue.r.appspot.com/app/security/biometric/identification/attempts/v1'

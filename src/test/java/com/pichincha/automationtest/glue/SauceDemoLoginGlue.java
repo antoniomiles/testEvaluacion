@@ -3,6 +3,7 @@ package com.pichincha.automationtest.glue;
 import com.pichincha.automationtest.tasks.IniciaSesion;
 import com.pichincha.automationtest.userinterface.SauceDemoLogin;
 import com.pichincha.automationtest.userinterface.SauceDemoProducts;
+import com.pichincha.automationtest.util.EnvProperties;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
