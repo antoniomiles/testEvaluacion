@@ -30,6 +30,7 @@ parameters:
       - ManualTest
       - ParallelTest
       - RestAssuredApi
+      - Database
       
   - name: TIPO_TEST
     displayName: 'Elija el tipo de test'
@@ -43,6 +44,7 @@ variables:
   - group: JIRA_AUTOMATIZACION
   - group: VARIABLES_TEST
   - group: SONAR2
+  - group: VARIABLES_TEST_SERENITY
            
 stages:
   - template: serenity/init.yml@qa-pipeline-templates

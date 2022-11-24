@@ -3,6 +3,7 @@ package com.pichincha.automationtest.runners;
 import com.intuit.karate.Runner;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
+import net.masterthought.cucumber.Reportable;
 import net.minidev.json.JSONArray;
 import net.minidev.json.parser.JSONParser;
 import net.minidev.json.parser.ParseException;
@@ -19,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static org.junit.Assert.assertNotNull;
 
 public class ApiRunnerTest {
     private static final Logger logger = Logger.getLogger(ApiRunnerTest.class.getName());
@@ -28,10 +30,11 @@ public class ApiRunnerTest {
     public void testparallel() throws IOException {
         Runner.path("src/test/resources/features/").tags("@karate").outputCucumberJson(true).parallel(5);
         String karateOutputPath = "build/karate-reports";
-        generateReport(karateOutputPath);
+        Reportable report = generateReport(karateOutputPath);
+        assertNotNull(report);
     }
 
-    public static void generateReport(String karateOutputPath) throws IOException {
+    public static Reportable generateReport(String karateOutputPath) throws IOException {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(karateOutputPath), new String[]{"json"}, true);
         List<String> jsonPaths = new ArrayList<>(jsonFiles.size());
         JSONArray karateJson = new JSONArray();
@@ -47,7 +50,8 @@ public class ApiRunnerTest {
         Files.write(Paths.get(karateResumePath + "/karate.json"), karateJson.toJSONString().getBytes());
         Configuration config = new Configuration(new File("build"), "Banca Movil");
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
-        reportBuilder.generateReports();
+        Reportable report = reportBuilder.generateReports();
+        return report;
     }
 
     public static Object getReportJsonByFile(String filePath) {

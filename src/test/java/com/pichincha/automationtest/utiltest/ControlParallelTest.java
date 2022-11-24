@@ -47,7 +47,7 @@ public class ControlParallelTest {
 
     private static List<String> addOrDeleteExecutioInProperties(final File featureFile, String addOrDelete)
             throws IOException {
-        final List<String> fileData = new ArrayList<String>();
+        final List<String> fileData = new ArrayList<>();
         BufferedReader buffReader = null;
         try {
             buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);

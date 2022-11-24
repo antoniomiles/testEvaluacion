@@ -12,7 +12,7 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
     Logger logger = Logger.getLogger(this.getClass().getName());
 
     @After
-    @AfterStep("not @manual")
+    @AfterStep("not @manual and not @Database")
     public void attachScreenshotJsonReportForScenario(Scenario scenario) {
         boolean isManualScenario = false;
         if (scenario.isFailed()) {
