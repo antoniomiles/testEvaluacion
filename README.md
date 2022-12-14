@@ -83,6 +83,8 @@ Para ejecutar los  enviando variables de ambiente
 > * Para ejecutar el proyecto se necesita Java JDK 1.8 y Gradle con la versión 4.10.2 o superior.
 > * Otra alternativa para no instalar gradle es usar el comando gradlew al momento de ejecutar el proyecto como se muestro anteriormente.
 > * En caso de tener problemas con el web driver por la versión del google chrome, realizar el cambio del web driver (descarga) por una versión compatible con el google chrome instalado. tener en cuenta que la  ruta del web driver en el proyecto es \src\test\resources\drivers
+> * Para las pruebas E2E, el reporte serenity se genera en la ruta **target/site/serenity/index.html**, los reportes cucumber se generan en la carpeta **build/cucumber-reports/json**, el archivo **cucumber.json**
+> * Para las pruebas API, el reporte se genera en la ruta **build/karate-reports**, el archivo **karate-sumary.html**, y el reporte cucumber en la ruta **build/karate-reports/json**, el archivo **cucumber.json**
 
 ## Construido con
 
