@@ -81,7 +81,8 @@ Para ejecutar todos los escenarios que contengan un tag especifico
 Para ejecutar los  enviando variables de ambiente
 ```bash
   ./gradlew clean test --tests "-Dkarate.options=--tags @test" "com.pichincha.automationtest.runners.ApiRunnerTest" -Dvariable1=test
-```	 
+```
+
 > **NOTA**:
 > * Para ejecutar el proyecto se necesita Java JDK 1.8 y Gradle con la versión 4.10.2 o superior.
 > * Otra alternativa para no instalar gradle es usar el comando gradlew al momento de ejecutar el proyecto como se muestro anteriormente.
