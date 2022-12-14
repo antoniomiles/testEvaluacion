@@ -14,10 +14,6 @@ Realizadas por: EquipoE2E
 > * Una vez obtenido Intellij es necesario instalar los plugins de Gherkin y Cucumber. (*[Guia de instalación plugins en intellij](https://www.jetbrains.com/help/idea/managing-plugins.html)*) 
 > * El navegador usado para la ejecución de las pruebas fue google chrome en su ultima versión ( 98.0.4758.102 )
 
-
-<h2 id="pre2">3. Modificar código </h2>
-
-
 ## Ejecución local
 
 Clonar el proyecto
