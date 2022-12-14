@@ -1,8 +1,8 @@
 # README
 
-Arquetipo de pruebas automatizadas de E2E usando la herramienta sernityBDD con Screenplay
+Arquetipo de pruebas automatizadas de E2E usando la herramienta SerenityBDD con Screenplay
 
-Realizadas por:  EquipoE2E
+Realizadas por: EquipoE2E
 
 ## Complementos
 
