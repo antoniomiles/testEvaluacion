@@ -1,13 +1,10 @@
 # README
-Desarrollo de pruebas automatizadas para la pagina demoblaze.
 
-Realizadas por:  EquipoE2E
+Arquetipo de pruebas automatizadas E2E usando la herramienta SerenityBDD con Screenplay
 
-------------------------
-<h1 id="pre0">Pre-requisitos</h1>
+Realizadas por: EquipoE2E
 
-<h2 id="pre1">1. Programas y complementos</h2>
-<br>
+## Complementos
 
 
 |**Intellij**|**Java**|**Gradle**|
@@ -17,8 +14,20 @@ Realizadas por:  EquipoE2E
 > * Una vez obtenido Intellij es necesario instalar los plugins de Gherkin y Cucumber. (*[Guia de instalación plugins en intellij](https://www.jetbrains.com/help/idea/managing-plugins.html)*) 
 > * El navegador usado para la ejecución de las pruebas fue google chrome en su ultima versión ( 98.0.4758.102 )
 
+## Ejecución local
 
-<h2 id="pre2">3. Modificar código </h2>
+Clonar el proyecto
+
+```bash
+  git clone https://BancoPichinchaEC@dev.azure.com/BancoPichinchaEC/BP-Quality-Management/_git/sqa-aut-arq-serenitybdd
+```
+
+Entrar al directorio del proyecto
+
+```bash
+  cd sqa-aut-arq-serenitybdd
+```
+## Modificación del codigo
 
 - Para realizar modificaciones al codigo del proyecto. realizar los siguientes pasos: 
 
@@ -26,26 +35,58 @@ Realizadas por:  EquipoE2E
 	 1. Importar el proyecto desde IntelliJ IDE bajo la estructura de un proyecto Gradle existente
 	 2. Configurar JRE System Library con JavaSE-1.8
 	 3. Configurar la codificación a UTF-8 al proyecto una vez sea importado
-     4. Ejemplo de corrida ./gradlew clean test --tests com.pichincha.automationtest.runners.SimulacionCompraTelefonoCSVRunnerTest
-     5. Ejemplo de corrida  para karate  ./gradle clean test --tests "-Dkarate.options=--tags @BancaMovil" "com.pichincha.automationtest.featuresws.ApiRunnerTest"
 
-<h2 id="pre4">4. Para Ejecutar Las Pruebas </h2>
+## Comandos
 
-* Para realizar el proceso de ejecución de los escenarios de pruebas existentes dentro del proyecto se debe realizar el siguiente proceso:
+El arquetipo posee 2 runners activos, uno para pruebas E2E y otro pruebas de Arquetipo
 
-    1. Ir a los runners src/test/java/com.pichincha.automationtest/runners y ejecutarselo
-      2. Una vez finalizada la ejecución podremos observar el reporte de las pruebas en la ruta.
-	~~~
-	target\site\serenity\index.html
-	~~~
+### Comandos E2E
 
-> **NOTA**: 
+Para ejecutar todos los features por linea de comandos
+```bash
+  ./gradlew clean test --tests "com.pichincha.automationtest.runners.WebRunnerTest"
+```
+
+Para ejecutar todos los escenarios que contengan un tag especifico
+```bash
+  ./gradlew clean test --tests -Dcucumber.filter.tags="@test" com.pichincha.automationtest.runners.WebRunnerTest
+```
+
+Para ejecutar los  enviando variables de ambiente
+```bash
+  ./gradlew clean test --tests "com.pichincha.automationtest.runners.WebRunnerTest" -Dvariable1=test
+```
+
+Para ejecutar las pruebas con 3 hilos en paralelo  enviando variables de ambiente
+```bash
+  ./gradlew clean test -PmaxParallelForks=4 --tests "com.pichincha.automationtest.runners.parallel.*" aggregate -i -Dvariable=test
+```
+
+### Comandos API
+
+Para ejecutar todos los features por linea de comandos
+```bash
+  ./gradlew clean test --tests "com.pichincha.automationtest.runners.ApiRunnerTest"
+```
+
+Para ejecutar todos los escenarios que contengan un tag especifico
+```bash
+  ./gradlew clean test --tests "-Dkarate.options=--tags @test" "com.pichincha.automationtest.runners.ApiRunnerTest"
+```
+
+Para ejecutar los  enviando variables de ambiente
+```bash
+  ./gradlew clean test --tests "-Dkarate.options=--tags @test" "com.pichincha.automationtest.runners.ApiRunnerTest" -Dvariable1=test
+```
+
+> **NOTA**:
 > * Para ejecutar el proyecto se necesita Java JDK 1.8 y Gradle con la versión 4.10.2 o superior.
-> * Otra alternativa para no instalar gradle es usar el comando gradlew al momento de ejecutar el proyecto como se muestro anteriormente.  
-> * En caso de tener problemas con el web driver por la versión del google chrome, realizar el cambio del web driver (descarga) por una versión compatible con el google chrome instalado. tener en cuenta que la  ruta del web driver en el proyecto es \src\test\resources\drivers  
-		 
+> * Otra alternativa para no instalar gradle es usar el comando gradlew al momento de ejecutar el proyecto como se muestro anteriormente.
+> * En caso de tener problemas con el web driver por la versión del google chrome, realizar el cambio del web driver (descarga) por una versión compatible con el google chrome instalado. tener en cuenta que la  ruta del web driver en el proyecto es \src\test\resources\drivers
+> * Para las pruebas E2E, el reporte serenity se genera en la ruta **target/site/serenity/index.html**, los reportes cucumber se generan en la carpeta **build/cucumber-reports/json**, el archivo **cucumber.json**
+> * Para las pruebas API, el reporte se genera en la ruta **build/karate-reports**, el archivo **karate-sumary.html**, y el reporte cucumber en la ruta **build/karate-reports/json**, el archivo **cucumber.json**
 
-<h2 id="p2">Construido Con </h2>
+## Construido con
 
 La automatización fue desarrollada con:
 
@@ -56,4 +97,6 @@ La automatización fue desarrollada con:
 * Serenity BDD - Biblioteca de código abierto para la generación de reportes
 * Gherkin - Lenguaje Business Readable DSL (Lenguaje especifico de dominio legible por el negocio)
 
-------------------------
+## Documentacion
+
+[Manual SerenityBDD](https://pichincha.atlassian.net/wiki/spaces/CS/pages/2440757667/Manual+Arquetipo+SerenityBDD+ScreenPlay)

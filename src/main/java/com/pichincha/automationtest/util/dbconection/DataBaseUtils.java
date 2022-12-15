@@ -15,17 +15,21 @@ public class DataBaseUtils {
     private final JdbcTemplate jdbc;
 
     public DataBaseUtils(Map<String, Object> config) {
-        String url = (String) config.get("url");
-        String username = (String) config.get("username");
-        String password = (String) config.get("password");
-        String driver = (String) config.get("driverClassName");
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName(driver);
-        dataSource.setUrl(url);
-        dataSource.setUsername(username);
-        dataSource.setPassword(password);
-        jdbc = new JdbcTemplate(dataSource);
-        logger.log(Level.INFO,"init jdbc template: {}",url);
+        if("not_supported".equals(config.get("driverClassName"))){
+            throw new UnsupportedOperationException();
+        } else {
+            String url = (String) config.get("url");
+            String username = (String) config.get("username");
+            String password = (String) config.get("password");
+            String driver = (String) config.get("driverClassName");
+            DriverManagerDataSource dataSource = new DriverManagerDataSource();
+            dataSource.setDriverClassName(driver);
+            dataSource.setUrl(url);
+            dataSource.setUsername(username);
+            dataSource.setPassword(password);
+            jdbc = new JdbcTemplate(dataSource);
+            logger.log(Level.INFO, "init jdbc template: {}", url);
+        }
     }
 
     public Object readValue(String query) {

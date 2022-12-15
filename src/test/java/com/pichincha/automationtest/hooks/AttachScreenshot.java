@@ -19,7 +19,8 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
             try {
                 String[] tagsScenario = scenario.getSourceTagNames().toArray(new String[0]);
                 for (String lineTag : tagsScenario) {
-                    if (lineTag.trim().equalsIgnoreCase("@manual")) {
+                    if (lineTag.trim().equalsIgnoreCase("@manual") ||
+                            lineTag.trim().equalsIgnoreCase("@Database")) {
                         isManualScenario = true;
                         break;
                     }
