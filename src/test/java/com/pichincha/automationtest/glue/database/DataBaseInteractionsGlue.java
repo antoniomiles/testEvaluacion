@@ -17,9 +17,9 @@ public class DataBaseInteractionsGlue {
     private Map<String, Object> querySelectResult;
     private Integer queryUpdateResult;
 
-    @Given("I am connected to the database")
-    public void i_am_connected_to_the_database() {
-        Map<String, Object> configMap = ConfigurationParamUtils.loadEnviromentalValues();
+    @Given("I am connected to the {string} database")
+    public void i_am_connected_to_the_database(String dbType) {
+        Map<String, Object> configMap = ConfigurationParamUtils.loadEnviromentalValues(dbType);
         Actor victor = Actor.named("victor");
         victor.can(DataBaseInteraction.using(configMap));
         dataBaseUtils = DataBaseInteraction.as(victor).getDBUtils();
