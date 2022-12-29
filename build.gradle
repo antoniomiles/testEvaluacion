@@ -54,7 +54,7 @@ sourceSets {
 
 ext {
     slf4jVersion = '1.7.7'
-    serenityCoreVersion = '3.2.1'
+    serenityCoreVersion = '3.2.5'
     junitVersion = '4.13.2'
     assertJVersion = '3.22.0'
     logbackVersion = '1.2.11'
@@ -76,7 +76,7 @@ dependencies {
             "net.serenity-bdd:serenity-screenplay:${serenityCoreVersion}",
             "net.serenity-bdd:serenity-screenplay-webdriver:${serenityCoreVersion}",
             "net.serenity-bdd:serenity-screenplay-rest:${serenityCoreVersion}"
-    implementation group: 'net.serenity-bdd', name: 'serenity-ensure', version: '3.2.1'
+    implementation group: 'net.serenity-bdd', name: 'serenity-ensure', version: '3.2.5'
     implementation group: 'org.springframework', name: 'spring-jdbc', version: '5.3.14'
     implementation group: 'org.antlr', name: 'ST4', version: '4.3.4'
     implementation 'com.github.matrixseven:ExcelReads:1.0.4'
