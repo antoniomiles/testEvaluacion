@@ -15,7 +15,7 @@ import java.io.IOException;
         features = "src/test/resources/features/",
         glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
         plugin = "json:build/cucumber-reports/json/cucumber.json",
-        tags = "not @karate and not @ManualTest "
+        tags = "not @karate and not @ManualTest and not @Mobiletest"
 )
 
 public class WebRunnerTest {

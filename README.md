@@ -100,3 +100,24 @@ La automatización fue desarrollada con:
 ## Documentacion
 
 [Manual SerenityBDD](https://pichincha.atlassian.net/wiki/spaces/CS/pages/2440757667/Manual+Arquetipo+SerenityBDD+ScreenPlay)
+
+
+# Serenity Appium Mobile
+
+La corrida en Azure Devops se la realiza cambiando las variables dentro de la librería de varibles de Azure APPIUM. 
+
+La corrida es local se la realiza desde el WebRunnerTest. Para el cambio de las desired capabilities de appium, ir al archivo serenity.properties y descomentar la línea de appium
+
+```
+webdriver.driver=appium
+```
+
+En este archivo serenity-properties se puede cambiar el dispositivo, la plataforma del dispositivo e incluso la ubicación de la app. 
+
+```
+appium.deviceName = NOMBREDISPOSITIVO
+appium.platformVersion = VERSION
+appium.app = PATH_APP
+```
+------------
+La aplicación debe contener dentro de sus dispositivos permitidos el UDID del dispositivo a usarse 
