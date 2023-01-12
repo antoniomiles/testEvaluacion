@@ -8,42 +8,29 @@ import io.cucumber.junit.CucumberOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 
-import java.io.IOException;
-import java.util.concurrent.Callable;
-
-import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.awaitility.Awaitility.await;
-
 @Slf4j
 @RunWith(CustomCucumberWithSerenityRunner.class)
 @CucumberOptions(
         features = "src/test/resources/features/",
         glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
-        plugin = "json:build/cucumberreportstest/cucumberParallel2.json",
+        plugin = "json:build/cucumberreportstest/cucumberParallel3.json",
         tags = "@R3 and not @karate and not @ManualTest and not @Mobiletest"
 )
 
 public class WebRunnerC {
+
+    private static final String RUNNER = "Runner3";
     private WebRunnerC() {
     }
 
-    private static final String RUNNER = "Runner3";
-
     @BeforeSuite
-    public static void init() throws IOException {
-        await().atMost(30, SECONDS).until(featuresOverwritten());
-        ControlParallel.setOrRemoveExecution("add");
-        log.info("Inicia " + RUNNER);
+    public static void init() {
+        ControlParallel.startRunner(RUNNER);
     }
 
     @AfterSuite
-    public static void after() throws IOException {
-        ControlParallel.setOrRemoveExecution("delete");
-        log.info("Termina " + RUNNER);
-    }
-
-    private static Callable<Boolean> featuresOverwritten() {
-        return () -> ControlParallel.validateExecution(RUNNER);
+    public static void after() {
+        ControlParallel.endsRunner(RUNNER);
     }
 
 }

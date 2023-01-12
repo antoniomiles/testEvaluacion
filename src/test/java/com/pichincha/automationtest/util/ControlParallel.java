@@ -12,6 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 
 @Slf4j
 public class ControlParallel {
@@ -70,13 +74,7 @@ public class ControlParallel {
         } catch (IOException e) {
             log.error("Error al leer properties parallelcontrol.properties " + e.getMessage(), e);
         } finally {
-            if (buffReader != null) {
-                try {
-                    buffReader.close();
-                } catch (IOException e) {
-                    log.error("Error al cerrar BufferedReader ," + e.getMessage(), e);
-                }
-            }
+            closeBufferedReader(buffReader);
         }
         return fileData;
     }
@@ -94,11 +92,7 @@ public class ControlParallel {
                     cont++;
                 }
             }
-            if (stage.trim().equalsIgnoreCase("Runner1")) {
-                if (cont == 1) {
-                    go = true;
-                }
-            } else if (stage.trim().equalsIgnoreCase("Runner2")) {
+            if (stage.trim().equalsIgnoreCase("Runner1") || stage.trim().equalsIgnoreCase("Runner2")) {
                 if (cont == 1) {
                     go = true;
                 }
@@ -116,15 +110,33 @@ public class ControlParallel {
         } catch (IOException e) {
             log.error("Error al leer properties parallelcontrol.properties " + e.getMessage(), e);
         } finally {
-            if (buffReader != null) {
-                try {
-                    buffReader.close();
-                } catch (IOException e) {
-                    log.error("Error al cerrar BufferedReader ," + e.getMessage(), e);
-                }
-            }
+            closeBufferedReader(buffReader);
         }
         return go;
     }
 
+    private static void closeBufferedReader(BufferedReader buffReader) {
+        if (buffReader != null) {
+            try {
+                buffReader.close();
+            } catch (IOException e) {
+                log.error("Error al cerrar BufferedReader ," + e.getMessage(), e);
+            }
+        }
+    }
+
+    public static void startRunner(final String runner) {
+        await().atMost(30, SECONDS).until(featuresOverwritten(runner));
+        ControlParallel.setOrRemoveExecution("add");
+        log.info("Inicia " + runner);
+    }
+
+    public static void endsRunner(final String runner) {
+        ControlParallel.setOrRemoveExecution("delete");
+        log.info("Termina " + runner);
+    }
+
+    public static Callable<Boolean> featuresOverwritten(final String runner) {
+        return () -> ControlParallel.validateExecution(runner);
+    }
 }
