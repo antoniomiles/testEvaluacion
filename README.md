@@ -27,6 +27,33 @@ Entrar al directorio del proyecto
 ```bash
   cd sqa-aut-arq-serenitybdd
 ```
+Para correr el proyecto de manera local se debe realizar los siguientes pasos:
+1. Definir la tag de los tipos de tests que se van a ejecutar, esto lo hacemos en el archivo WebRunnerTest, para el ejemplo se va a correr todos los test menos los manuales, api y las pruebas móviles. Se correra los test de aplicaciones web.
+```
+tags = "not @karate and not @ManualTest and not @Mobiletest"
+```
+
+2. Definir el driver a usarse en serenity.properties y comentar la elección del driver mediante variables de entorno. Para el ejemplo vamos a correr pruebas de una aplicación web por lo tanto vamos a seleccionar el driver de chrome
+```
+####Configuracion driver
+#para corrida local
+webdriver.driver=chrome
+#para Azure pipeline
+#webdriver.driver=${TIPO_DRIVER}
+```
+
+3. En el archivo serenity.properties comentar las siguientes líneas para ejecución local.
+   (Estas líneas deben ir descomentadas solo cuando se requiere ejecutar pruebas móviles mediante el pipeline)
+```
+    ###BrowserStack Genérico
+    #appium.deviceName=${DEVICE_NAME}
+    #appium.platformVersion=${PLATFORM_VERSION}
+    #appium.platformName=${PLATFORM_NAME}
+    #appium.app=${APPIUM_APP}
+    #appium.hub=https://${BROWSERSTACK_USER}:${BROWSERSTACK_KEY}@hub-cloud.browserstack.com/wd/hub
+```
+
+
 ## Modificación del codigo
 
 - Para realizar modificaciones al codigo del proyecto. realizar los siguientes pasos: 
@@ -104,20 +131,36 @@ La automatización fue desarrollada con:
 
 # Serenity Appium Mobile
 
-La corrida en Azure Devops se la realiza cambiando las variables dentro de la librería de varibles de Azure APPIUM. 
+Para correr el proyecto en el pipeline se debe configurar las variables de la library APPIUM ahi se debe setear las desired capabilities del dispositivo de la granja y credenciales de acceso.
 
-La corrida es local se la realiza desde el WebRunnerTest. Para el cambio de las desired capabilities de appium, ir al archivo serenity.properties y descomentar la línea de appium
-
+Para correr de manera local se debe realizar los siguientes pasos:
+1. Definir la tag que debe correr el runner, esto lo hacemos en el archivo WebRunnerTest: 
 ```
+tags = "@Mobiletest"
+```
+
+2. Definir el driver de appium en serenity.properties y comentar la elección del driver mediante variables de entorno
+```
+####Configuracion driver
+#para corrida local
 webdriver.driver=appium
+#para Azure pipeline
+#webdriver.driver=${TIPO_DRIVER}
 ```
 
-En este archivo serenity-properties se puede cambiar el dispositivo, la plataforma del dispositivo e incluso la ubicación de la app. 
+3. Definir el dispositivo para correr la prueba. A partir de la linea 33 en el archivo serenity.properties se define los diferentes dispositivos y escenarios en los que se puede probar la automatización. Descomentar solamente un escenario y configurar las desired capabilities del dispositivo a probar por ejemplo si se quiere probar en dispositivo Android localmente solamente debe estar descomentada la sección Local-Android es decir las líneas:
 
 ```
-appium.deviceName = NOMBREDISPOSITIVO
-appium.platformVersion = VERSION
-appium.app = PATH_APP
+   ###Local
+   ##Android
+   appium.platformName=Android
+   appium.platformVersion=7.0 NRD90M
+   appium.deviceName=29d10d5d0704
+   appium.automationName=UiAutomator2
+   appium.appActivity=com.yellowpepper.pichincha.MainActivity
+   appium.appPackage=com.yellowpepper.pichincha
+   appium.hub=http://127.0.0.1:4723/wd/hub
+   appium.app=/Users/bpuio01610019lm/Documents/BancaMoil/BancaMovil.apk
+
 ```
 ------------
-La aplicación debe contener dentro de sus dispositivos permitidos el UDID del dispositivo a usarse 
