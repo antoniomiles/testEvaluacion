@@ -1,12 +1,12 @@
 package com.pichincha.automationtest.hooks;
 
 import com.pichincha.automationtest.util.AttachScreenshotToScenario;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AttachScreenshot extends AttachScreenshotToScenario {
     Logger logger = Logger.getLogger(this.getClass().getName());

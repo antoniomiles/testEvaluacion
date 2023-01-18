@@ -74,7 +74,7 @@ public class ManualReadFeature {
     }
 
     public static List<String> readManualFeaturePassedOrdFailed(final File featureFile) throws IOException {
-        final List<String> scenarios = new ArrayList<String>();
+        final List<String> scenarios = new ArrayList<>();
         try (BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
                 StandardCharsets.UTF_8)) {
             String passedFailedScenario = "";

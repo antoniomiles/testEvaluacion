@@ -14,7 +14,8 @@ import java.util.Map;
 import static net.serenitybdd.screenplay.GivenWhenThen.then;
 import static net.serenitybdd.screenplay.actors.OnStage.theActorInTheSpotlight;
 import static net.serenitybdd.screenplay.rest.questions.ResponseConsequence.seeThatResponse;
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
 
 public class DemoblazeApiLoginGlue {
 
