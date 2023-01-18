@@ -8,7 +8,8 @@ import net.serenitybdd.screenplay.waits.WaitUntil;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
 
-import static com.pichincha.automationtest.userinterface.CodigoActivacionMovil.*;
+import static com.pichincha.automationtest.userinterface.CodigoActivacionMovil.BOTON_ENVIAR_CODIGO_ANDROID;
+import static com.pichincha.automationtest.userinterface.CodigoActivacionMovil.BOTON_ENVIAR_CODIGO_IOS;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isEnabled;
 

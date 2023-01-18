@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 @RunWith(BlockJUnit4ClassRunner.class)
 public class PropertiesUtilsTest {

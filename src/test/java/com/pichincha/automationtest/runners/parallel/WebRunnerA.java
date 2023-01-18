@@ -4,8 +4,6 @@ import com.pichincha.automationtest.runners.WebRunnerTest;
 import com.pichincha.automationtest.util.*;
 import io.cucumber.junit.CucumberOptions;
 import lombok.extern.slf4j.Slf4j;
-import net.thucydides.core.util.EnvironmentVariables;
-import net.thucydides.core.util.SystemEnvironmentVariables;
 import org.junit.runner.RunWith;
 
 import java.io.IOException;

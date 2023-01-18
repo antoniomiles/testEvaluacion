@@ -5,7 +5,8 @@ import org.junit.Test;
 
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 
 public class DataBaseUtilsTest {
 

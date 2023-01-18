@@ -9,7 +9,6 @@ import io.cucumber.java.en.When;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.ensure.Ensure;
 
-
 import java.util.Map;
 
 public class DataBaseInteractionsGlue {
