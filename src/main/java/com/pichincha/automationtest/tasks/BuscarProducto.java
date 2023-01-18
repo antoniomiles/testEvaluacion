@@ -5,11 +5,12 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
 import net.thucydides.core.annotations.Step;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static com.pichincha.automationtest.userinterface.PaginaPrincipal.SELECTED_PRODUCT;
 import static com.pichincha.automationtest.userinterface.PaginaPrincipal.SELECT_TYPE_PRODUCT;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class BuscarProducto implements Task {
 
