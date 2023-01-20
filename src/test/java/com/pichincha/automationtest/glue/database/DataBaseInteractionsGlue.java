@@ -17,7 +17,7 @@ public class DataBaseInteractionsGlue {
     private Integer queryUpdateResult;
 
     @Given("I am connected to the {string} database")
-    public void i_am_connected_to_the_database(String dbType) {
+    public void iAmConnectedToTheDatabase(String dbType) {
         Map<String, Object> configMap = ConfigurationParamUtils.loadEnviromentalValues(dbType);
         Actor victor = Actor.named("victor");
         victor.can(DataBaseInteraction.using(configMap));
@@ -25,21 +25,21 @@ public class DataBaseInteractionsGlue {
     }
 
     @When("I execute the following query {string}")
-    public void i_execute_the_following_query(String query) {
+    public void iExecuteTheFollowingQuery(String query) {
         querySelectResult = dataBaseUtils.readRow(query);
 
     }
     @Then("I expect the result value should be {string}")
-    public void i_expect_the_result_value_should_be(String string) {
+    public void iExpectTheResultValueShouldBe(String string) {
         Ensure.that((String) querySelectResult.get("nombre")).equals(string);
     }
 
     @When("I execute the following modifying query {string}")
-    public void i_execute_the_following_insert_query(String string) {
+    public void iExecuteTheFollowingInsertQuery(String string) {
         queryUpdateResult = dataBaseUtils.update(string);
     }
     @Then("I expect the result value should be {int}")
-    public void i_expect_the_result_value_should_be(Integer result) {
+    public void iExpectTheResultValueShouldBe(Integer result) {
         Ensure.that(queryUpdateResult).equals(result);
     }
 }
