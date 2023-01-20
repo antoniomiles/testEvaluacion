@@ -51,8 +51,7 @@ public class ApiRunnerTest {
         Files.write(Paths.get(karateResumePath + "/karate.json"), karateJson.toJSONString().getBytes());
         Configuration config = new Configuration(new File("build"), "Banca Movil");
         ReportBuilder reportBuilder = new ReportBuilder(jsonPaths, config);
-        Reportable report = reportBuilder.generateReports();
-        return report;
+        return reportBuilder.generateReports();
     }
 
     public static Object getReportJsonByFile(String filePath) {

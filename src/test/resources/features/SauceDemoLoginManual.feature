@@ -13,7 +13,7 @@ Feature: Pruebas manuales Web
     When el ingresa sus cred para iniciar sesion Mantest
     Then se deberia mostrar el mensaje de error Mantest
 
-  @id:3 @manual @manual-last-tested:sprint-1 @manual-test-evidence:[Evidencia_Given](assets/1screenshot.png),[Evidencia_When/Then](assets/4screenshot.png),[Evidencia_Concluciones](assets/EvidenceScn1.txt)
+  @id:3 @manual @manual-last-tested:sprint-1 @manual-test-evidence:[Evidencia_Word](assets/Evidence1.docx),[Evidencia_Rar](assets/Evidence2.rar),[Evidencia_Txt](assets/ObserConcl.txt)
   Scenario: T-E2E-PQBP-110-CA3- Iniciar prueba Mantest
     Given que el cliente ingresa a la pagina SauceDemo2 Mantest
     When el ingresa sus cred para iniciar sesion2 Mantest

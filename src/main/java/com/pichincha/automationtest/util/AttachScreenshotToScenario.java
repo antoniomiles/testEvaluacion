@@ -16,14 +16,14 @@ import java.util.Date;
 
 public class AttachScreenshotToScenario {
     static PropertiesReader readProperties = new PropertiesReader();
-    private DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+    private final DateFormat formatDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     public void addScreenshot(Scenario scenario) {
         scenario.attach(
-                ((TakesScreenshot) BrowseTheWeb.as(OnStage.theActorInTheSpotlight()).getDriver())
-                        .getScreenshotAs(OutputType.BYTES),
-                "image/png", // "text/plain"
-                String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date())));
+                ((TakesScreenshot) BrowseTheWeb.as(OnStage.theActorInTheSpotlight()).getDriver()).getScreenshotAs(OutputType.BYTES),
+                "image/png",
+                String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date()))
+        );
     }
 
     public void addScreenshotManualTest(Scenario scenario) throws IOException {
@@ -34,22 +34,27 @@ public class AttachScreenshotToScenario {
                 for (String e : numberEvidence) {
                     String nameEvidence = StringUtils.substringBetween(e, "(", ")");
                     nameEvidence = nameEvidence.substring(6);
-                    FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.dir")
-                            + readProperties.getPropiedad("report.assets.directory") + nameEvidence);
-                    byte[] imageInBytes = IOUtils.toByteArray(fileInputStream);
-                    if (nameEvidence.endsWith(".png") || nameEvidence.endsWith(".jpg")
-                            || nameEvidence.endsWith(".jpeg")) {
-                        scenario.attach(imageInBytes,
-                                "image/png", // "text/plain"
+                    FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.dir") + PathConstants.validatePath(readProperties.getPropiedad("report.assets.directory")) + nameEvidence);
+                    byte[] fileInBytes = IOUtils.toByteArray(fileInputStream);
+                    if (nameEvidence.endsWith(".png") || nameEvidence.endsWith(".jpg") || nameEvidence.endsWith(".jpeg")) {
+                        scenario.attach(fileInBytes,
+                                "image/png",
                                 String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date())));
                     } else if (nameEvidence.endsWith(".txt")) {
-                        scenario.attach(imageInBytes,
+                        scenario.attach(fileInBytes,
                                 "text/plain",
                                 String.format("%s %s.txt", scenario.getName(), formatDate.format(new Date())));
+                    } else if (nameEvidence.endsWith(".docx")) {
+                        scenario.attach(fileInBytes,
+                                "application/msword",
+                                String.format("%s %s.docx", scenario.getName(), formatDate.format(new Date())));
+                    } else if (nameEvidence.endsWith(".rar")) {
+                        scenario.attach(fileInBytes,
+                                "application/x-rar-compressed",
+                                String.format("%s %s.rar", scenario.getName(), formatDate.format(new Date())));
                     } else {
                         throw new IllegalStateException();
                     }
-
                 }
             }
         }

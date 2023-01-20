@@ -81,6 +81,8 @@ public class FeatureOverwrite {
                 } else if ((data.trim().startsWith("@") || data.trim().startsWith("Scenario")) && exampleData) {
                     exampleData = false;
                     fileData.addAll(staticDataExample);
+                }else {
+                    log.debug("- No cumple condiciones -");
                 }
                 if (!exampleData) {
                     fileData.add(data);
@@ -156,8 +158,8 @@ public class FeatureOverwrite {
         final List<String> fileData = new ArrayList<>();
         try (BufferedReader buffReader = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
                 StandardCharsets.UTF_8);
-                BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
-                        StandardCharsets.UTF_8)) {
+             BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
+                     StandardCharsets.UTF_8)) {
             String data;
             String externalDataSt;
             final List<String> scenarios = new ArrayList<>();
@@ -176,11 +178,11 @@ public class FeatureOverwrite {
                 boolean foundHashTag = data.trim().contains("@manual") && !(data.trim().contains("@manual-result:"));
                 if (foundHashTag) {
                     if (azureOrLocalExecution.equalsIgnoreCase("azure")) {
-                        externalDataSt = ManualReadFeature.setPassedOrFailedFromCSV(numScenario,
-                                readProperties.getPropiedad("path.data.passed.or.failed"));
+                        String dataPassedOrFailed = featureFile.getName().replace(".feature", ".csv");
+                        dataPassedOrFailed = PathConstants.dataPath() + "manualtest" + File.separator + dataPassedOrFailed;
+                        externalDataSt = ManualReadFeature.setPassedOrFailedFromCSV(numScenario, dataPassedOrFailed);
                     } else {
-                        externalDataSt = ManualReadFeature.setPassedOrFailedFromPane(scenarios.get(numScenario),
-                                numScenario);
+                        externalDataSt = ManualReadFeature.setPassedOrFailedFromPane(featureFile.getName(), scenarios.get(numScenario), numScenario);
                     }
                     numScenario++;
                     StringBuilder externalString = new StringBuilder(data).append(" ").append(externalDataSt.trim());

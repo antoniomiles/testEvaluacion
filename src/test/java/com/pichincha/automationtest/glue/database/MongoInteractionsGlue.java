@@ -20,7 +20,7 @@ public class MongoInteractionsGlue {
     private MongoCollection commandResult;
 
     @Given("I am connected to the {string} nosql database")
-    public void i_am_connected_to_the_nosql_database(String dbType) {
+    public void iAmConnectedToTheNosqlDatabase(String dbType) {
         Map<String, Object> configMap = ConfigurationParamUtils.loadEnviromentalValues(dbType);
         this.mongoUtils = new MongoUtils(configMap);
         Actor victor = Actor.named("victor");
@@ -29,11 +29,11 @@ public class MongoInteractionsGlue {
 
     }
     @When("I fetch a collection called {string} from the server")
-    public void i_fetch_a_collection_called_from_the_server(String collectionName) {
+    public void iFetchACollectionCalledFromTheServer(String collectionName) {
         commandResult = mongoUtils.getCollection(collectionName, Catalogo.class);
     }
     @Then("I expect the command's result should not be null")
-    public void i_expect_the_command_s_result_should_not_be_null() {
+    public void iExpectTheCommandSResultShouldNotBeNull() {
         assertNotNull(commandResult.getNamespace());
     }
 
