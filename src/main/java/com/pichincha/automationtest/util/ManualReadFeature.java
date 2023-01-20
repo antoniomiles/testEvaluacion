@@ -19,9 +19,9 @@ public class ManualReadFeature {
 
     static PropertiesReader readProperties = new PropertiesReader();
 
-    public static String setPassedOrFailedFromPane(String nameScenario, int numScenario) {
+    public static String setPassedOrFailedFromPane(String featureName, String nameScenario, int numScenario) {
         String statusExecution;
-        String[] options = { "   No   ", "   Si   " };
+        String[] options = {"   No   ", "   Si   "};
         String numInitArrayReadCsv = readProperties.getPropiedad("num.init.array.read.csv");
         if (numInitArrayReadCsv.equals("1")) {
             numScenario = numScenario + 1;
@@ -30,7 +30,7 @@ public class ManualReadFeature {
         JOptionPane jOptionPane = new JOptionPane("El  \"" + nameScenario.trim() + "\"  se ejecutó correctamente?",
                 JOptionPane.QUESTION_MESSAGE, JOptionPane.DEFAULT_OPTION,
                 null, options, options[0]);
-        JDialog jDialog = jOptionPane.createDialog(null, "Scenario N° " + numScenario);
+        JDialog jDialog = jOptionPane.createDialog(null, featureName + "   -->   Scenario N° " + numScenario);
         jDialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         jDialog.setVisible(true);
         String optionSelected = (String) jOptionPane.getValue();
@@ -43,7 +43,7 @@ public class ManualReadFeature {
     }
 
     public static String setPassedOrFailedFromCSV(int numScenario, String filePath) throws IOException {
-        String lineData = "";
+        String lineData;
         String statusExecution = "  #EstadoScenarioNoDefinido";
         String numInitArrayReadCsv = readProperties.getPropiedad("num.init.array.read.csv");
         if (numInitArrayReadCsv.equals("1")) {
@@ -77,7 +77,7 @@ public class ManualReadFeature {
         final List<String> scenarios = new ArrayList<>();
         try (BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
                 StandardCharsets.UTF_8)) {
-            String passedFailedScenario = "";
+            String passedFailedScenario;
             while ((passedFailedScenario = buffReaderScenario.readLine()) != null) {
                 if (passedFailedScenario.trim().contains("@manual-result:")
                         || passedFailedScenario.trim().contains("#EstadoScenarioNoDefinido")) {
@@ -88,9 +88,11 @@ public class ManualReadFeature {
         return scenarios;
     }
 
-    public static void validatePassedOrdFailed(List<String> scenarios, int numScenario) {
-        String passedOrdFailed = scenarios.get(numScenario);
-        String status = "";
+    public static void validatePassedOrdFailed(String featureName, int numScenario) throws IOException {
+        List<String> scenarios = readManualFeaturePassedOrdFailed(new File(PathConstants.featurePath() + featureName));
+        String passedOrdFailed = scenarios.get(numScenario - 1);
+
+        String status;
         if (passedOrdFailed.contains("passed")) {
             status = "PASSED";
         } else if (passedOrdFailed.contains("failed")) {
