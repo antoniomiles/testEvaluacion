@@ -6,7 +6,7 @@ import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
 
-import static com.pichincha.automationtest.userinterface.CarritoCompra.*;
+import static com.pichincha.automationtest.ui.CarritoCompra.*;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 public class RegistrarCliente implements Task {

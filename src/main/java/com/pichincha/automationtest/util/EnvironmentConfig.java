@@ -9,4 +9,12 @@ public class EnvironmentConfig {
     public String getValue(String property) {
         return EnvironmentSpecificConfiguration.from(variables).getProperty(property);
     }
+
+    public String getVariable(String variable) {
+        String value = System.getenv(variable);
+        if (value == null || value.isEmpty()) {
+            value = System.getProperty(variable);
+        }
+        return value == null ? "" : value;
+    }
 }

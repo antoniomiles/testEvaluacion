@@ -7,7 +7,7 @@ import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
 import net.thucydides.core.annotations.Step;
 
-import static com.pichincha.automationtest.userinterface.SauceDemoLogin.*;
+import static com.pichincha.automationtest.ui.SauceDemoLogin.*;
 
 public class IniciaSesion implements Task {
 
