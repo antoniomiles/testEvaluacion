@@ -4,14 +4,14 @@ import com.pichincha.automationtest.model.InformacionCliente;
 import com.pichincha.automationtest.tasks.AnadirProducto;
 import com.pichincha.automationtest.tasks.BuscarProducto;
 import com.pichincha.automationtest.tasks.RegistrarCliente;
-import com.pichincha.automationtest.userinterface.PaginaPrincipal;
+import com.pichincha.automationtest.ui.PaginaPrincipal;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actions.Open;
 
-import static com.pichincha.automationtest.userinterface.CarritoCompra.SUCCESSFULL_PURCHASE;
+import static com.pichincha.automationtest.ui.CarritoCompra.SUCCESSFULL_PURCHASE;
 import static net.serenitybdd.screenplay.GivenWhenThen.*;
 import static net.serenitybdd.screenplay.actors.OnStage.theActorInTheSpotlight;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isPresent;

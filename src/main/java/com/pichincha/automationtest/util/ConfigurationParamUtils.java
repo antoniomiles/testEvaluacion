@@ -24,7 +24,7 @@ public class ConfigurationParamUtils {
         if(opValuesEnvMap.isPresent()){
             valuesMap = normalizeNames(opValuesEnvMap.get(), "_");
         }else{
-            PropertiesUtils propertiesUtils = new PropertiesUtils();
+            PropertiesReader propertiesUtils = new PropertiesReader();
             Optional<Properties> opProperties = propertiesUtils.getPropValues();
             valuesMap =  normalizeNames(opProperties
                         .map(properties ->ConfigurationParamUtils.createConfigMapPropertiesParams(properties, dbType))

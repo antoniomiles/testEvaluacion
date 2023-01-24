@@ -46,9 +46,9 @@ parameters:
     default: chrome
     values:
       - chrome
-      - appium
       - firefox
       - edge
+      - appium
 
 variables:
   - group: USUARIO_GENERICO
