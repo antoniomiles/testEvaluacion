@@ -38,7 +38,6 @@ public class PathConstants {
 
     public static String validatePath(String path) {
         String[] separators = {"/", "\\", "-"};
-
         for (String separator : separators) {
             if (path.contains(separator)) {
                 path = path.replace(separator, File.separator);

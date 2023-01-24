@@ -11,9 +11,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
 
-import static com.pichincha.automationtest.userinterface.CabeceraMenu.MENU_CART;
-import static com.pichincha.automationtest.userinterface.CarritoCompra.ELEMENT_CART;
-import static com.pichincha.automationtest.userinterface.PaginaProductos.BUTTON_ADD_TO_CART;
+import static com.pichincha.automationtest.ui.CabeceraMenu.MENU_CART;
+import static com.pichincha.automationtest.ui.CarritoCompra.ELEMENT_CART;
+import static com.pichincha.automationtest.ui.PaginaProductos.BUTTON_ADD_TO_CART;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 public class AnadirProducto  implements Task {

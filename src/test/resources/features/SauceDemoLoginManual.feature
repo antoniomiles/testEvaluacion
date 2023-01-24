@@ -2,7 +2,7 @@
 Feature: Pruebas manuales Web
 
   @id:1 @manual @manual-last-tested:sprint-1 @manual-test-evidence:[Evidencia_Given](assets/1screenshot.png),[Evidencia_When](assets/2screenshot.png),[Evidencia_Then](assets/3screenshot.png)
-  Scenario: T-E2E-PQBP-110-CA1- Iniciar sesión con credenciales correctas Mantest
+  Scenario: T-E2E-PQBP-110-CA1- Iniciar sesion con credenciales correctas Mantest
     Given que el cliente ingresa a la pagina Mantest
     When quien ingresa sus cred para iniciar sesion Mantest
     Then el ingresa a ver los productos disponibles Mantest

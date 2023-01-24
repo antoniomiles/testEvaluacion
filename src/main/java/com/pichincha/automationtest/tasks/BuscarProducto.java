@@ -8,8 +8,8 @@ import net.thucydides.core.annotations.Step;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static com.pichincha.automationtest.userinterface.PaginaPrincipal.SELECTED_PRODUCT;
-import static com.pichincha.automationtest.userinterface.PaginaPrincipal.SELECT_TYPE_PRODUCT;
+import static com.pichincha.automationtest.ui.PaginaPrincipal.SELECTED_PRODUCT;
+import static com.pichincha.automationtest.ui.PaginaPrincipal.SELECT_TYPE_PRODUCT;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
 public class BuscarProducto implements Task {

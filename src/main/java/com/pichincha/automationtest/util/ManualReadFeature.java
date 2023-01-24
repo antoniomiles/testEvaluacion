@@ -1,5 +1,7 @@
 package com.pichincha.automationtest.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import javax.swing.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -8,11 +10,10 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@Slf4j
 public class ManualReadFeature {
     private ManualReadFeature() {
     }
@@ -56,8 +57,8 @@ public class ManualReadFeature {
                 String[] numberAndResultTest = lineData.split(",");
 
                 String columnOne = numberAndResultTest[0];
-                if (columnOne.equalsIgnoreCase(String.valueOf(numScenario))) {
-                    switch (numberAndResultTest[1].toLowerCase()) {
+                if (columnOne.trim().equalsIgnoreCase(String.valueOf(numScenario))) {
+                    switch (numberAndResultTest[1].trim().toLowerCase()) {
                         case "failed":
                             statusExecution = "  @manual-result:failed";
                             break;
@@ -73,25 +74,34 @@ public class ManualReadFeature {
         return statusExecution;
     }
 
-    public static List<String> readManualFeaturePassedOrdFailed(final File featureFile) throws IOException {
-        final List<String> scenarios = new ArrayList<>();
-        try (BufferedReader buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()),
-                StandardCharsets.UTF_8)) {
-            String passedFailedScenario;
-            while ((passedFailedScenario = buffReaderScenario.readLine()) != null) {
-                if (passedFailedScenario.trim().contains("@manual-result:")
-                        || passedFailedScenario.trim().contains("#EstadoScenarioNoDefinido")) {
-                    scenarios.add(passedFailedScenario);
+    public static String readManualFeaturePassedOrdFailed(final File featureFile, final int lineScenario) throws IOException {
+        String resultScenario = "";
+        BufferedReader buffReaderScenario = null;
+        try {
+            buffReaderScenario = Files.newBufferedReader(Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8);
+            String lineOfFeatureFile;
+            int countLine = 1;
+            while ((lineOfFeatureFile = buffReaderScenario.readLine()) != null) {
+                if ((lineOfFeatureFile.trim().contains("@manual-result:") || lineOfFeatureFile.trim().contains("#EstadoScenarioNoDefinido"))
+                        && countLine == lineScenario - 1) {
+                    resultScenario = lineOfFeatureFile;
+                }
+                countLine++;
+            }
+        } finally {
+            if (buffReaderScenario != null) {
+                try {
+                    buffReaderScenario.close();
+                } catch (IOException e) {
+                    log.error("Error al cerrar buffReaderScenario" + e.getMessage(), e);
                 }
             }
         }
-        return scenarios;
+        return resultScenario;
     }
 
-    public static void validatePassedOrdFailed(String featureName, int numScenario) throws IOException {
-        List<String> scenarios = readManualFeaturePassedOrdFailed(new File(PathConstants.featurePath() + featureName));
-        String passedOrdFailed = scenarios.get(numScenario - 1);
-
+    public static void validatePassedOrdFailed(File featureFile, int lineScenario) throws IOException {
+        String passedOrdFailed = readManualFeaturePassedOrdFailed(featureFile, lineScenario);
         String status;
         if (passedOrdFailed.contains("passed")) {
             status = "PASSED";
