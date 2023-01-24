@@ -36,27 +36,35 @@ public class AttachScreenshotToScenario {
                     nameEvidence = nameEvidence.substring(6);
                     FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.dir") + PathConstants.validatePath(readProperties.getPropiedad("report.assets.directory")) + nameEvidence);
                     byte[] fileInBytes = IOUtils.toByteArray(fileInputStream);
-                    if (nameEvidence.endsWith(".png") || nameEvidence.endsWith(".jpg") || nameEvidence.endsWith(".jpeg")) {
-                        scenario.attach(fileInBytes,
-                                "image/png",
-                                String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date())));
-                    } else if (nameEvidence.endsWith(".txt")) {
-                        scenario.attach(fileInBytes,
-                                "text/plain",
-                                String.format("%s %s.txt", scenario.getName(), formatDate.format(new Date())));
-                    } else if (nameEvidence.endsWith(".docx")) {
-                        scenario.attach(fileInBytes,
-                                "application/msword",
-                                String.format("%s %s.docx", scenario.getName(), formatDate.format(new Date())));
-                    } else if (nameEvidence.endsWith(".rar")) {
-                        scenario.attach(fileInBytes,
-                                "application/x-rar-compressed",
-                                String.format("%s %s.rar", scenario.getName(), formatDate.format(new Date())));
-                    } else {
-                        throw new IllegalStateException();
-                    }
+                    validateFileType(nameEvidence, scenario, fileInBytes);
                 }
             }
+        }
+    }
+
+    private void validateFileType(String nameEvidence, Scenario scenario, byte[] fileInBytes) {
+        if (nameEvidence.endsWith(".png") || nameEvidence.endsWith(".jpg") || nameEvidence.endsWith(".jpeg")) {
+            scenario.attach(fileInBytes,
+                    "image/png",
+                    String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date())));
+        } else if (nameEvidence.endsWith(".txt")) {
+            scenario.attach(fileInBytes,
+                    "text/plain",
+                    String.format("%s %s.txt", scenario.getName(), formatDate.format(new Date())));
+        } else if (nameEvidence.endsWith(".docx")) {
+            scenario.attach(fileInBytes,
+                    "application/msword",
+                    String.format("%s %s.docx", scenario.getName(), formatDate.format(new Date())));
+        } else if (nameEvidence.endsWith(".rar")) {
+            scenario.attach(fileInBytes,
+                    "application/x-rar-compressed",
+                    String.format("%s %s.rar", scenario.getName(), formatDate.format(new Date())));
+        } else if (nameEvidence.endsWith(".zip")) {
+            scenario.attach(fileInBytes,
+                    "application/zip",
+                    String.format("%s %s.zip", scenario.getName(), formatDate.format(new Date())));
+        } else {
+            throw new IllegalStateException();
         }
     }
 }
