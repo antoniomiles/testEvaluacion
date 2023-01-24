@@ -15,7 +15,7 @@ public class PropertiesUtilsTest {
 
     @Test
     public void getPropValues(){
-        PropertiesUtils propertiesUtils = new PropertiesUtils();
+        PropertiesReader propertiesUtils = new PropertiesReader();
         Optional<Properties> opProperties = propertiesUtils.getPropValues();
         Properties properties ;
         if(opProperties.isPresent()) {

@@ -1,4 +1,4 @@
-package com.pichincha.automationtest.userinterface;
+package com.pichincha.automationtest.ui;
 
 import io.appium.java_client.AppiumBy;
 import net.serenitybdd.screenplay.targets.Target;

@@ -8,7 +8,7 @@ import net.serenitybdd.screenplay.waits.WaitUntil;
 import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
 
-import static com.pichincha.automationtest.userinterface.AprobacionesMovil.*;
+import static com.pichincha.automationtest.ui.AprobacionesMovil.*;
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isEnabled;
 

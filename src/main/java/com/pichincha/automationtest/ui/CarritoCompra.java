@@ -1,4 +1,4 @@
-package com.pichincha.automationtest.userinterface;
+package com.pichincha.automationtest.ui;
 
 import net.serenitybdd.screenplay.targets.Target;
 import org.openqa.selenium.By;

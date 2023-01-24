@@ -1,19 +1,14 @@
 package com.pichincha.automationtest.glue;
 
-import com.pichincha.automationtest.util.ManualReadFeature;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 
-import java.io.IOException;
-
 public class SauceDemoLoginManualGlue {
 
-    private static final String SAUCEDEMOLOGINMANUAL_FEATURE = "SauceDemoLoginManual.feature";
-
     @Given("que el cliente ingresa a la pagina Mantest")
-    public void queElClienteIngresaAlaPagina() throws IOException {
-        ManualReadFeature.validatePassedOrdFailed(SAUCEDEMOLOGINMANUAL_FEATURE, 1);
+    public void queElClienteIngresaAlaPagina() {
+        //Metodo vacio por que pertenece a un step manual
     }
 
     @When("quien ingresa sus cred para iniciar sesion Mantest")
@@ -27,8 +22,8 @@ public class SauceDemoLoginManualGlue {
     }
 
     @Given("que el cliente ingresa a la pagina SauceDemo Mantest")
-    public void queElClienteIngresaaAlaPaginaSauceDemo() throws IOException {
-        ManualReadFeature.validatePassedOrdFailed(SAUCEDEMOLOGINMANUAL_FEATURE, 2);
+    public void queElClienteIngresaaAlaPaginaSauceDemo() {
+        //Metodo vacio por que pertenece a un step manual
     }
 
     @When("el ingresa sus cred para iniciar sesion Mantest")
@@ -42,8 +37,8 @@ public class SauceDemoLoginManualGlue {
     }
 
     @Given("que el cliente ingresa a la pagina SauceDemo2 Mantest")
-    public void queElClienteIngresaAlaPaginaSauceDemo2() throws IOException {
-        ManualReadFeature.validatePassedOrdFailed(SAUCEDEMOLOGINMANUAL_FEATURE, 3);
+    public void queElClienteIngresaAlaPaginaSauceDemo2() {
+        //Metodo vacio por que pertenece a un step manual
     }
 
     @When("el ingresa sus cred para iniciar sesion2 Mantest")
@@ -55,5 +50,4 @@ public class SauceDemoLoginManualGlue {
     public void seDeberiaMostrarElMensajeDeError2() {
         //Metodo vacio por que pertenece a un step manual
     }
-
 }
