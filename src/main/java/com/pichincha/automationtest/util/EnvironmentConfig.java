@@ -1,20 +1,21 @@
 package com.pichincha.automationtest.util;
 
-import net.serenitybdd.core.environment.EnvironmentSpecificConfiguration;
+import net.thucydides.core.util.SystemEnvironmentVariables;
 import net.thucydides.core.util.EnvironmentVariables;
 
 public class EnvironmentConfig {
-    private EnvironmentVariables variables;
 
-    public String getValue(String property) {
-        return EnvironmentSpecificConfiguration.from(variables).getProperty(property);
-    }
+    private static final EnvironmentVariables environmentVariables = SystemEnvironmentVariables.createEnvironmentVariables();
 
     public String getVariable(String variable) {
-        String value = System.getenv(variable);
+        String value = System.getenv(variable);//obtener desde variables de entorno
         if (value == null || value.isEmpty()) {
-            value = System.getProperty(variable);
+            value = System.getProperty(variable);//obtener desde variables del sistema
+            if (value == null || value.isEmpty()) {
+                value = environmentVariables.getProperty(variable);//obtener desde variables de sistema y serenity.properties
+            }
         }
         return value == null ? "" : value;
     }
+
 }
