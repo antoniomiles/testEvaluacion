@@ -41,7 +41,7 @@ public class RestsAssuredGlue {
                 .when().log().all() //retorna log total en consola de la peticion
                 //llamado al metodo de accion para consumir el servicio. Estan disponibles todos los metodos HTTP
                 //Dentro del metodo se envia la URL del servicio a consultar
-                .post(env.getValue("api.base") + "/api/users");
+                .post(env.getVariable("api.base") + "/api/users");
 
         response.then().statusCode(201); //validación del código de respuesta
         response.prettyPeek(); //metodo que imprime la respuesta de manera ordenada
@@ -67,7 +67,7 @@ public class RestsAssuredGlue {
                 .body(bodyRequest)
                 .pathParam("userId", userId)
                 .when().log().all()
-                .put(env.getValue("api.base") + "/api/users/{userId}");
+                .put(env.getVariable("api.base") + "/api/users/{userId}");
     }
 
     @Then("valido que el nuevo trabajo del usuario creado haya sido actualizado")
