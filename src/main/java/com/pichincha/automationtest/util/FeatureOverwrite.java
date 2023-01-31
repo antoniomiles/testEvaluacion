@@ -1,8 +1,8 @@
 package com.pichincha.automationtest.util;
 
 import lombok.extern.slf4j.Slf4j;
-import net.thucydides.core.util.EnvironmentVariables;
 import net.thucydides.core.util.SystemEnvironmentVariables;
+import net.thucydides.core.util.EnvironmentVariables;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
@@ -27,17 +27,17 @@ public class FeatureOverwrite {
     private FeatureOverwrite() {
     }
 
-    public static void overwriteFeatureFileAdd(final String featureName) throws IOException {
-        addExternalDataToFeature(featureName);
+    public static void overwriteFeatureFileAdd(final String featurePath) throws IOException {
+        addExternalDataToFeature(featurePath);
     }
 
-    private static void addExternalDataToFeature(final String featureName) throws IOException {
-        File featureFile = new File(PathConstants.featurePath() + featureName);
+    private static void addExternalDataToFeature(final String featurePath) throws IOException {
+        File featureFile = new File(featurePath);
         List<String> featureWithExternalData;
-        if (featureName.contains("Manual.feature")) {
+        if (featurePath.contains("Manual.feature")) {
             featureWithExternalData = impSetPaneOrCsvDataToFeature(featureFile);
         } else {
-            featureWithExternalData = impSetFileDataToFeature(featureFile, featureName);
+            featureWithExternalData = impSetFileDataToFeature(featureFile, featureFile.getName());
         }
 
         try (BufferedWriter writer = Files.newBufferedWriter(
@@ -131,19 +131,19 @@ public class FeatureOverwrite {
         return example + "|";
     }
 
-    public static void overwriteFeatureFileRemove(final String featureName) throws IOException {
-        removeExternalDataToFeature(featureName);
+    public static void overwriteFeatureFileRemove(final String featurePath) throws IOException {
+        removeExternalDataToFeature(featurePath);
     }
 
-    private static void removeExternalDataToFeature(final String featureName) throws IOException {
-        File featureFile = new File(PathConstants.featurePath() + featureName);
+    private static void removeExternalDataToFeature(final String featurePath) throws IOException {
+        File featureFile = new File(featurePath);
 
         final List<String> featureWithExternalData;
 
-        if (featureName.contains("Manual.feature")) {
+        if (featurePath.contains("Manual.feature")) {
             featureWithExternalData = impRemovePaneDataToFeature(featureFile);
         } else {
-            featureWithExternalData = currentFeatures.get(featureName);
+            featureWithExternalData = currentFeatures.get(featureFile.getName());
         }
         try (BufferedWriter writer = Files.newBufferedWriter(
                 Paths.get(featureFile.getAbsolutePath()), StandardCharsets.UTF_8)) {
