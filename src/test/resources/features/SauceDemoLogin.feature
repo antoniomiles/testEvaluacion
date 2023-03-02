@@ -1,7 +1,7 @@
-@REQ_PQBP-511 @Saucedemo @cucumber @R1
+@REQ_PQBP-511 @Saucedemo @cucumber @R1 @Agente1
 Feature: Iniciar sesion en la pagina SauceDemo
 
-  @id:1 @login
+  @id:1 @login @testExitoso
   Scenario Outline: T-E2E-PQBP-551-CA1- Iniciar sesión con credenciales correctas
     Given que el cliente admin ingresa a la pagina SauceDemo
     When el ingresa sus credenciales para iniciar sesion

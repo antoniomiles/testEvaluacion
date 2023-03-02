@@ -40,7 +40,7 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
                 }
             }
         } catch (Exception e) {
-            log.warn("ERROR: al adjuntar imagen/evidencia al reporte JSON generado por cucumber:" + e.getMessage(), e);
+            log.warn("ERROR: al adjuntar imagen/evidencia al reporte JSON generado por cucumber:" + e.getMessage());
         }
 
     }

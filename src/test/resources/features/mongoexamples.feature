@@ -1,4 +1,4 @@
-@REQ_PQBP-1846 @Database @Mongo
+@REQ_PQBP-1846 @Database @Mongo @Agente2
 Feature: Database Interaction example
   @id:1 @FetchCOllection
   Scenario: Fetch a collection from the server
