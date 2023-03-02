@@ -1,5 +1,8 @@
 package com.pichincha.automationtest.glue;
 
+import com.pichincha.automationtest.model.ModelScenario;
+import com.pichincha.automationtest.util.ManualReadFeature;
+import io.cucumber.java.Scenario;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -8,7 +11,7 @@ public class SauceDemoLoginManualGlue {
 
     @Given("que el cliente ingresa a la pagina Mantest")
     public void queElClienteIngresaAlaPagina() {
-        //Metodo vacio por que pertenece a un step manual
+        ManualReadFeature.validateScenario(ModelScenario.getScenario());
     }
 
     @When("quien ingresa sus cred para iniciar sesion Mantest")
@@ -23,7 +26,7 @@ public class SauceDemoLoginManualGlue {
 
     @Given("que el cliente ingresa a la pagina SauceDemo Mantest")
     public void queElClienteIngresaaAlaPaginaSauceDemo() {
-        //Metodo vacio por que pertenece a un step manual
+        ManualReadFeature.validateScenario(ModelScenario.getScenario());
     }
 
     @When("el ingresa sus cred para iniciar sesion Mantest")
@@ -38,7 +41,7 @@ public class SauceDemoLoginManualGlue {
 
     @Given("que el cliente ingresa a la pagina SauceDemo2 Mantest")
     public void queElClienteIngresaAlaPaginaSauceDemo2() {
-        //Metodo vacio por que pertenece a un step manual
+        ManualReadFeature.validateScenario(ModelScenario.getScenario());
     }
 
     @When("el ingresa sus cred para iniciar sesion2 Mantest")

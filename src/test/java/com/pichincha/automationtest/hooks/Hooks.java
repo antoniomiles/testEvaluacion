@@ -1,8 +1,10 @@
 package com.pichincha.automationtest.hooks;
 
 import com.google.common.base.Splitter;
+import com.pichincha.automationtest.model.ModelScenario;
 import io.cucumber.java.Before;
 import io.cucumber.java.ParameterType;
+import io.cucumber.java.Scenario;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
@@ -16,6 +18,11 @@ public class Hooks {
     @Before
     public void firstSetTheStage() {
         setTheStage(new OnlineCast());
+    }
+
+    @Before
+    public void setScenario(Scenario scenario) {
+        ModelScenario.setScenario(scenario);
     }
 
     @ParameterType(".*")

@@ -1,4 +1,4 @@
-@REQ_PQBP-1927 @Mobiletest
+@REQ_PQBP-1927 @Mobiletest @Agente1
 Feature: Demo Banca Movil Enrolamiento
 @id:1 @Enrollamiento
 Scenario Outline: T-E2E-PQBP-1927-CA1- Enrolamiento

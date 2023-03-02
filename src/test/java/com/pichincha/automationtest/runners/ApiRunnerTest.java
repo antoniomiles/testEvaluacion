@@ -1,6 +1,7 @@
 package com.pichincha.automationtest.runners;
 import com.intuit.karate.Results;
 import com.intuit.karate.Runner;
+import com.pichincha.automationtest.util.ControlsExecutionParallelAgents;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import net.minidev.json.JSONArray;
@@ -28,6 +29,8 @@ public class ApiRunnerTest {
 
     @Test
     public void testRunner() throws IOException {
+        ControlsExecutionParallelAgents.featuresSegmentation();
+
         Results results = Runner.path("src/test/resources/features/")
                 .tags("@karate").outputCucumberJson(true).parallel(5);
 
