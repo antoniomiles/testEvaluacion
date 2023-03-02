@@ -1,5 +1,7 @@
 package com.pichincha.automationtest.util;
 
+import com.pichincha.automationtest.exceptions.ExcRuntime;
+import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
@@ -98,6 +100,17 @@ public class ManualReadFeature {
             }
         }
         return resultScenario;
+    }
+
+    public static void validateScenario(Scenario scenario) {
+        try {
+            File featureFile = new File(scenario.getUri());
+            int lineScenario = scenario.getLine();
+            log.info("Validando scenario de la linea " + lineScenario + " en el feature " + featureFile.getName());
+            ManualReadFeature.validatePassedOrdFailed(featureFile, lineScenario);
+        } catch (IOException e) {
+            throw new ExcRuntime("Error al validar resultado de scenario Manual - " + e.getMessage(), e);
+        }
     }
 
     public static void validatePassedOrdFailed(File featureFile, int lineScenario) throws IOException {

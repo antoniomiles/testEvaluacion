@@ -16,33 +16,42 @@ trigger:
   - master
 
 parameters:
+  - name: NUM_AGENTES
+    displayName: 'Num agentes para ejecución'
+    default: 1
+    values:
+      - 1
+      - 2
+
   - name: FLUJO
     displayName: 'Flujo a ejecutar'
     default: TodosWeb
     values:
       - TodosWeb
       - TodosAPI
+      - TagFromVariable
+      - ManualTest
+      - ParallelTest
+      - Mobiletest
       - Saucedemo
       - SimulacionCompraTelefono
       - BancaMovil
       - TCS
       - GraphQL
-      - ManualTest
-      - ParallelTest
       - RestAssuredApi
-      - Mobiletest
       - Database
       - Mongo
+      - testExitoso
       
   - name: TIPO_TEST
-    displayName: 'Elija el tipo de test'
+    displayName: 'Tipo de Test'
     default: cucumber   
     values:
       - cucumber
       - karate
 
   - name: TIPO_DRIVER
-    displayName: 'Elija el tipo de driver'
+    displayName: 'Tipo de Driver'
     default: chrome
     values:
       - chrome
@@ -60,7 +69,8 @@ variables:
 stages:
   - template: serenity/init.yml@qa-pipeline-templates
     parameters:
+      NUM_AGENTES: ${{parameters.NUM_AGENTES}}
+      FLUJO: ${{parameters.FLUJO}}
       TIPO_TEST: ${{parameters.TIPO_TEST}}
       TIPO_DRIVER: ${{parameters.TIPO_DRIVER}}
-      FLUJO: ${{parameters.FLUJO}}
       TEST_EXTRA_PARAMETERS: ""

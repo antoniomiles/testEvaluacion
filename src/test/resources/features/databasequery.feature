@@ -1,4 +1,4 @@
-@REQ_PQBP-1845 @Database
+@REQ_PQBP-1845 @Database @Agente1
 Feature: Database Interaction example
 
   @id:1 @SelectQuery
