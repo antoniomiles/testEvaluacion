@@ -221,4 +221,23 @@ public class FeatureOverwrite {
         }
         return fileData;
     }
+
+
+    public static List<String> listFilesByFolder(String featureName, final File folder) {
+        final String ALL_FEATURES = "todos";
+        List<String> featuresList = new ArrayList<>();
+        if (featureName.equalsIgnoreCase(ALL_FEATURES)) {
+            for (final File fileOrFolder : Objects.requireNonNull(folder.listFiles())) {
+                if (fileOrFolder.isDirectory()) {
+                    listFilesByFolder(featureName, fileOrFolder);
+                } else {
+                    featuresList.add(fileOrFolder.getAbsolutePath());
+                }
+            }
+        } else {
+            featuresList = List.of(featureName.split(";"));
+        }
+        return featuresList;
+    }
+
 }

@@ -1,4 +1,4 @@
-@REQ_PQBP-110 @ManualTest @cucumber
+@REQ_PQBP-110 @ManualTest @cucumber @Agente2
 Feature: Pruebas manuales Web
 
   @id:1 @manual @manual-last-tested:sprint-1 @manual-test-evidence:[Evidencia_Given](assets/1screenshot.png),[Evidencia_When](assets/2screenshot.png),[Evidencia_Then](assets/3screenshot.png)

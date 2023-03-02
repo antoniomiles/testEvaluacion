@@ -1,4 +1,4 @@
-@REQ_PQBP-556 @karate
+@REQ_PQBP-556 @karate @Agente2
 Feature: Consulta servicio WSClientes0007
 
   @id:1 @TCS @Consulcontacto

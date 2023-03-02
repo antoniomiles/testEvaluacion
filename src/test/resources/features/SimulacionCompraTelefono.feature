@@ -1,8 +1,8 @@
-@REQ_PQBP-110 @SimulacionCompraTelefono @cucumber @R2
+@REQ_PQBP-110 @SimulacionCompraTelefono @cucumber @R1 @Agente2
 Feature: Simulacion de la Compra de telefonos
   Ejecutar una simulacion de la compra de telefonos
 
-  @id:1 @CompraTelefono @CompraTelefonoExitosa
+  @id:1 @CompraTelefono @CompraTelefonoExitosa @testExitoso
   Scenario Outline: T-E2E-PQBP-110-CA1- Compra de productos tecnologicos
   Para realizar una compra exitosa de un producto
   como cliente sin realizar login en la aplicación

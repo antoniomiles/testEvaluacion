@@ -1,4 +1,4 @@
-@REQ_PQBP-1706 @GraphQL @karate
+@REQ_PQBP-1706 @GraphQL @karate @Agente1
 Feature: GraphQl Test
   @id:1 @ConsultaValidaKarate @embebida
   Scenario: Solicitud GraphQL con query embedida

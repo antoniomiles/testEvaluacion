@@ -1,4 +1,4 @@
-@REQ_PQBP-557 @karate
+@REQ_PQBP-557 @karate @Agente1
 Feature: Consulta Intentos
   @id:1 @BancaMovil @Consultaintentos
   Scenario: T-API-PQBP-557-CA1- Consulta Intentos
