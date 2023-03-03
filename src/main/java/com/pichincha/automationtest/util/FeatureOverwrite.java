@@ -23,6 +23,7 @@ public class FeatureOverwrite {
     static PropertiesReader readProperties = new PropertiesReader();
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
     private static final Map<String, List<String>> currentFeatures = new HashMap<>();
+    private static List<String> featuresList = new ArrayList<>();
 
     private FeatureOverwrite() {
     }
@@ -222,10 +223,9 @@ public class FeatureOverwrite {
         return fileData;
     }
 
-
     public static List<String> listFilesByFolder(String featureName, final File folder) {
         final String ALL_FEATURES = "todos";
-        List<String> featuresList = new ArrayList<>();
+        List<String> featuresListCopy;
         if (featureName.equalsIgnoreCase(ALL_FEATURES)) {
             for (final File fileOrFolder : Objects.requireNonNull(folder.listFiles())) {
                 if (fileOrFolder.isDirectory()) {
@@ -237,7 +237,8 @@ public class FeatureOverwrite {
         } else {
             featuresList = List.of(featureName.split(";"));
         }
-        return featuresList;
+        featuresListCopy = featuresList;
+        return featuresListCopy;
     }
 
 }
