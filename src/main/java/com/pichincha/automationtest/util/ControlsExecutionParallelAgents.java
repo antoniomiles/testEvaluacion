@@ -1,7 +1,5 @@
 package com.pichincha.automationtest.util;
 
-import com.pichincha.automationtest.exceptions.ExcInvalidArgument;
-import com.pichincha.automationtest.exceptions.ExcRuntime;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -19,8 +17,10 @@ public class ControlsExecutionParallelAgents {
     private ControlsExecutionParallelAgents() {
         throw new IllegalStateException("Utility class");
     }
+
     static List<String> allFeatures = new ArrayList<>();
     static EnvironmentConfig environmentConfig = new EnvironmentConfig();
+    private static boolean parameterizedSegmentation;
 
     public static void featuresSegmentation() {
         final String FEATURE_NAME = "todos";
@@ -31,7 +31,7 @@ public class ControlsExecutionParallelAgents {
 
         if (valitateParalelExcecution(totalAgentes)) {
             List<String> pathsFeatureToRemove = getPathsFeatureToRemove(agenteNum);
-            if (allFeatures.size() == pathsFeatureToRemove.size()) {
+            if (!parameterizedSegmentation) {
                 pathsFeatureToRemove.clear();
                 pathsFeatureToRemove = getPathsFeatureToRemoveDefault(totalAgentes, agenteNum);
             }
@@ -53,6 +53,7 @@ public class ControlsExecutionParallelAgents {
             boolean isPresentAgent = false;
             try (BufferedReader bufferedReader = Files.newBufferedReader(Paths.get(featurePath), StandardCharsets.UTF_8)) {
                 while ((data = bufferedReader.readLine()) != null) {
+                    if (data.trim().contains(" @Agente")) parameterizedSegmentation = true;
                     isPresentAgent = data.trim().contains(" @Agente" + agenteNum);
                     if (isPresentAgent) {
                         break;
@@ -62,7 +63,7 @@ public class ControlsExecutionParallelAgents {
                     featuresToDelete.add(featurePath);
                 }
             } catch (IOException e) {
-                throw new ExcRuntime("=====> ERROR al crear lista de features para eliminar, " + e.getMessage(), e);
+                throw new IllegalStateException("=====> ERROR al crear lista de features para eliminar, " + e.getMessage(), e);
             }
         }
         return featuresToDelete;
@@ -96,10 +97,11 @@ public class ControlsExecutionParallelAgents {
                 }
             }
         } else {
-            throw new ExcInvalidArgument("ERROR: NO se puede realizar segmentacion de features ");
+            throw new IllegalStateException("ERROR: NO se puede realizar segmentacion de features ");
         }
         return featuresPathToRemove;
     }
+
     private static void removeFeatures(List<String> pathsFeatureToRemove) {
         log.info("=====> Total de features a borrar: " + pathsFeatureToRemove.size());
         pathsFeatureToRemove.forEach(feature -> log.info("Feature a borrar:" + feature));
@@ -108,7 +110,7 @@ public class ControlsExecutionParallelAgents {
             try {
                 Files.delete(Paths.get(featurePath));
             } catch (IOException e) {
-                throw new ExcRuntime("=====> ERROR al eliminar feature, " + featurePath + " - " + e.getMessage(), e);
+                throw new IllegalStateException("=====> ERROR al eliminar feature, " + featurePath + " - " + e.getMessage(), e);
             }
         }
     }
