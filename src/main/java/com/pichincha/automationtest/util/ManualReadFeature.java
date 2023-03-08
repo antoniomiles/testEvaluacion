@@ -72,6 +72,8 @@ public class ManualReadFeature {
                     }
                 }
             }
+        } catch (Exception e) {
+            log.error("ERROR, NO existe el archivo: " + e.getMessage(), e);
         }
         return statusExecution;
     }

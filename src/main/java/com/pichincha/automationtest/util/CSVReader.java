@@ -1,5 +1,7 @@
 package com.pichincha.automationtest.util;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,13 +9,14 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+@Slf4j
 public class CSVReader {
     private CSVReader() {
     }
 
     private static final char DEFAULT_SEPARATOR = ',';
 
-    public static List<Map<String, String>> getData(final String filePath) throws IOException {
+    public static List<Map<String, String>> getData(final String filePath){
         List<Map<String, String>> rowsData = new ArrayList<>();
         String lineData;
         Map<Integer, String> rowHeaderPosition = new HashMap<>();
@@ -35,6 +38,8 @@ public class CSVReader {
             if (headerRow != null) {
                 rowsData.add(headerRow);
             }
+        } catch (Exception e) {
+            log.error("ERROR, NO existe el archivo: " + e.getMessage(), e);
         }
         return rowsData;
     }
