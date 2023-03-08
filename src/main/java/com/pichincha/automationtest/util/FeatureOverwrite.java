@@ -24,6 +24,7 @@ public class FeatureOverwrite {
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
     private static final Map<String, List<String>> currentFeatures = new HashMap<>();
     private static List<String> featuresList = new ArrayList<>();
+    private static boolean externalDataProcessIsEmpty;
 
     private FeatureOverwrite() {
     }
@@ -50,17 +51,22 @@ public class FeatureOverwrite {
         }
     }
 
-    private static void externalDataProcess(String data, List<String> fileData) throws IOException {
+    private static void externalDataProcess(String data, List<String> fileData) {
         String filePath = getValidFilePath(data);
         List<Map<String, String>> externalData = getDataFromFile(
                 PathConstants.dataPath() + PathConstants.validatePath(filePath));
-        Collection<String> headers = externalData.get(0).keySet();
-        fileData.add(getGherkinExample(headers));
-        for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
-            Collection<String> rowValues = externalData.get(rowNumber).values();
-            String example = getGherkinExample(rowValues);
-            if (!"".equals(example))
-                fileData.add(example);
+        if (!externalData.isEmpty()) {
+            externalDataProcessIsEmpty = false;
+            Collection<String> headers = externalData.get(0).keySet();
+            fileData.add(getGherkinExample(headers));
+            for (int rowNumber = 0; rowNumber < externalData.size() - 1; rowNumber++) {
+                Collection<String> rowValues = externalData.get(rowNumber).values();
+                String example = getGherkinExample(rowValues);
+                if (!"".equals(example))
+                    fileData.add(example);
+            }
+        } else {
+            externalDataProcessIsEmpty = true;
         }
     }
 
@@ -77,8 +83,7 @@ public class FeatureOverwrite {
                 if (data.trim().contains("@externaldata")) {
                     externalDataProcess(data, fileData);
                     exampleData = false;
-                    StringBuilder externalString = new StringBuilder("#").append(data);
-                    data = externalString.toString();
+                    data = validateExternaldataProcess(data);
                 } else if ((data.trim().startsWith("@") || data.trim().startsWith("Scenario")) && exampleData) {
                     exampleData = false;
                     fileData.addAll(staticDataExample);
@@ -104,13 +109,21 @@ public class FeatureOverwrite {
         return fileData;
     }
 
+    private static String validateExternaldataProcess(String data) {
+        if (!externalDataProcessIsEmpty) {
+            StringBuilder externalString = new StringBuilder("#").append(data);
+            data = externalString.toString();
+        }
+        return data;
+    }
+
     private static String getValidFilePath(String data) {
         return data.substring(StringUtils.ordinalIndexOf(data, "@", 2) + 1)
                 .replace("|", "")
                 .trim();
     }
 
-    private static List<Map<String, String>> getDataFromFile(String filePath) throws IOException {
+    private static List<Map<String, String>> getDataFromFile(String filePath) {
         if (isCSV(filePath))
             return CSVReader.getData(filePath);
         return new ArrayList<>();
@@ -225,7 +238,6 @@ public class FeatureOverwrite {
 
     public static List<String> listFilesByFolder(String featureName, final File folder) {
         final String ALL_FEATURES = "todos";
-
         if (featureName.equalsIgnoreCase(ALL_FEATURES)) {
             for (final File fileOrFolder : Objects.requireNonNull(folder.listFiles())) {
                 if (fileOrFolder.isDirectory()) {
@@ -237,9 +249,11 @@ public class FeatureOverwrite {
         } else {
             featuresList = List.of(featureName.split(";"));
         }
-        List<String> featuresListCopy = new ArrayList<>(featuresList);
+        return new ArrayList<>(featuresList);
+    }
+
+    public static void clearListFilesByFolder() {
         featuresList.clear();
-        return featuresListCopy;
     }
 
 }
