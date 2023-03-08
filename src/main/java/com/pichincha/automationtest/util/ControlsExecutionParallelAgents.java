@@ -37,6 +37,7 @@ public class ControlsExecutionParallelAgents {
             }
             removeFeatures(pathsFeatureToRemove);
         }
+        FeatureOverwrite.clearListFilesByFolder();
     }
 
     private static boolean valitateParalelExcecution(String totalAgentes) {

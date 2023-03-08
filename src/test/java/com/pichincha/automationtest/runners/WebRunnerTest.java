@@ -40,6 +40,7 @@ public class WebRunnerTest {
                 FeatureOverwrite.overwriteFeatureFileAdd(feature);
             }
         }
+        FeatureOverwrite.clearListFilesByFolder();
     }
 
 
@@ -53,5 +54,6 @@ public class WebRunnerTest {
             }
             FeatureOverwrite.overwriteFeatureFileRemove(feature);
         }
+        FeatureOverwrite.clearListFilesByFolder();
     }
 }

@@ -225,7 +225,6 @@ public class FeatureOverwrite {
 
     public static List<String> listFilesByFolder(String featureName, final File folder) {
         final String ALL_FEATURES = "todos";
-
         if (featureName.equalsIgnoreCase(ALL_FEATURES)) {
             for (final File fileOrFolder : Objects.requireNonNull(folder.listFiles())) {
                 if (fileOrFolder.isDirectory()) {
@@ -237,9 +236,11 @@ public class FeatureOverwrite {
         } else {
             featuresList = List.of(featureName.split(";"));
         }
-        List<String> featuresListCopy = new ArrayList<>(featuresList);
+        return new ArrayList<>(featuresList);
+    }
+
+    public static void clearListFilesByFolder() {
         featuresList.clear();
-        return featuresListCopy;
     }
 
 }
