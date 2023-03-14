@@ -45,7 +45,7 @@ public class ManualReadFeature {
         return statusExecution;
     }
 
-    public static String setPassedOrFailedFromCSV(int numScenario, String filePath) throws IOException {
+    public static String setPassedOrFailedFromCSV(int numScenario, String filePath) {
         String lineData;
         String statusExecution = "  #EstadoScenarioNoDefinido";
         String numInitArrayReadCsv = readProperties.getPropiedad("num.init.array.read.csv");
@@ -73,7 +73,7 @@ public class ManualReadFeature {
                 }
             }
         } catch (Exception e) {
-            log.error("ERROR, NO existe el archivo: " + e.getMessage(), e);
+            log.error("ERROR en lectura de archivo: " + e.getMessage(), e);
         }
         return statusExecution;
     }

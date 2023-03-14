@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -39,7 +38,7 @@ public class CSVReader {
                 rowsData.add(headerRow);
             }
         } catch (Exception e) {
-            log.error("ERROR, NO existe el archivo: " + e.getMessage(), e);
+            log.error("ERROR en lectura de archivo CSV: " + e.getMessage(), e);
         }
         return rowsData;
     }
