@@ -38,7 +38,7 @@ parameters:
       - BancaMovil
       - TCS
       - GraphQL
-      - RestAssuredApi
+      - DemoblazeAPIRestAssured
       - Database
       - Mongo
       - testExitoso
