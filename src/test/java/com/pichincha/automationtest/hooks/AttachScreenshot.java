@@ -12,8 +12,8 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
 
     static PropertiesReader readProperties = new PropertiesReader();
 
-    @After("not @Database")
-    @AfterStep("not @manual and not @Database")
+    @After("not @Database and not @API")
+    @AfterStep("not @manual and not @Database and not @API")
     public void attachScreenshotJsonReportForScenario(Scenario scenario) {
         boolean isManualScenario = false;
 

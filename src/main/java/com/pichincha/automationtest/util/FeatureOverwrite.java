@@ -36,7 +36,7 @@ public class FeatureOverwrite {
     private static void addExternalDataToFeature(final String featurePath) throws IOException {
         File featureFile = new File(featurePath);
         List<String> featureWithExternalData;
-        if (featurePath.contains("Manual.feature")) {
+        if (featurePath.toLowerCase().contains("manual.feature")) {
             featureWithExternalData = impSetPaneOrCsvDataToFeature(featureFile);
         } else {
             featureWithExternalData = impSetFileDataToFeature(featureFile, featureFile.getName());
@@ -124,9 +124,11 @@ public class FeatureOverwrite {
     }
 
     private static List<Map<String, String>> getDataFromFile(String filePath) {
-        if (isCSV(filePath))
+        if (isCSV(filePath)) {
             return CSVReader.getData(filePath);
-        return new ArrayList<>();
+        } else {
+            return ExcelReader.getData(filePath);
+        }
     }
 
     private static boolean isCSV(String filePath) {
