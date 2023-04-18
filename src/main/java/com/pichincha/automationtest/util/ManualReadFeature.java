@@ -123,7 +123,7 @@ public class ManualReadFeature {
         } else if (passedOrdFailed.contains("failed")) {
             status = "FAILED";
         } else {
-            status = "PENDING";
+            throw new io.cucumber.java.PendingException();
         }
         assertEquals("ESTADO SCENARIO MANUAL: ", "PASSED", status);
     }

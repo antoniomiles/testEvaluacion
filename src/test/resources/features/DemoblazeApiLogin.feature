@@ -1,4 +1,4 @@
-@REQ_PQBP-110 @DemoblazeAPIRestAssured @cucumber @R1 @Agente1
+@REQ_PQBP-110 @API @DemoblazeAPIRestAssured @cucumber @R1 @Agente1
 Feature: Iniciar sesion mediante Api
   #RESTASSURED con ScreenPlay
   @id:1 @loginApi
