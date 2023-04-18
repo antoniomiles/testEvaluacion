@@ -43,28 +43,32 @@ public class AttachScreenshotToScenario {
     }
 
     private void validateFileType(String nameEvidence, Scenario scenario, byte[] fileInBytes) {
-        if (nameEvidence.endsWith(".png") || nameEvidence.endsWith(".jpg") || nameEvidence.endsWith(".jpeg")) {
-            scenario.attach(fileInBytes,
+        int pointIndex = nameEvidence.trim().indexOf(".");
+        String extension = nameEvidence.trim().toLowerCase().substring(pointIndex);
+        switch (extension) {
+            case ".jpg", ".png", "jpeg" -> scenario.attach(fileInBytes,
                     "image/png",
                     String.format("%s %s.jpg", scenario.getName(), formatDate.format(new Date())));
-        } else if (nameEvidence.endsWith(".txt")) {
-            scenario.attach(fileInBytes,
+            case ".txt" -> scenario.attach(fileInBytes,
                     "text/plain",
                     String.format("%s %s.txt", scenario.getName(), formatDate.format(new Date())));
-        } else if (nameEvidence.endsWith(".docx")) {
-            scenario.attach(fileInBytes,
+            case ".docx" -> scenario.attach(fileInBytes,
                     "application/msword",
                     String.format("%s %s.docx", scenario.getName(), formatDate.format(new Date())));
-        } else if (nameEvidence.endsWith(".rar")) {
-            scenario.attach(fileInBytes,
+            case ".pdf" -> scenario.attach(fileInBytes,
+                    "application/pdf",
+                    String.format("%s %s.pdf", scenario.getName(), formatDate.format(new Date())));
+            case ".html" -> scenario.attach(fileInBytes,
+                    "text/html",
+                    String.format("%s %s.phtml", scenario.getName(), formatDate.format(new Date())));
+            case ".rar" -> scenario.attach(fileInBytes,
                     "application/x-rar-compressed",
                     String.format("%s %s.rar", scenario.getName(), formatDate.format(new Date())));
-        } else if (nameEvidence.endsWith(".zip")) {
-            scenario.attach(fileInBytes,
+            case ".zip" -> scenario.attach(fileInBytes,
                     "application/zip",
                     String.format("%s %s.zip", scenario.getName(), formatDate.format(new Date())));
-        } else {
-            throw new IllegalStateException();
+            default ->
+                    throw new IllegalStateException("ERROR, formato de evidencia '" + nameEvidence + "' no soportado");
         }
     }
 }
