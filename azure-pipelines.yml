@@ -60,11 +60,7 @@ parameters:
       - appium
 
 variables:
-  - group: USUARIO_GENERICO
-  - group: JIRA_AUTOMATIZACION
-  - group: VARIABLES_TEST
-  - group: SONAR2
-  - group: APPIUM
+  - group: sqa-cross-arq-serenitybdd
 
 stages:
   - template: serenity/init.yml@qa-pipeline-templates
