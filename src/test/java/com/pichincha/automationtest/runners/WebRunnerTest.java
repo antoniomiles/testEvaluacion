@@ -28,11 +28,25 @@ public class WebRunnerTest {
 
     private static final String ALL_FEATURES = "todos";
     private static final String EXTENSION_FEATURE = ".feature";
+    private static final String WEB_DRIVER_PROPERTY = "webdriver.driver";
+
+
+    public static void setDriver(){
+        String envDriver = System.getenv("TIPO_DRIVER");
+        if (envDriver != null && !envDriver.isEmpty()){
+            System.setProperty(WEB_DRIVER_PROPERTY, envDriver);
+        }
+        else{
+            if (variables.getProperty(WEB_DRIVER_PROPERTY).equals("${TIPO_DRIVER}")){
+                System.setProperty(WEB_DRIVER_PROPERTY, "chrome");
+            }
+        }
+    }
 
     @BeforeSuite
     public static void init() throws IOException {
         ControlsExecutionParallelAgents.featuresSegmentation();
-
+        setDriver();
         String featureName = variables.getProperty("featureName");
         List<String> features = FeatureOverwrite.listFilesByFolder(featureName, new File(PathConstants.featurePath()));
         for (String feature : features) {
