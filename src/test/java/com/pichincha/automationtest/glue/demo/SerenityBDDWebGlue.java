@@ -101,8 +101,4 @@ public class SerenityBDDWebGlue {
                 LoginAzure.conCredenciales(environmentConfig.getVariable("QA-USER-AUTOMATION"), environmentConfig.getVariable("QA-PASS-AUTOMATION"))
         );
     }
-
-    @Then("realiza el ingreso exitoso")
-    public void realizaElIngresoExitoso() {
-    }
 }

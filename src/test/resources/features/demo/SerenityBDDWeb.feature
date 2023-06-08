@@ -50,4 +50,3 @@ Feature:  Pruebas para automatizacion WEB desde SerenityBDD
   @id:5 @LoginAzure
   Scenario: T-E2E-PQBP-511-CA1- Login Azure Usuario Generico
     Given que el cliente inicia sesion en el aplicativo con sus credenciales
-    Then  realiza el ingreso exitoso
