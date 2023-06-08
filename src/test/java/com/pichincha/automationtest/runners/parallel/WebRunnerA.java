@@ -1,7 +1,10 @@
 package com.pichincha.automationtest.runners.parallel;
 
 import com.pichincha.automationtest.runners.WebRunnerTest;
-import com.pichincha.automationtest.util.*;
+import com.pichincha.automationtest.util.AfterSuite;
+import com.pichincha.automationtest.util.BeforeSuite;
+import com.pichincha.automationtest.util.ControlParallel;
+import com.pichincha.automationtest.util.CustomCucumberWithSerenityRunner;
 import io.cucumber.junit.CucumberOptions;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
@@ -17,7 +20,7 @@ import static org.awaitility.Awaitility.await;
         features = "src/test/resources/features/",
         glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
         plugin = "json:build/cucumberreportstest/cucumberParallel1.json",
-        tags = "@R1 and not @karate and not @ManualTest and not @Mobiletest"
+        tags = "@R1 and not @karate and not @API and not @ManualTest and not @Mobiletest and not @smokeTest"
 )
 
 public class WebRunnerA {

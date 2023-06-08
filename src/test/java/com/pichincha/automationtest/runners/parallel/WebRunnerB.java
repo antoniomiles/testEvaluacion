@@ -14,7 +14,7 @@ import org.junit.runner.RunWith;
         features = "src/test/resources/features/",
         glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
         plugin = "json:build/cucumberreportstest/cucumberParallel2.json",
-        tags = "@R2 and not @karate and not @ManualTest and not @Mobiletest"
+        tags = "@R2 and not @karate and not @API and not @ManualTest and not @Mobiletest and not @smokeTest"
 )
 
 public class WebRunnerB {

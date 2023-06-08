@@ -12,27 +12,26 @@ import java.util.logging.Logger;
 
 public class PropertiesReader {
 
-    private final Properties proper = new Properties();
     Logger logger = Logger.getLogger(this.getClass().getName());
 
     public String getPropiedad(String atributopro) {
-        InputStream archivoProp = null;
+        InputStream imputStream = null;
+        Properties properties = new Properties();
         try {
-            archivoProp = PropertiesReader.class.getClassLoader()
-                    .getResourceAsStream("properties/manualtest.properties");
-            this.proper.load(archivoProp);
+            imputStream = PropertiesReader.class.getClassLoader().getResourceAsStream("properties/manualtest.properties");
+            properties.load(imputStream);
         } catch (IOException e) {
             logger.log(Level.WARNING, "ERROR: ", e);
         } finally {
-            if (archivoProp != null) {
+            if (imputStream != null) {
                 try {
-                    archivoProp.close();
+                    imputStream.close();
                 } catch (IOException e) {
                     logger.log(Level.WARNING, "ERROR: ", e);
                 }
             }
         }
-        return this.proper.getProperty(atributopro);
+        return properties.getProperty(atributopro);
     }
 
     public Optional<Properties> getPropValues() {
@@ -40,9 +39,9 @@ public class PropertiesReader {
         String projectDirectory = FileSystems.getDefault()
                 .getPath("")
                 .toAbsolutePath().toString();
-        String propFileName = projectDirectory +"/serenity.properties";
+        String propFileName = projectDirectory + "/serenity.properties";
 
-        try(InputStream inputStream = Files.newInputStream(Paths.get(propFileName))){
+        try (InputStream inputStream = Files.newInputStream(Paths.get(propFileName))) {
             properties.load(inputStream);
             return Optional.of(properties);
         } catch (IOException e) {
