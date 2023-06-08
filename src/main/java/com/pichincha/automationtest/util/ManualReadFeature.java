@@ -123,7 +123,7 @@ public class ManualReadFeature {
         } else if (passedOrdFailed.contains("failed")) {
             status = "FAILED";
         } else {
-            throw new io.cucumber.java.PendingException();
+            throw new io.cucumber.java.PendingException("No se encontró el resultado del scenario manual, verificar data/path de resultados");
         }
         assertEquals("ESTADO SCENARIO MANUAL: ", "PASSED", status);
     }

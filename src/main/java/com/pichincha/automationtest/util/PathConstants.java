@@ -1,7 +1,7 @@
 package com.pichincha.automationtest.util;
 
+import net.thucydides.core.environment.SystemEnvironmentVariables;
 import net.thucydides.core.util.EnvironmentVariables;
-import net.thucydides.core.util.SystemEnvironmentVariables;
 
 import java.io.File;
 
@@ -10,12 +10,8 @@ public class PathConstants {
     }
 
     private static final EnvironmentVariables variables = SystemEnvironmentVariables.createEnvironmentVariables();
-
-    private static final String RESOURCES_PATH = System.getProperty("user.dir")
-            + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator;
-
+    private static final String RESOURCES_PATH = System.getProperty("user.dir") + File.separator + "src" + File.separator + "test" + File.separator + "resources" + File.separator;
     private static final String FEATURE_PATH = RESOURCES_PATH + "features" + File.separator;
-
     private static final String DATA_PATH = RESOURCES_PATH + "data" + File.separator;
 
     public static String resourcesPath() {

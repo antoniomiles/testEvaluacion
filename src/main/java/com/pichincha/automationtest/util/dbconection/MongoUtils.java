@@ -33,19 +33,19 @@ public class MongoUtils {
     public MongoUtils(Map<String, Object> config) {
         this.config = config;
         MongoClientSettings clientSettings;
-        if(((String)config.get("username")).isEmpty() || ((String)config.get("password")).isEmpty()
-                || ((String) config.get("url")).isEmpty()){
+        if (((String) config.get("username")).isEmpty() || ((String) config.get("password")).isEmpty()
+                || ((String) config.get("url")).isEmpty()) {
             throw new IllegalArgumentException("Nombre de Usuario o Password son nulos o vacios");
-        }else{
-            clientSettings = getClientSetting(getMongoUrlString(),MongoUtils.getCodec());
+        } else {
+            clientSettings = getClientSetting(getMongoUrlString(), MongoUtils.getCodec());
         }
 
         this.mongoClient = MongoClients.create(clientSettings);
-        this.database = mongoClient.getDatabase((String)config.get("database"));
+        this.database = mongoClient.getDatabase((String) config.get("database"));
         logger.log(Level.INFO, "mongo connection ready");
     }
 
-    public MongoClientSettings getClientSetting(String connString, CodecRegistry codecRegistry ) {
+    public MongoClientSettings getClientSetting(String connString, CodecRegistry codecRegistry) {
 
         ConnectionString connectionString = new ConnectionString(connString);
         return MongoClientSettings.builder()
@@ -54,32 +54,33 @@ public class MongoUtils {
                 .build();
     }
 
-    private static CodecRegistry getCodec(){
+    private static CodecRegistry getCodec() {
         CodecRegistry pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
         return fromRegistries(MongoClientSettings.getDefaultCodecRegistry(),
                 pojoCodecRegistry);
     }
+
     public String getMongoUrlString() {
         String connectionString;
         String encodedUserName = URLEncoder.encode((String) config.get("username"), StandardCharsets.UTF_8);
         String encodedPassword = URLEncoder.encode((String) config.get("password"), StandardCharsets.UTF_8);
         String userinfo = encodedUserName.concat(":").concat(encodedPassword);
-        ST stMongoUrl = new ST((String) config.get("url"),'{','}');
-        stMongoUrl.add("userinfo",userinfo);
+        ST stMongoUrl = new ST((String) config.get("url"), '{', '}');
+        stMongoUrl.add("userinfo", userinfo);
         connectionString = stMongoUrl.render();
         return connectionString;
     }
 
-    public <T> MongoCollection<T> getCollection(String collectionName, Class<T> documentClass){
-        return database.getCollection(collectionName,documentClass);
+    public <T> MongoCollection<T> getCollection(String collectionName, Class<T> documentClass) {
+        return database.getCollection(collectionName, documentClass);
     }
 
-    public void createCollection(String collectioName, ValidationOptions options){
+    public void createCollection(String collectioName, ValidationOptions options) {
         database.createCollection(collectioName,
                 new CreateCollectionOptions().validationOptions(options));
     }
 
-    public void createCollection(String collectioName){
+    public void createCollection(String collectioName) {
         database.createCollection(collectioName);
     }
 

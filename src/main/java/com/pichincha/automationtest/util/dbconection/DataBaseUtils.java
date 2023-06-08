@@ -15,7 +15,7 @@ public class DataBaseUtils {
     private final JdbcTemplate jdbc;
 
     public DataBaseUtils(Map<String, Object> config) {
-        if("not_supported".equals(config.get("driverClassName"))){
+        if ("not_supported".equals(config.get("driverClassName"))) {
             throw new UnsupportedOperationException();
         } else {
             String url = (String) config.get("url");
@@ -44,7 +44,7 @@ public class DataBaseUtils {
         return jdbc.queryForList(query);
     }
 
-    public int update(String query, Object... args ){
+    public int update(String query, Object... args) {
         return jdbc.update(query, args);
     }
 

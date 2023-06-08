@@ -1,115 +1,122 @@
 # README
 
-Arquetipo de pruebas automatizadas E2E usando la herramienta SerenityBDD con Screenplay
+Arquetipo de pruebas automatizadas usando la herramienta SerenityBDD con Screenplay
 
-Realizadas por: EquipoE2E
+> **Soporta automatización**:
+> * Web
+> * Apis
+> * Movil
+> * As400
+> * Pruebas manuales 
+> * Scenarios con Karate Framework
 
-## Complementos
 
+## Herramientas y Complementos
 
-|**Intellij**|**Java**|**Gradle**|
-| :----: | :----: | :----:  |
-|[<img width="50" height="50" src="https://cdn.iconscout.com/icon/free/png-128/intellij-idea-569199.png">](https://www.jetbrains.com/es-es/idea/download/#section=windows)|[<img height="60" src="https://www.oracle.com/a/ocom/img/cb71-java-logo.png">](https://www.oracle.com/java/technologies/javase/javase-jdk8-downloads.html)|[<img height="50" src="https://gradle.org/images/gradle-knowledge-graph-logo.png?20170228">](https://gradle.org/releases/)|
-> **NOTA**: 
-> * Una vez obtenido Intellij es necesario instalar los plugins de Gherkin y Cucumber. (*[Guia de instalación plugins en intellij](https://www.jetbrains.com/help/idea/managing-plugins.html)*) 
-> * El navegador usado para la ejecución de las pruebas fue google chrome en su ultima versión ( 98.0.4758.102 )
+|                                                                               **IntelliJ**                                                                                |**Java**|**Gradle**|
+|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------:| :----: | :----:  |
+| [<img width="50" height="50" src="https://cdn.iconscout.com/icon/free/png-128/intellij-idea-569199.png">](https://www.jetbrains.com/es-es/idea/download/#section=windows) | [<img height="60" src="https://www.oracle.com/a/ocom/img/cb71-java-logo.png">](https://www.oracle.com/java/technologies/downloads/) | [<img height="50" src="https://gradle.org/images/gradle-knowledge-graph-logo.png?20170228">](https://gradle.org/releases/) |
+
+> **NOTA**:
+> * Para ejecutar el proyecto se recomienda minimo las siguientes versiones: 
+>   * IntelliJ Community Edition 2021
+>   * Java JDK 17
+>   * Gradle 7.4
+> * Una vez obtenido IntelliJ es necesario instalar los plugins de Gherkin y Cucumber for Java. (
+    *[Guia de instalación plugins en intellij](https://www.jetbrains.com/help/idea/managing-plugins.html)*)
 
 ## Ejecución local
 
-Clonar el proyecto
+0. Clonar el proyecto
 
 ```bash
   git clone https://BancoPichinchaEC@dev.azure.com/BancoPichinchaEC/BP-Quality-Management/_git/sqa-aut-arq-serenitybdd
 ```
 
-Entrar al directorio del proyecto
-
-```bash
-  cd sqa-aut-arq-serenitybdd
-```
 Para correr el proyecto de manera local se debe realizar los siguientes pasos:
-1. Definir la tag de los tipos de tests que se van a ejecutar, esto lo hacemos en el archivo WebRunnerTest, para el ejemplo se va a correr todos los test menos los manuales, api y las pruebas móviles. Se correra los test de aplicaciones web.
+
+1. Definir la tag de los tipos de tests que se van a ejecutar, esto lo hacemos en el archivo WebRunnerTest, para el
+   ejemplo se va a correr todos los test menos los de karate, manuales y las pruebas móviles. 
+
 ```
 tags = "not @karate and not @ManualTest and not @Mobiletest"
 ```
 
-2. Definir el driver a usarse en serenity.properties y comentar la elección del driver mediante variables de entorno. Para el ejemplo vamos a correr pruebas de una aplicación web por lo tanto vamos a seleccionar el driver de chrome
+2. Definir el driver a usarse en serenity.properties.
+
 ```
-####Configuracion driver
-#para corrida local
+#CONFIGURACION DRIVER
 webdriver.driver=chrome
-#para Azure pipeline
-#webdriver.driver=${TIPO_DRIVER}
 ```
-
-
-
-
-## Modificación del codigo
-
-- Para realizar modificaciones al codigo del proyecto. realizar los siguientes pasos: 
-
-     
-	 1. Importar el proyecto desde IntelliJ IDE bajo la estructura de un proyecto Gradle existente
-	 2. Configurar JRE System Library con JavaSE-1.8
-	 3. Configurar la codificación a UTF-8 al proyecto una vez sea importado
 
 ## Comandos
 
-El arquetipo posee 2 runners activos, uno para pruebas E2E y otro pruebas de Arquetipo
+El arquetipo posee 2 runners activos, uno para pruebas con SErenityBDD y otro para pruebas con Karate Framework
 
-### Comandos E2E
+### Comandos SerenityBDD
 
-Para ejecutar todos los features por linea de comandos
+Para ejecutar todos los escenarios por linea de comandos
+
 ```bash
   ./gradlew clean test --tests "com.pichincha.automationtest.runners.WebRunnerTest"
 ```
 
-Para ejecutar todos los escenarios que contengan un tag especifico
+Para ejecutar escenarios que contengan un tag especifico
+
 ```bash
   ./gradlew clean test --tests -Dcucumber.filter.tags="@test" com.pichincha.automationtest.runners.WebRunnerTest
 ```
 
-Para ejecutar los  enviando variables de ambiente
+Para ejecutar los escenarios enviando variables de ambiente
+
 ```bash
   ./gradlew clean test --tests "com.pichincha.automationtest.runners.WebRunnerTest" -Dvariable1=test
 ```
 
-Para ejecutar las pruebas con 3 hilos en paralelo  enviando variables de ambiente
+Para ejecutar las pruebas con 3 hilos en paralelo enviando variables de ambiente
+
 ```bash
   ./gradlew clean test -PmaxParallelForks=4 --tests "com.pichincha.automationtest.runners.parallel.*" aggregate -i -Dvariable=test
 ```
 
-### Comandos API
+### Comandos Karate Framework
 
-Para ejecutar todos los features por linea de comandos
+Para ejecutar todos los escenarios por linea de comandos
+
 ```bash
   ./gradlew clean test --tests "com.pichincha.automationtest.runners.ApiRunnerTest"
 ```
 
-Para ejecutar todos los escenarios que contengan un tag especifico
+Para ejecutar escenarios que contengan un tag especifico
+
 ```bash
   ./gradlew clean test --tests "-Dkarate.options=--tags @test" "com.pichincha.automationtest.runners.ApiRunnerTest"
 ```
 
-Para ejecutar los  enviando variables de ambiente
+Para ejecutar los escenarios enviando variables de ambiente
+
 ```bash
   ./gradlew clean test --tests "-Dkarate.options=--tags @test" "com.pichincha.automationtest.runners.ApiRunnerTest" -Dvariable1=test
 ```
 
+
+
+
 > **NOTA**:
-> * Para ejecutar el proyecto se necesita Java JDK 1.8 y Gradle con la versión 4.10.2 o superior.
-> * Otra alternativa para no instalar gradle es usar el comando gradlew al momento de ejecutar el proyecto como se muestro anteriormente.
-> * En caso de tener problemas con el web driver por la versión del google chrome, realizar el cambio del web driver (descarga) por una versión compatible con el google chrome instalado. tener en cuenta que la  ruta del web driver en el proyecto es \src\test\resources\drivers
-> * Para las pruebas E2E, el reporte serenity se genera en la ruta **target/site/serenity/index.html**, los reportes cucumber se generan en la carpeta **build/cucumber-reports/json**, el archivo **cucumber.json**
-> * Para las pruebas API, el reporte se genera en la ruta **build/karate-reports**, el archivo **karate-sumary.html**, y el reporte cucumber en la ruta **build/karate-reports/json**, el archivo **cucumber.json**
+> * Antes de empezar a usar el arquetipo para un nuevo proyecto se debe elimiar todos los objetso demo:
+>   * 1 Todos los paquetes/carpetas de nombre "demo"
+>   * 2 Contenido del paquete/carpeta "sqa-aut-arq-serenitybdd\src\test\resources\data\manualtest\"
+> * Para las pruebas de SerenityBDD, el reporte serenity se genera en la ruta **target/site/serenity/index.html**, los reportes
+    cucumber se generan en la carpeta **build/cucumber-reports/json**, en el archivo **cucumber.json**
+> * Para las pruebas Karate Framework, el reporte se genera en la ruta **build/karate-reports**, en el archivo **karate-sumary.html**, y
+    el reporte cucumber en la ruta **build/karate-reports/json**, en el archivo **cucumber.json**
 
 ## Construido con
 
 La automatización fue desarrollada con:
 
 * BDD - Estrategia de desarrollo
-* Screenplay 
+* Screenplay
 * Gradle - Manejador de dependencias
 * Cucumber - Framework para automatizar pruebas BDD
 * Serenity BDD - Biblioteca de código abierto para la generación de reportes
@@ -120,25 +127,27 @@ La automatización fue desarrollada con:
 [Manual SerenityBDD](https://pichincha.atlassian.net/wiki/spaces/CS/pages/2440757667/Manual+Arquetipo+SerenityBDD+ScreenPlay)
 
 
+
+
 # Pruebas automatizadas en dispositivos móviles
 
 Para correr de manera local se debe realizar los siguientes pasos:
 
-1. Definir la tag que debe correr el runner, esto lo hacemos en el archivo WebRunnerTest: 
+1. Definir la tag que debe correr el runner, esto lo hacemos en el archivo WebRunnerTest:
+
 ```
 tags = "@Mobiletest"
 ```
 
-2. Definir el driver de appium en serenity.properties y comentar la elección del driver mediante variables de entorno
+2. Definir el driver de appium en serenity.properties
+
 ```
-####Configuracion driver
-#para corrida local
-webdriver.driver=appium
-#para Azure pipeline
-#webdriver.driver=${TIPO_DRIVER}
+#CONFIGURACION DRIVER
+webdriver.driver=chrome
 ```
 
-3. Configurar las desired capabilities del dispositivo sobre el que se va a ejecutar las pruebas automatizadas, esto no es más datos referentes al dispositivo y la aplicación a ser probada
+3. Configurar las desired capabilities del dispositivo sobre el que se va a ejecutar las pruebas automatizadas, esto no
+   es más datos referentes al dispositivo y la aplicación a ser probada
 
 A continuación se detalla las principales desired capabilities y como se debe encontrar cada una:
 
@@ -153,21 +162,27 @@ A continuación se detalla las principales desired capabilities y como se debe e
 | noReset                | Si esta en false borra todos los datos de la aplicación es similar a cuando recién instalamos la aplicación. <br />Si esta en true guarda los datos de la aplicación                                                                                                                                                                                                                                        |
 
 **“appActivity” and “appPackage”**
-Para hallar estos datos de nuestra aplicación de Android, verificar que USB Debugging e Instalar vía USB estén activados. Despues ejecutar la aplicación
+Para hallar estos datos de nuestra aplicación de Android, verificar que USB Debugging e Instalar vía USB estén
+activados. Despues ejecutar la aplicación
 y finalmente ejecutar en la línea de comandos:
 <br />Mac-Linux:
+
 ```bash
 adb shell dumpsys window | grep -E 'mCurrentFocus'  
 ``` 
+
 Windows:
+
 ```bash
 adb shell dumpsys window | find "mCurrentFocus"
 ``` 
+
 Formato: package/activity
 
-
-Las desired capabilities en serenity se configura en el archivo serenity.properties a continuación se muestra algunos ejemplos
+Las desired capabilities en serenity se configura en el archivo serenity.properties a continuación se muestra algunos
+ejemplos
 <br />Para dispositivo físico Android
+
 ```
    ###Local
    ##Android
@@ -180,7 +195,9 @@ Las desired capabilities en serenity se configura en el archivo serenity.propert
    appium.hub=http://127.0.0.1:4723/wd/hub
 
 ```
+
 Para dispositivo físico IOS:
+
 ```
 ##IOS
 #appium.platformName=iOS
@@ -192,26 +209,28 @@ Para dispositivo físico IOS:
 #appium.app=/Users/bpuio01610025lm/Apps/app.ipa
 ```
 
-
 ## Ejecución en BrowserStack
-1. Para ejecutar nuestro proyecto en la granja BrowserStack primero se debe revisar en que modelo y versión de sistema operativo vamos a ejecutar la prueba, ingresando al siguiente link:
+
+1. Para ejecutar nuestro proyecto en la granja BrowserStack primero se debe revisar en que modelo y versión de sistema
+   operativo vamos a ejecutar la prueba, ingresando al siguiente link:
 
 [Lista de dispositivos BrowserStack](https://www.browserstack.com/list-of-browsers-and-platforms/app_automate)
 
 2. Para el caso de las granjas se debe configurar las siguientes desired capabilities de la siguiente forma:
 
-**app:** una vez subida la aplicación en browserStack, la plataforma nos devuelve un link y este  link se coloca en esta propiedad.
+**app:** una vez subida la aplicación en browserStack, la plataforma nos devuelve un link y este link se coloca en esta
+propiedad.
 
 **hub:** Colocamos la url del servidor de browserstack este sigue la siguiente estructura:
 <br />https://${BROWSERSTACK_USER}:${BROWSERSTACK_KEY}@hub-cloud.browserstack.com/wd/hub
 <br />Donde:
 <br />{BROWSERSTACK_USER} -> Es el usuario de la cuenta de BrowserStack
-<br />{BROWSERSTACK_KEY} -> Es la clave de la cuenta de BrowserStack 
-
+<br />{BROWSERSTACK_KEY} -> Es la clave de la cuenta de BrowserStack
 
 En las siguientes líneas se presentan dos ejemplos de la configuración de las desired capabilities para este caso:
 
 Para IOS
+
 ```
 ###BrowserStack IOS
 appium.deviceName=iPhone 12
@@ -221,8 +240,8 @@ appium.app=bs://d398f429005d405a82c11edcb827671b52c57db8
 appium.hub=https://serenitymobile_FXptXh:okS2z2FqLsHDh3Baw2ag@hub-cloud.browserstack.com/wd/hub
 ```
 
-
 Para Android
+
 ```
 ###BrowserStack Android
 appium.deviceName=Samsung Galaxy S8
@@ -233,19 +252,21 @@ appium.hub=https://serenitymobile_FXptXh:okS2z2FqLsHDh3Baw2ag@hub-cloud.browsers
 ```
 
 ## Ejecución en SouceLab
+
 1. Para ver el listado de dispositivos y versiones de sitemas operativos abrir el siguiente link:
-<br />[Lista de dispositivos SouceLab](https://saucelabs.com/products/supported-browsers-devices)
+   <br />[Lista de dispositivos SouceLab](https://saucelabs.com/products/supported-browsers-devices)
 
 
-2. **app:** Al igual que en browserStack se sube la aplicación a la plataforma, el formato que hay que seguir es el siguiente:
-<br />storage:filename=nombreDeLaAplicación.extensión
-<br />Ejemplo:
-<br />storage:filename=BancaMovil.apk
+2. **app:** Al igual que en browserStack se sube la aplicación a la plataforma, el formato que hay que seguir es el
+   siguiente:
+   <br />storage:filename=nombreDeLaAplicación.extensión
+   <br />Ejemplo:
+   <br />storage:filename=BancaMovil.apk
 
-
-Ejemplos de desired capabilities para conexión con SouceLab. 
+Ejemplos de desired capabilities para conexión con SouceLab.
 
 Para Android
+
 ```
 ###SouceLab Android
 appium.deviceName=Samsung Galaxy S9
@@ -255,8 +276,8 @@ appium.app=storage:filename=BancaMovil.apk
 appium.hub=https://oauth-edge.test90v2-41637:23addea2-5b1d-43ac-9b11-b844cc5fc543@ondemand.us-west-1.saucelabs.com:443/wd/hub
 ```
 
-
 Para IOS
+
 ```
 ###SouceLab IOS
 appium.deviceName=iPhone XR
@@ -266,10 +287,12 @@ appium.app=storage:filename=BancaMovil.ipa
 appium.hub=https://oauth-edge.test90v2-41637:23addea2-5b1d-43ac-9b11-b844cc5fc543@ondemand.us-west-1.saucelabs.com:443/wd/hub
 ```
 
-
 # Correr en el Pipeline pruebas móviles
+
 <br />Para correr el proyecto en el pipeline:
-1. Se debe configurar las variables de la library APPIUM ahi se debe setear las desired capabilities del dispositivo de la granja y credenciales de acceso. 
+
+1. Se debe configurar las variables de la library APPIUM ahi se debe setear las desired capabilities del dispositivo de
+   la granja y credenciales de acceso.
 2. Adicional en el serenity.properties agregar las siguiente líneas:
 
 ```
