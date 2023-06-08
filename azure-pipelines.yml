@@ -30,18 +30,16 @@ parameters:
       - TodosWeb
       - TodosAPI
       - TagFromVariable
-      - ManualTest
       - ParallelTest
-      - Mobiletest
-      - Saucedemo
-      - SimulacionCompraTelefono
-      - BancaMovil
+      - SerenityBDDWeb
+      - SerenityBDDApi
+      - SerenityBDDDataBase
+      - SerenityBDDMovil
+      - ManualTest
       - TCS
-      - GraphQL
-      - DemoblazeAPIRestAssured
-      - Database
-      - Mongo
-      - testExitoso
+      - ConsultaIntentos
+      - SDtestExitoso
+      - LoginAzure
       
   - name: TIPO_TEST
     displayName: 'Tipo de Test'
@@ -69,4 +67,4 @@ stages:
       FLUJO: ${{parameters.FLUJO}}
       TIPO_TEST: ${{parameters.TIPO_TEST}}
       TIPO_DRIVER: ${{parameters.TIPO_DRIVER}}
-      TEST_EXTRA_PARAMETERS: ""
+      TEST_EXTRA_PARAMETERS: -DQA-USER-AUTOMATION="$(QA-USER-AUTOMATION)" -DQA-PASS-AUTOMATION="$(QA-PASS-AUTOMATION)"

@@ -1,7 +1,7 @@
 package com.pichincha.automationtest.runners;
 import com.intuit.karate.Results;
 import com.intuit.karate.Runner;
-import com.pichincha.automationtest.util.ControlsExecutionParallelAgents;
+import com.pichincha.automationtest.util.ControlExecution;
 import net.masterthought.cucumber.Configuration;
 import net.masterthought.cucumber.ReportBuilder;
 import net.minidev.json.JSONArray;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class ApiRunnerTest {
     private static final Logger logger = Logger.getLogger(ApiRunnerTest.class.getName());
@@ -29,14 +29,14 @@ public class ApiRunnerTest {
 
     @Test
     public void testRunner() throws IOException {
-        ControlsExecutionParallelAgents.featuresSegmentation();
+        ControlExecution.featuresSegmentation();
 
         Results results = Runner.path("src/test/resources/features/")
                 .tags("@karate").outputCucumberJson(true).parallel(5);
 
         String karateOutputPath = "build/karate-reports";
         generateReport(karateOutputPath);
-        assertTrue(results.getErrorMessages(), results.getFailCount() == 0);
+        assertEquals(results.getErrorMessages(), 0, results.getFailCount());
     }
     public static void generateReport(String karateOutputPath) throws IOException {
         Collection<File> jsonFiles = FileUtils.listFiles(new File(karateOutputPath), new String[]{"json"},true);
