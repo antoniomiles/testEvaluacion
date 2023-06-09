@@ -15,7 +15,6 @@ import io.cucumber.java.en.When;
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.actions.Open;
-import net.serenitybdd.screenplay.ensure.Ensure;
 
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import static com.pichincha.automationtest.ui.demo.PageCart.SUCCESSFULL_PURCHASE
 import static net.serenitybdd.screenplay.GivenWhenThen.*;
 import static net.serenitybdd.screenplay.actors.OnStage.theActorInTheSpotlight;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isPresent;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 import static net.serenitybdd.screenplay.questions.WebElementQuestion.the;
 import static org.hamcrest.CoreMatchers.containsString;
 
@@ -51,8 +51,8 @@ public class SerenityBDDWebGlue {
 
     @Then("el deberia ingresar a ver los productos disponibles")
     public void elDeberiaIngresarAVerLosProductosDisponibles() {
-        then(theActorInTheSpotlight()).attemptsTo(
-                Ensure.that(PageSauceProducts.PRODUCT_TITLE).isDisplayed()
+        then(theActorInTheSpotlight()).should(
+                seeThat(the(PageSauceProducts.PRODUCT_TITLE), isVisible())
         );
     }
 
