@@ -22,3 +22,13 @@ Feature: Pruebas usando Karate Framework para llar a APIs
     When method POST
     Then status 201
     And print response
+
+  @id:3 @ConsultaIntentosUrlFallida @smokeTest
+  Scenario: T-API-PQBP-556-CA05 - Consulta Intentos, colocado url incorrecta para que de 404
+    * header content-type = 'application/json'
+    Given url 'https://app-security-username-attempts-dot-pmovil-app-test.ue.r.appspot.com/app/security/biometric/identification/attempts/urlIncorrecta'
+    And def user = read('classpath:../data/demo/BMconsultaIntentosUsuarioData.json')
+    And request user
+    When method POST
+    Then status 201
+    And print response
