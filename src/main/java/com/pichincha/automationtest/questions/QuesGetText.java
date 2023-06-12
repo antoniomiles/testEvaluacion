@@ -21,9 +21,6 @@ public class QuesGetText implements Question<String> {
 
     @Override
     public String answeredBy(Actor actor) {
-        actor.attemptsTo(
-                WaitUntil.the(target, isVisible())
-        );
         return target.resolveFor(actor).getText();
     }
 }
