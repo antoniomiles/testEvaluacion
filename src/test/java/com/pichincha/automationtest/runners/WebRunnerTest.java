@@ -18,7 +18,7 @@ import java.util.List;
         glue = {"com.pichincha.automationtest.hooks", "com.pichincha.automationtest.glue"},
         plugin = "json:build/cucumber-reports/json/cucumber.json",
         snippets = CucumberOptions.SnippetType.CAMELCASE,
-        tags = "@EvaluacionAPI"
+        tags = "not @karate and not @API and not @ManualTest and not @Mobiletest and not @smokeTest"
 )
 
 public class WebRunnerTest {
