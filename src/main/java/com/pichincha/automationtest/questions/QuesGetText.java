@@ -3,9 +3,6 @@ package com.pichincha.automationtest.questions;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Question;
 import net.serenitybdd.screenplay.targets.Target;
-import net.serenitybdd.screenplay.waits.WaitUntil;
-
-import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 public class QuesGetText implements Question<String> {
 
