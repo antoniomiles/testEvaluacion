@@ -70,7 +70,7 @@ dependencies {
 }
 
 tasks.register('backupFeatures') {
-    dependsOn(clean, clearReports)
+    dependsOn(clearReports)
     doLast {
         copy {
             from "src/test/resources/features"
