@@ -58,6 +58,7 @@ parameters:
       - appium
 
 variables:
+  - group: sqa-cross-generico
   - group: sqa-cross-arq-serenitybdd
 
 stages:
