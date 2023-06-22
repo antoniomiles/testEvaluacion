@@ -79,19 +79,26 @@ tasks.register('backupFeatures') {
     }
 }
 
+tasks.register('copyAssets') {
+    onlyIf {
+        new File('target/site/serenity/isManualTests').exists()
+    }
+    doLast {
+        copy {
+            from "src/test/resources/assets"
+            into "target/site/serenity/assets"
+        }
+    }
+}
+
 tasks.register('restoreFeatures') {
+    dependsOn(copyAssets)
     doLast {
         copy {
             from "build/originalFeatures"
             into "src/test/resources/features"
         }
-
         delete "build/originalFeatures"
-
-        copy {
-            from "src/test/resources/assets"
-            into "target/site/serenity/assets"
-        }
     }
 }
 

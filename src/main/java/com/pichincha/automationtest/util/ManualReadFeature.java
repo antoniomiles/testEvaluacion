@@ -105,6 +105,15 @@ public class ManualReadFeature {
     }
 
     public static void validateScenario(Scenario scenario) {
+        String nameFile = "isManualTests";
+        File file = new File(System.getProperty("user.dir") + File.separator + "target" + File.separator + "site" + File.separator + "serenity" + File.separator + nameFile);
+        try {
+            boolean fileCreated = file.createNewFile();
+            if (fileCreated) log.info("=====> Archivo " + nameFile + "creado exitosamente");
+        } catch (IOException e) {
+            log.info("Error al crear archivo " + nameFile + e.getMessage());
+        }
+
         try {
             File featureFile = new File(scenario.getUri());
             int lineScenario = scenario.getLine();
