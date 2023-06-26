@@ -5,8 +5,8 @@ buildscript {
         }
     }
     dependencies {
-        classpath "net.serenity-bdd:serenity-gradle-plugin:3.4.2"
-        classpath "net.serenity-bdd:serenity-single-page-report:3.7.1"
+        classpath "net.serenity-bdd:serenity-gradle-plugin:3.3.10"
+        classpath "net.serenity-bdd:serenity-single-page-report:3.3.10"
     }
 }
 
@@ -46,7 +46,7 @@ sourceSets {
 }
 
 ext {
-    serenityCoreVersion = '3.7.1'
+    serenityCoreVersion = '3.8.1'
 }
 
 dependencies {
