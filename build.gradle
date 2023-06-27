@@ -46,7 +46,7 @@ sourceSets {
 }
 
 ext {
-    serenityCoreVersion = '3.8.1'
+    serenityCoreVersion = '3.7.0'
 }
 
 dependencies {
