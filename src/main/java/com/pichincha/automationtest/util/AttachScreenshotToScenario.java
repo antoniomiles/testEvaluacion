@@ -60,7 +60,7 @@ public class AttachScreenshotToScenario {
                     String.format("%s %s.pdf", scenario.getName(), formatDate.format(new Date())));
             case ".html" -> scenario.attach(fileInBytes,
                     "text/html",
-                    String.format("%s %s.phtml", scenario.getName(), formatDate.format(new Date())));
+                    String.format("%s %s.html", scenario.getName(), formatDate.format(new Date())));
             case ".rar" -> scenario.attach(fileInBytes,
                     "application/x-rar-compressed",
                     String.format("%s %s.rar", scenario.getName(), formatDate.format(new Date())));

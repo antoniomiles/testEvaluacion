@@ -10,7 +10,6 @@ Feature: Pruebas usando Karate Framework para llar a APIs
     And request user
     When method POST
     Then status 200
-    And print response
     And match response.ConsultarContactoTransaccional01Response.error.mensajeNegocio contains 'Transaccion exitosa.'
 
   @id:2 @ConsultaIntentos
@@ -23,12 +22,15 @@ Feature: Pruebas usando Karate Framework para llar a APIs
     Then status 201
     And print response
 
-  @id:3 @ConsultaIntentosUrlFallida @smokeTest
+  @id:3 @ConsultaIntentosUrlFallida @smokeTest @aplicativo:CXP%(Banca%Web) @funcionalidad:Test%Jira
   Scenario: T-API-PQBP-556-CA05 - Consulta Intentos, colocado url incorrecta para que de 404
     * header content-type = 'application/json'
     Given url 'https://app-security-username-attempts-dot-pmovil-app-test.ue.r.appspot.com/app/security/biometric/identification/attempts/urlIncorrecta'
     And def user = read('classpath:../data/demo/BMconsultaIntentosUsuarioData.json')
     And request user
     When method POST
-    Then status 201
+    #Para SmokeTest
+    And print karate.prevRequest
+    And print karate.prevRequest.body
     And print response
+    Then status 201
