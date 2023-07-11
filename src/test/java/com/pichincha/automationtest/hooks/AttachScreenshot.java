@@ -5,7 +5,9 @@ import com.pichincha.automationtest.util.PropertiesReader;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterStep;
 import io.cucumber.java.Scenario;
+import io.restassured.specification.FilterableRequestSpecification;
 import lombok.extern.slf4j.Slf4j;
+import net.serenitybdd.rest.SerenityRest;
 
 @Slf4j
 public class AttachScreenshot extends AttachScreenshotToScenario {
@@ -42,6 +44,24 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
         } catch (Exception e) {
             log.warn("ERROR: al adjuntar imagen/evidencia al reporte JSON generado por cucumber:" + e.getMessage());
         }
+    }
 
+    @After("@api and @smokeTest and not @karate")
+    public void addEvidenceApis(Scenario scenario) {
+        if (scenario.isFailed()) {
+            FilterableRequestSpecification requestSpecification = (FilterableRequestSpecification) SerenityRest.when();
+            String templateJson = """
+                    {
+                        "URL": "%s",
+                        "Request Headers": "%s",
+                        "Request Body": "%s",
+                        "Status Code": "%s",
+                        "Response Headers": "%s",
+                        "Response Body": "%s"
+                    }""";
+
+            String evidences = String.format(templateJson, requestSpecification.getURI(), requestSpecification.getHeaders().toString(), requestSpecification.getBody(), SerenityRest.lastResponse().statusCode(), SerenityRest.lastResponse().getHeaders(), SerenityRest.lastResponse().getBody().prettyPrint());
+            scenario.log(evidences);
+        }
     }
 }

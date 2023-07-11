@@ -2,7 +2,7 @@
 Feature:  Pruebas para automatizacion WEB desde SerenityBDD
   Varios scenarios de pruebas Web con SerenityBDD
 
-  @id:1 @SauceDemo @login @SDdataEstatica @smokeTest
+  @id:1 @SauceDemo @login @SDdataEstatica @smokeTest @aplicativo:CXP%(Banca%Web) @funcionalidad:Test%Jira
   Scenario Outline: T-E2E-SMOKETEST-PQBP - Iniciar sesion con credenciales correctas, data estatica.
     Given que el cliente admin ingresa a la pagina SauceDemo
     When el ingresa sus credenciales para iniciar sesion

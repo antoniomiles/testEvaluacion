@@ -3,7 +3,7 @@ Feature:  Pruebas para automatizacion de APIs desde SerenityBDD
   Varios scenarios de pruebas APIs con SerenityBDD y Restassured
 
   #RESTASSURED con ScreenPlay
-  @id:1 @loginApi @smokeTest
+  @id:1 @loginApi @smokeTest @aplicativo:CXP%(Banca%Web) @funcionalidad:Test%Jira
   Scenario Outline: T-E2E-SMOKETEST-PQBP - Iniciar sesion con credenciales correctas en el Api-Demoblaze
     Given que "usuario" se conecta a la API "https://api.demoblaze.com"
     When inicia sesion en el endpoint "/login" con las credenciales
@@ -25,7 +25,7 @@ Feature:  Pruebas para automatizacion de APIs desde SerenityBDD
       | @externaldata@demo/demoblazeloginerror.csv |
 
   #RESTASSURED con ScreenPlay
-  @id:3 @loginApiUrlFallida @smokeTest
+  @id:3 @loginApiUrlFallida @smokeTest @aplicativo:CXP%(Banca%Web) @funcionalidad:Test%Jira
   Scenario Outline: T-E2E-SMOKETEST-PQBP - Iniciar sesion con credenciales correctas en el Api-Demoblaze, colocado url incorrecta para que de 404
     Given que "usuario" se conecta a la API "https://api.demoblaze.com"
     When inicia sesion en el endpoint "/urlIncorrecta" con las credenciales
