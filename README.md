@@ -18,6 +18,7 @@ Arquetipo de pruebas automatizadas usando la herramienta SerenityBDD con Screenp
 | [<img width="50" height="50" src="https://cdn.iconscout.com/icon/free/png-128/intellij-idea-569199.png">](https://www.jetbrains.com/es-es/idea/download/#section=windows) | [<img height="60" src="https://www.oracle.com/a/ocom/img/cb71-java-logo.png">](https://www.oracle.com/java/technologies/downloads/) | [<img height="50" src="https://gradle.org/images/gradle-knowledge-graph-logo.png?20170228">](https://gradle.org/releases/) |
 
 > **NOTA**:
+
 > * Para ejecutar el proyecto se recomienda minimo las siguientes versiones: 
 >   * IntelliJ Community Edition 2021
 >   * Java JDK 17

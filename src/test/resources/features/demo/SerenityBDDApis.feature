@@ -25,10 +25,21 @@ Feature:  Pruebas para automatizacion de APIs desde SerenityBDD
       | @externaldata@demo/demoblazeloginerror.csv |
 
   #RESTASSURED con ScreenPlay
+
   @id:3 @loginApiUrlFallida @smokeTest @aplicativo:CXP%(Banca%Web) @funcionalidad:Test%Jira
   Scenario Outline: T-E2E-SMOKETEST-PQBP - Iniciar sesion con credenciales correctas en el Api-Demoblaze, colocado url incorrecta para que de 404
     Given que "usuario" se conecta a la API "https://api.demoblaze.com"
-    When inicia sesion en el endpoint "/urlIncorrecta" con las credenciales
+    When inicia sesion en el endpoint "/endPointFallido" con las credenciales
+      | user   | pass   |
+      | <user> | <pass> |
+    Then visualiza el codigo de autenticacion y el status code 200
+    Examples:
+      | @externaldata@demo/demoblazeloginok.csv |
+
+  @id:3 @loginApiUrlFallida @smokeTest @aplicativo:CXP%(Banca%Web) @funcionalidad:Test%Jira
+  Scenario Outline: T-E2E-SMOKETEST-PQBP - Iniciar sesion con credenciales correctas en el Api-Demoblaze, colocado url incorrecta para que de 500
+    Given que "usuario" se conecta a la API "http://urlincorrecta.dgd.fxghs"
+    When inicia sesion en el endpoint "/login" con las credenciales
       | user   | pass   |
       | <user> | <pass> |
     Then visualiza el codigo de autenticacion y el status code 200

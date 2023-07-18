@@ -1,5 +1,4 @@
 package com.pichincha.automationtest.ui.demo;
-
 import io.appium.java_client.AppiumBy;
 import net.serenitybdd.core.annotations.findby.By;
 import net.serenitybdd.screenplay.targets.Target;
