@@ -36,7 +36,6 @@ Feature:  Pruebas para automatizacion WEB desde SerenityBDD
     Examples:
       | @externaldata@demo\DataSaucedemoLocked.csv |
 
-
   @id:4 @CompraTelefono @CompraTelefonoExitosa
   Scenario Outline: T-E2E-PQBP-511-CA04 - Compra de productos tecnologicos.
   Para realizar una compra exitosa de un producto  como cliente sin realizar login en la aplicación  necesito ser capaz de realizar y verificar la compra
@@ -45,7 +44,6 @@ Feature:  Pruebas para automatizacion WEB desde SerenityBDD
     Then el realiza la compra del producto exitosamente
     Examples:
       | @externaldata@demo/DataCompraTelefono.xlsx..compra |
-
 
   @id:5 @LoginAzure
   Scenario: T-E2E-PQBP-511-CA1- Login Azure Usuario Generico

@@ -62,6 +62,7 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
     implementation group: 'org.springframework', name: 'spring-jdbc', version: '6.0.9'
     implementation 'org.mongodb:mongodb-driver-sync:4.9.1'
+    implementation 'org.json:json:20230618'
     testImplementation 'com.intuit.karate:karate-junit4:1.4.0.RC3'
     testImplementation 'com.intuit.karate:karate-netty:0.9.3.RC1'
     testImplementation "com.intuit.karate:karate-apache:0.9.6"
@@ -98,6 +99,7 @@ tasks.register('restoreFeatures') {
             from "build/originalFeatures"
             into "src/test/resources/features"
         }
+
         delete "build/originalFeatures"
     }
 }
