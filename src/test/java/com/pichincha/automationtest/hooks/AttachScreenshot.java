@@ -32,7 +32,7 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
                 }
             }
             if (isManualScenario) {
-                String addEvidenceOn = readProperties.getPropiedad("add.evidence.cucumber.on");
+                String addEvidenceOn = readProperties.getProperty("add.evidence.cucumber.on", "manualtest.properties");
                 if (addEvidenceOn.trim().equalsIgnoreCase("failed")) {
                     if (scenario.isFailed()) {
                         addScreenshotManualTest(scenario);
@@ -49,11 +49,12 @@ public class AttachScreenshot extends AttachScreenshotToScenario {
             log.warn("ERROR: al adjuntar imagen/evidencia al reporte JSON generado por cucumber:" + e.getMessage());
         }
     }
+
     @After("@api and @smokeTest and not @karate")
     public void addEvidenceApis(Scenario scenario) {
         if (scenario.isFailed()) {
             FilterableRequestSpecification requestSpecification = (FilterableRequestSpecification) SerenityRest.when();
-            Map<String, Object> metadata  = new HashMap<>();
+            Map<String, Object> metadata = new HashMap<>();
             metadata.put("URL", requestSpecification.getURI());
             metadata.put("Request Headers", requestSpecification.getHeaders().toString().split("\n"));
             metadata.put("Request Method", requestSpecification.getMethod());

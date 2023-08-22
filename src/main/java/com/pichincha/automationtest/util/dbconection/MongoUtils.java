@@ -15,6 +15,7 @@ import org.stringtemplate.v4.ST;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,7 +32,7 @@ public class MongoUtils {
     private MongoDatabase database;
 
     public MongoUtils(Map<String, Object> config) {
-        this.config = config;
+        this.config = new HashMap<>(config);
         MongoClientSettings clientSettings;
         if (((String) config.get("username")).isEmpty() || ((String) config.get("password")).isEmpty()
                 || ((String) config.get("url")).isEmpty()) {

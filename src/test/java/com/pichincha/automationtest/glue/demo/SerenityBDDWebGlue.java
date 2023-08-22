@@ -3,10 +3,11 @@ package com.pichincha.automationtest.glue.demo;
 import com.pichincha.automationtest.model.demo.Customer;
 import com.pichincha.automationtest.questions.QuesGetText;
 import com.pichincha.automationtest.tasks.demo.*;
-import com.pichincha.automationtest.ui.demo.PageLoginAzureUI;
-import com.pichincha.automationtest.ui.demo.PageMain;
-import com.pichincha.automationtest.ui.demo.PageSauceLogin;
-import com.pichincha.automationtest.ui.demo.PageSauceProducts;
+import com.pichincha.automationtest.tasks.demo.retrieveusername.ProccessRetrieveUserName;
+import com.pichincha.automationtest.tasks.demo.retrieveusername.RetrieveData;
+import com.pichincha.automationtest.tasks.demo.retrieveusername.UseRetrievedData;
+import com.pichincha.automationtest.tasks.demo.retrieveusername.enums.VarMsGraph;
+import com.pichincha.automationtest.ui.demo.*;
 import com.pichincha.automationtest.util.EnvironmentConfig;
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.en.Given;
@@ -25,7 +26,7 @@ import static net.serenitybdd.screenplay.actors.OnStage.theActorInTheSpotlight;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isPresent;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 import static net.serenitybdd.screenplay.questions.WebElementQuestion.the;
-import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.*;
 
 @Slf4j
 public class SerenityBDDWebGlue {
@@ -59,7 +60,7 @@ public class SerenityBDDWebGlue {
     @Then("se deberia mostrar el siguiente mensaje de error")
     public void seDeberiaMostrarElSiguienteMensajeDeError(String errorMessage) {
         then(theActorInTheSpotlight()).should(
-                seeThat("Mensaje de Error ", QuesGetText.getText(PageSauceLogin.LOCKED_ERROR), containsString(errorMessage))
+                seeThat("Mensaje de Error ", QuesGetText.fromTarget(PageSauceLogin.LOCKED_ERROR), containsString(errorMessage))
         );
     }
 
@@ -101,4 +102,37 @@ public class SerenityBDDWebGlue {
                 LoginAzure.conCredenciales(environmentConfig.getVariable("QA-USER-AUTOMATION"), environmentConfig.getVariable("QA-PASS-AUTOMATION"))
         );
     }
+
+
+    @Given("que el {actor} ingresa a la pagina de recordar usuario oracle")
+    public void queElClienteIngresaALaPaginaDeRecordarUsuarioOracle(Actor actor) {
+        givenThat(actor).attemptsTo(
+                Open.browserOn().the(PageOracle.class)
+        );
+    }
+
+    @When("decide realizar el proceso ingresando su mail {string}")
+    public void decideRealizarElProcesoIngresandoSuMail(final String email) {
+        Actor actor = theActorInTheSpotlight();
+
+        when(actor).attemptsTo(
+                ProccessRetrieveUserName.whitMail(email),
+                RetrieveData.fromMail()
+        );
+    }
+
+    @Then("obtiene el usuario de logueo")
+    public void obtieneElUsuarioDeLogueo() {
+        Actor actor = theActorInTheSpotlight();
+        String userName = actor.recall(VarMsGraph.DATA_FROM_MAIL.getVarName());
+        then(actor).attemptsTo(
+                UseRetrievedData.inLoginOracle(userName)
+        );
+
+        actor.should(
+                seeThat("'Valor userName: " + userName + "'", validation -> userName, not(equalTo("")))
+        );
+    }
+
+
 }

@@ -46,5 +46,11 @@ Feature:  Pruebas para automatizacion WEB desde SerenityBDD
       | @externaldata@demo/DataCompraTelefono.xlsx..compra |
 
   @id:5 @LoginAzure
-  Scenario: T-E2E-PQBP-511-CA1- Login Azure Usuario Generico
+  Scenario: T-E2E-PQBP-511-CA05- Login Azure Usuario Generico
     Given que el cliente inicia sesion en el aplicativo con sus credenciales
+
+  @id:6 @forgotUserOracle @getDataMail
+  Scenario: T-E2E-PQBP-551-CA06 - Recordar usuario de login Oracle
+    Given que el cliente ingresa a la pagina de recordar usuario oracle
+    When decide realizar el proceso ingresando su mail "tu_mail_aqui@hotmail.com"
+    Then obtiene el usuario de logueo

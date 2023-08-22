@@ -25,7 +25,7 @@ public class ConfigurationParamUtils {
             valuesMap = normalizeNames(opValuesEnvMap.get(), "_");
         }else{
             PropertiesReader propertiesUtils = new PropertiesReader();
-            Optional<Properties> opProperties = propertiesUtils.getPropValues();
+            Optional<Properties> opProperties = propertiesUtils.getPropValues("db.properties");
             valuesMap =  normalizeNames(opProperties
                         .map(properties ->ConfigurationParamUtils.createConfigMapPropertiesParams(properties, dbType))
                         .orElseGet(HashMap::new), "\\.");
