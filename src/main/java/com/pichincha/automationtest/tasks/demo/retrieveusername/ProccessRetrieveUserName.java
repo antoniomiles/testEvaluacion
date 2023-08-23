@@ -1,6 +1,6 @@
 package com.pichincha.automationtest.tasks.demo.retrieveusername;
 
-import com.pichincha.automationtest.actions.BPRememberDate;
+import com.pichincha.automationtest.actions.demo.BPRememberDate;
 import com.pichincha.automationtest.ui.demo.PageOracle;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;

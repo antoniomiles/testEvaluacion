@@ -1,7 +1,7 @@
 package com.pichincha.automationtest.tasks.demo.retrieveusername;
 
 import com.pichincha.automationtest.exceptions.ExcRuntime;
-import com.pichincha.automationtest.questions.QuesGetData;
+import com.pichincha.automationtest.questions.demo.QuesGetData;
 import com.pichincha.automationtest.tasks.demo.retrieveusername.enums.VarMsGraph;
 import com.pichincha.automationtest.util.EnvironmentConfig;
 import com.pichincha.automationtest.util.PropertiesReader;
