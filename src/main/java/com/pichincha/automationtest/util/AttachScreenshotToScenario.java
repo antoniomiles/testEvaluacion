@@ -34,7 +34,7 @@ public class AttachScreenshotToScenario {
                 for (String e : numberEvidence) {
                     String nameEvidence = StringUtils.substringBetween(e, "(", ")");
                     nameEvidence = nameEvidence.substring(6);
-                    FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.dir") + PathConstants.validatePath(readProperties.getPropiedad("report.assets.directory") + nameEvidence));
+                    FileInputStream fileInputStream = new FileInputStream(System.getProperty("user.dir") + PathConstants.validatePath(readProperties.getProperty("report.assets.directory","manualtest.properties") + nameEvidence));
                     byte[] fileInBytes = IOUtils.toByteArray(fileInputStream);
                     validateFileType(nameEvidence, scenario, fileInBytes);
                 }

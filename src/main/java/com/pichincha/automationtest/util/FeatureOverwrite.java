@@ -146,7 +146,7 @@ public class FeatureOverwrite {
             int numScenario = 0;
             String azureOrLocalExecution = variables.getProperty("execute");
             if (azureOrLocalExecution == null || azureOrLocalExecution.isEmpty()) {
-                azureOrLocalExecution = readProperties.getPropiedad("azure.or.local.execution");
+                azureOrLocalExecution = readProperties.getProperty("azure.or.local.execution","manualtest.properties");
             }
             while ((nameScenario = buffReaderScenario.readLine()) != null) {
                 if (nameScenario.trim().contains("Scenario:")) {

@@ -12,7 +12,7 @@ public class QuesGetText implements Question<String> {
         this.target = target;
     }
 
-    public static QuesGetText getText(Target target) {
+    public static QuesGetText fromTarget(Target target) {
         return new QuesGetText(target);
     }
 

@@ -25,7 +25,7 @@ public class ManualReadFeature {
     public static String setPassedOrFailedFromPane(String featureName, String nameScenario, int numScenario) {
         String statusExecution;
         String[] options = {"   No   ", "   Si   "};
-        String numInitArrayReadCsv = readProperties.getPropiedad("num.init.array.read.csv");
+        String numInitArrayReadCsv = readProperties.getProperty("num.init.array.read.csv","manualtest.properties");
         if (numInitArrayReadCsv.equals("1")) {
             numScenario = numScenario + 1;
         }
@@ -48,7 +48,7 @@ public class ManualReadFeature {
     public static String setPassedOrFailedFromCSV(int numScenario, String filePath) {
         String lineData;
         String statusExecution = "  #EstadoScenarioNoDefinido";
-        String numInitArrayReadCsv = readProperties.getPropiedad("num.init.array.read.csv");
+        String numInitArrayReadCsv = readProperties.getProperty("num.init.array.read.csv","manualtest.properties");
         if (numInitArrayReadCsv.equals("1")) {
             numScenario = numScenario + 1;
         }

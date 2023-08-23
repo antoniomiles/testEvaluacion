@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class DataBaseInteraction implements Ability{
 
-    private DataBaseUtils dataBaseUtils;
+    private final DataBaseUtils dataBaseUtils;
 
     public DataBaseUtils getDBUtils() {
         return dataBaseUtils;

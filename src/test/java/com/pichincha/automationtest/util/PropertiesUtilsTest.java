@@ -14,13 +14,13 @@ import static org.junit.Assert.assertEquals;
 public class PropertiesUtilsTest {
 
     @Test
-    public void getPropValues(){
+    public void getPropValues() {
         PropertiesReader propertiesUtils = new PropertiesReader();
-        Optional<Properties> opProperties = propertiesUtils.getPropValues();
-        Properties properties ;
-        if(opProperties.isPresent()) {
+        Optional<Properties> opProperties = propertiesUtils.getPropValues("db.properties");
+        Properties properties;
+        if (opProperties.isPresent()) {
             properties = opProperties.get();
-            if(Objects.nonNull(properties.get("mysql.username"))) {
+            if (Objects.nonNull(properties.get("mysql.username"))) {
                 assertEquals("vvalencia", properties.get("mysql.username"));
             }
         }

@@ -7,11 +7,10 @@ import net.serenitybdd.screenplay.Actor;
 import java.util.Map;
 
 public class NOSQLBaseInteraction implements Ability {
-    private MongoUtils mongoUtils;
+    private final MongoUtils mongoUtils;
 
     public NOSQLBaseInteraction(Map<String, Object> config) {
-        this.mongoUtils =
-                new MongoUtils(config);
+        this.mongoUtils = new MongoUtils(config);
     }
 
     public static NOSQLBaseInteraction using(Map<String, Object> config) {

@@ -1,8 +1,8 @@
 package com.pichincha.automationtest.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -14,14 +14,26 @@ public class PropertiesReader {
 
     Logger logger = Logger.getLogger(this.getClass().getName());
 
-    public String getPropiedad(String atributopro) {
+    public Optional<Properties> getPropValues(String nameFileProperties) {
+        Properties properties = new Properties();
+        String propFileName = PathConstants.resourcesPath() + "properties" + File.separator + nameFileProperties;
+
+        try (InputStream inputStream = Files.newInputStream(Paths.get(propFileName))) {
+            properties.load(inputStream);
+            return Optional.of(properties);
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+    }
+
+    public String getProperty(String property, String nameFileProperties) {
         InputStream imputStream = null;
         Properties properties = new Properties();
         try {
-            imputStream = PropertiesReader.class.getClassLoader().getResourceAsStream("properties/manualtest.properties");
+            imputStream = PropertiesReader.class.getClassLoader().getResourceAsStream("properties" + File.separator + nameFileProperties);
             properties.load(imputStream);
         } catch (IOException e) {
-            logger.log(Level.WARNING, "ERROR: ", e);
+            logger.log(Level.SEVERE, String.format("ERROR reading property '%s', in file %s", property, nameFileProperties), e);
         } finally {
             if (imputStream != null) {
                 try {
@@ -31,21 +43,6 @@ public class PropertiesReader {
                 }
             }
         }
-        return properties.getProperty(atributopro);
-    }
-
-    public Optional<Properties> getPropValues() {
-        Properties properties = new Properties();
-        String projectDirectory = FileSystems.getDefault()
-                .getPath("")
-                .toAbsolutePath().toString();
-        String propFileName = projectDirectory + "/serenity.properties";
-
-        try (InputStream inputStream = Files.newInputStream(Paths.get(propFileName))) {
-            properties.load(inputStream);
-            return Optional.of(properties);
-        } catch (IOException e) {
-            return Optional.empty();
-        }
+        return properties.getProperty(property);
     }
 }
