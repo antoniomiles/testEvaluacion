@@ -47,15 +47,16 @@ public class GetTokenMsGraph implements Task {
                                     devTools.createSession();
                                     devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
                                     devTools.addListener(Network.responseReceived(), response -> {
-                                        if (response.getResponse().getUrl().contains("oauth2/v2.0/token")) {
-                                            requestIds[0] = response.getRequestId();
-                                            String responseBody = devTools.send(Network.getResponseBody(requestIds[0])).getBody();
-                                            JSONObject responseBodyJSON = new JSONObject(responseBody);
-                                            String accessToken = responseBodyJSON.getString("access_token");
-                                            System.setProperty(msGraphToken, accessToken);
-                                            devTools.close();
-                                        }
-                                    });
+                                                if (response.getResponse().getUrl().contains("oauth2/v2.0/token")) {
+                                                    requestIds[0] = response.getRequestId();
+                                                    String responseBody = devTools.send(Network.getResponseBody(requestIds[0])).getBody();
+                                                    JSONObject responseBodyJSON = new JSONObject(responseBody);
+                                                    String accessToken = responseBodyJSON.getString("access_token");
+                                                    System.setProperty(msGraphToken, accessToken);
+                                                    devTools.close();
+                                                }
+                                            }
+                                    );
                                 }
                         )
                 );

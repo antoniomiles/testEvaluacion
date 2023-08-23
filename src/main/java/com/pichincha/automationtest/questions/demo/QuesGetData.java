@@ -1,4 +1,4 @@
-package com.pichincha.automationtest.questions;
+package com.pichincha.automationtest.questions.demo;
 
 import lombok.extern.slf4j.Slf4j;
 import net.serenitybdd.rest.SerenityRest;

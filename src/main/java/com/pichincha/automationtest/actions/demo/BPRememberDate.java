@@ -1,4 +1,4 @@
-package com.pichincha.automationtest.actions;
+package com.pichincha.automationtest.actions.demo;
 
 import com.pichincha.automationtest.tasks.demo.retrieveusername.enums.VarMsGraph;
 import lombok.extern.slf4j.Slf4j;
