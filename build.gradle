@@ -60,8 +60,12 @@ dependencies {
             "net.serenity-bdd:serenity-ensure:${serenityCoreVersion}"
     implementation group: 'org.antlr', name: 'ST4', version: '4.3.4'
     implementation 'org.apache.poi:poi-ooxml:5.2.3'
-    implementation group: 'org.springframework', name: 'spring-jdbc', version: '6.0.9'
     implementation 'org.mongodb:mongodb-driver-sync:4.9.1'
+    implementation group: 'org.springframework', name: 'spring-jdbc', version: '6.0.9'
+    //Para conexion con Base de Datos SQL se debe activar el driver necesario
+    //implementation 'org.postgresql:postgresql:42.6.0'
+    //implementation 'com.microsoft.sqlserver:mssql-jdbc:12.4.0.jre11'
+    //implementation 'com.mysql:mysql-connector-j:8.1.0'
     implementation 'org.json:json:20230618'
     testImplementation 'com.intuit.karate:karate-junit4:1.4.0.RC3'
     testImplementation 'com.intuit.karate:karate-netty:0.9.3.RC1'
