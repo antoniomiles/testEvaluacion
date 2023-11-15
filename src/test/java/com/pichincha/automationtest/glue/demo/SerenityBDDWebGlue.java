@@ -10,6 +10,7 @@ import com.pichincha.automationtest.tasks.demo.retrieveusername.enums.VarMsGraph
 import com.pichincha.automationtest.ui.demo.*;
 import com.pichincha.automationtest.util.EnvironmentConfig;
 import io.cucumber.datatable.DataTable;
+import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -133,6 +134,7 @@ public class SerenityBDDWebGlue {
                 seeThat("'Valor userName: " + userName + "'", validation -> userName, not(equalTo("")))
         );
     }
+
 
 
 }
