@@ -1,5 +1,5 @@
-package com.pichincha.automationtest.glue.demo;
-import com.pichincha.automationtest.ui.demo.PageHipotecas;
+package com.pichincha.automationtest.glue;
+import com.pichincha.automationtest.ui.PageHipotecas;
 import io.cucumber.java.en.And;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
