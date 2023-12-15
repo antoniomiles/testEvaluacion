@@ -1,4 +1,4 @@
-package com.pichincha.automationtest.ui.demo;
+package com.pichincha.automationtest.ui;
 
 import net.serenitybdd.core.pages.PageObject;
 import net.serenitybdd.screenplay.targets.Target;
